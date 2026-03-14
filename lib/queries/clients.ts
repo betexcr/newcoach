@@ -1,0 +1,92 @@
+import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
+import { supabase } from "@/lib/supabase";
+import type { CoachClient, Profile } from "@/types/database";
+
+const CLIENT_KEYS = {
+  all: ["clients"] as const,
+  list: (coachId: string) => [...CLIENT_KEYS.all, coachId] as const,
+  profile: (clientId: string) => [...CLIENT_KEYS.all, "profile", clientId] as const,
+};
+
+export interface ClientWithProfile {
+  id: string;
+  coach_id: string;
+  client_id: string;
+  status: string;
+  created_at: string;
+  profile: Profile;
+}
+
+export function useCoachClients(coachId: string) {
+  return useQuery({
+    queryKey: CLIENT_KEYS.list(coachId),
+    queryFn: async () => {
+      const { data, error } = await supabase
+        .from("coach_clients")
+        .select("*, profile:profiles!coach_clients_client_id_fkey(*)")
+        .eq("coach_id", coachId)
+        .order("created_at", { ascending: false });
+      if (error) throw error;
+      return (data ?? []) as ClientWithProfile[];
+    },
+    enabled: !!coachId,
+  });
+}
+
+export function useAddClient() {
+  const queryClient = useQueryClient();
+  return useMutation({
+    mutationFn: async ({
+      coachId,
+      clientEmail,
+    }: {
+      coachId: string;
+      clientEmail: string;
+    }) => {
+      const { data: clientProfile, error: profileError } = await supabase
+        .from("profiles")
+        .select("id")
+        .eq("email", clientEmail.toLowerCase())
+        .single();
+
+      if (profileError || !clientProfile) {
+        throw new Error("No user found with that email. They need to sign up first.");
+      }
+
+      const { data, error } = await supabase
+        .from("coach_clients")
+        .insert({
+          coach_id: coachId,
+          client_id: clientProfile.id,
+          status: "active",
+        })
+        .select()
+        .single();
+
+      if (error) {
+        if (error.code === "23505") {
+          throw new Error("This client is already linked to your account.");
+        }
+        throw error;
+      }
+
+      return data;
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: CLIENT_KEYS.all });
+    },
+  });
+}
+
+export function useRemoveClient() {
+  const queryClient = useQueryClient();
+  return useMutation({
+    mutationFn: async (id: string) => {
+      const { error } = await supabase.from("coach_clients").delete().eq("id", id);
+      if (error) throw error;
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: CLIENT_KEYS.all });
+    },
+  });
+}

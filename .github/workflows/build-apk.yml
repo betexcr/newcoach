@@ -1,0 +1,58 @@
+name: Build & Release APK
+
+on:
+  push:
+    branches: [main]
+
+concurrency:
+  group: build-apk-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  build:
+    name: Build Android APK
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 20
+          cache: npm
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Setup EAS
+        uses: expo/expo-github-action@v8
+        with:
+          eas-version: latest
+          token: ${{ secrets.EXPO_TOKEN }}
+
+      - name: Build APK
+        run: eas build --platform android --profile preview --non-interactive --output ./newcoach.apk
+
+      - name: Get short SHA
+        id: slug
+        run: echo "sha=$(git rev-parse --short HEAD)" >> "$GITHUB_OUTPUT"
+
+      - name: Delete existing latest release
+        run: gh release delete latest --yes --cleanup-tag || true
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Create release with APK
+        run: |
+          gh release create latest ./newcoach.apk \
+            --title "Latest Build (${{ steps.slug.outputs.sha }})" \
+            --notes "Auto-built from \`main\` @ [${{ steps.slug.outputs.sha }}](https://github.com/${{ github.repository }}/commit/${{ github.sha }})
+
+          Download **newcoach.apk** below to install on Android." \
+            --prerelease
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
