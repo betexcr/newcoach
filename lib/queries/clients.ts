@@ -6,6 +6,7 @@ const CLIENT_KEYS = {
   all: ["clients"] as const,
   list: (coachId: string) => [...CLIENT_KEYS.all, coachId] as const,
   profile: (clientId: string) => [...CLIENT_KEYS.all, "profile", clientId] as const,
+  invites: (clientId: string) => [...CLIENT_KEYS.all, "invites", clientId] as const,
 };
 
 export interface ClientWithProfile {
@@ -58,7 +59,7 @@ export function useAddClient() {
         .insert({
           coach_id: coachId,
           client_id: clientProfile.id,
-          status: "active",
+          status: "pending",
         })
         .select()
         .single();
@@ -83,6 +84,64 @@ export function useRemoveClient() {
   return useMutation({
     mutationFn: async (id: string) => {
       const { error } = await supabase.from("coach_clients").delete().eq("id", id);
+      if (error) throw error;
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: CLIENT_KEYS.all });
+    },
+  });
+}
+
+export interface InviteWithCoach {
+  id: string;
+  coach_id: string;
+  client_id: string;
+  status: string;
+  created_at: string;
+  coach: Profile;
+}
+
+export function usePendingInvites(clientId: string) {
+  return useQuery({
+    queryKey: CLIENT_KEYS.invites(clientId),
+    queryFn: async () => {
+      const { data, error } = await supabase
+        .from("coach_clients")
+        .select("*, coach:profiles!coach_clients_coach_id_fkey(*)")
+        .eq("client_id", clientId)
+        .eq("status", "pending")
+        .order("created_at", { ascending: false });
+      if (error) throw error;
+      return (data ?? []) as InviteWithCoach[];
+    },
+    enabled: !!clientId,
+  });
+}
+
+export function useAcceptInvite() {
+  const queryClient = useQueryClient();
+  return useMutation({
+    mutationFn: async (id: string) => {
+      const { error } = await supabase
+        .from("coach_clients")
+        .update({ status: "active" })
+        .eq("id", id);
+      if (error) throw error;
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: CLIENT_KEYS.all });
+    },
+  });
+}
+
+export function useDeclineInvite() {
+  const queryClient = useQueryClient();
+  return useMutation({
+    mutationFn: async (id: string) => {
+      const { error } = await supabase
+        .from("coach_clients")
+        .delete()
+        .eq("id", id);
       if (error) throw error;
     },
     onSuccess: () => {

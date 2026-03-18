@@ -64,6 +64,7 @@ export default function ClientLayout() {
       <Tabs.Screen name="milestones" options={{ href: null, title: t("tabs.milestones") }} />
       <Tabs.Screen name="nutrition" options={{ href: null, title: t("tabs.nutrition") }} />
       <Tabs.Screen name="messages/chat" options={{ href: null, title: t("tabs.chat") }} />
+      <Tabs.Screen name="invites" options={{ href: null, title: t("invites.title") }} />
     </Tabs>
   );
 }

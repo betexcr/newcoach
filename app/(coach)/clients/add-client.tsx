@@ -27,7 +27,9 @@ export default function AddClientScreen() {
         coachId: userId,
         clientEmail: email.trim(),
       });
-      router.back();
+      Alert.alert(t("clients.addClient"), t("clients.inviteSent"), [
+        { text: t("common.ok"), onPress: () => router.back() },
+      ]);
     } catch (err: any) {
       Alert.alert(t("common.error"), err.message);
     }

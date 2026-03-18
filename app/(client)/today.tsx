@@ -7,6 +7,7 @@ import { MaterialCommunityIcons } from "@expo/vector-icons";
 import { useRouter } from "expo-router";
 import { useAuthStore } from "@/stores/auth-store";
 import { useClientWorkouts } from "@/lib/queries/workouts";
+import { usePendingInvites } from "@/lib/queries/clients";
 import { formatDate } from "@/lib/date-utils";
 import type { AssignedWorkout } from "@/types/database";
 
@@ -45,6 +46,7 @@ export default function TodayScreen() {
   );
 
   const { data: allWorkouts = [] } = useClientWorkouts(userId ?? "");
+  const { data: pendingInvites = [] } = usePendingInvites(userId ?? "");
 
   const todayWorkouts = useMemo(
     () => weekWorkouts.filter((w) => w.scheduled_date === todayStr),
@@ -128,6 +130,38 @@ export default function TodayScreen() {
               : t("today.greetingFallback")}
           </Text>
         </View>
+
+        {pendingInvites.length > 0 && (
+          <Pressable
+            onPress={() => router.push("/(client)/invites" as any)}
+            style={[styles.inviteBanner, { backgroundColor: theme.colors.primaryContainer }]}
+          >
+            <MaterialCommunityIcons
+              name="account-plus"
+              size={24}
+              color={theme.colors.primary}
+            />
+            <View style={{ flex: 1, marginLeft: 12 }}>
+              <Text
+                variant="titleSmall"
+                style={{ color: theme.colors.primary, fontWeight: "700" }}
+              >
+                {t("invites.bannerTitle")}
+              </Text>
+              <Text
+                variant="bodySmall"
+                style={{ color: theme.colors.onSurfaceVariant }}
+              >
+                {t("invites.bannerMessage", { count: pendingInvites.length })}
+              </Text>
+            </View>
+            <MaterialCommunityIcons
+              name="chevron-right"
+              size={24}
+              color={theme.colors.primary}
+            />
+          </Pressable>
+        )}
 
         {todayWorkouts.length === 0 ? (
           <Card
@@ -401,6 +435,13 @@ const styles = StyleSheet.create({
   container: { flex: 1 },
   content: { padding: 16, paddingBottom: 32 },
   greeting: { marginBottom: 20 },
+  inviteBanner: {
+    flexDirection: "row",
+    alignItems: "center",
+    padding: 14,
+    borderRadius: 14,
+    marginBottom: 16,
+  },
   todayCard: { borderRadius: 20, elevation: 0, marginBottom: 16 },
   todayContent: { alignItems: "center", paddingVertical: 32 },
   workoutCardContent: { alignItems: "center", paddingVertical: 24 },
