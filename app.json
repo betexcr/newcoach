@@ -35,6 +35,9 @@
       "expo-font",
       "expo-localization"
     ],
+    "experiments": {
+      "typedRoutes": true
+    },
     "extra": {
       "router": {},
       "eas": {

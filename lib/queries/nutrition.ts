@@ -1,6 +1,6 @@
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { supabase } from "@/lib/supabase";
-import type { NutritionLog } from "@/types/database";
+import type { NutritionLog, MacroGoals } from "@/types/database";
 
 const NUTRITION_KEYS = {
   all: ["nutrition"] as const,
@@ -64,6 +64,24 @@ export function useDeleteNutritionLog() {
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: NUTRITION_KEYS.all });
+    },
+  });
+}
+
+export function useUpdateNutritionGoals() {
+  return useMutation({
+    mutationFn: async ({
+      userId,
+      goals,
+    }: {
+      userId: string;
+      goals: MacroGoals;
+    }) => {
+      const { error } = await supabase
+        .from("profiles")
+        .update({ nutrition_goals: goals })
+        .eq("id", userId);
+      if (error) throw error;
     },
   });
 }

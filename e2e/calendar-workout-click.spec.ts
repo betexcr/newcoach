@@ -1,6 +1,9 @@
 import { test, expect } from "@playwright/test";
 
-const CLIENT = { email: "client@test.com", password: "Test1234!" };
+const CLIENT = {
+  email: process.env.TEST_CLIENT_EMAIL ?? "client@test.com",
+  password: process.env.TEST_PASSWORD ?? "Test1234!",
+};
 
 test("calendar page → click workout card → verify navigation", async ({
   page,

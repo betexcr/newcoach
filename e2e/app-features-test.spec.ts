@@ -17,8 +17,8 @@ test("NewCoach app features: Calendar, Habits, Settings", async ({ page }) => {
     await page.reload({ waitUntil: "domcontentloaded" });
     await page.waitForTimeout(1500);
     const inputs = page.locator("input");
-    await inputs.first().fill("client@test.com");
-    await inputs.nth(1).fill("Test1234!");
+    await inputs.first().fill(process.env.TEST_CLIENT_EMAIL ?? "client@test.com");
+    await inputs.nth(1).fill(process.env.TEST_PASSWORD ?? "Test1234!");
     await signInBtn.click();
     await page.waitForTimeout(3000);
   }

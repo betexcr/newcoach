@@ -1,37 +1,66 @@
 import { useState } from "react";
 import { useTranslation } from "react-i18next";
 import { View, StyleSheet, ScrollView, Pressable, Alert } from "react-native";
-import { Text, useTheme, Card, TextInput, ProgressBar, IconButton } from "react-native-paper";
+import {
+  Text,
+  useTheme,
+  Card,
+  TextInput,
+  ProgressBar,
+  IconButton,
+  Chip,
+} from "react-native-paper";
 import { SafeAreaView } from "react-native-safe-area-context";
 import { MaterialCommunityIcons } from "@expo/vector-icons";
 import { AuthButton } from "@/components/AuthButton";
 import { useAuthStore } from "@/stores/auth-store";
-import { useNutritionLogs, useAddNutritionLog, useDeleteNutritionLog } from "@/lib/queries/nutrition";
+import {
+  useNutritionLogs,
+  useAddNutritionLog,
+  useDeleteNutritionLog,
+  useUpdateNutritionGoals,
+} from "@/lib/queries/nutrition";
 import { formatDate } from "@/lib/date-utils";
-import type { NutritionLog } from "@/types/database";
+import type { MacroGoals, NutritionLog } from "@/types/database";
 
-const MACRO_GOALS = {
+const DEFAULT_GOALS: MacroGoals = {
   calories: 2200,
   protein: 160,
   carbs: 250,
   fat: 70,
 };
 
+const MEAL_TYPES = ["breakfast", "lunch", "dinner", "snack"] as const;
+type MealType = (typeof MEAL_TYPES)[number];
+
 export default function NutritionScreen() {
   const { t } = useTranslation();
   const theme = useTheme();
-  const userId = useAuthStore((s) => s.user?.id);
+  const user = useAuthStore((s) => s.user);
+  const profile = useAuthStore((s) => s.profile);
+  const setProfile = useAuthStore((s) => s.setProfile);
+  const userId = user?.id;
+  const goals: MacroGoals = profile?.nutrition_goals ?? DEFAULT_GOALS;
+
   const today = formatDate(new Date());
   const { data: entries = [] } = useNutritionLogs(userId ?? "", today);
   const addEntry = useAddNutritionLog();
   const deleteEntry = useDeleteNutritionLog();
+  const updateGoals = useUpdateNutritionGoals();
 
   const [showForm, setShowForm] = useState(false);
+  const [showGoalsForm, setShowGoalsForm] = useState(false);
   const [name, setName] = useState("");
   const [calories, setCalories] = useState("");
   const [protein, setProtein] = useState("");
   const [carbs, setCarbs] = useState("");
   const [fat, setFat] = useState("");
+  const [meal, setMeal] = useState<MealType>("snack");
+
+  const [goalCalories, setGoalCalories] = useState(String(goals.calories));
+  const [goalProtein, setGoalProtein] = useState(String(goals.protein));
+  const [goalCarbs, setGoalCarbs] = useState(String(goals.carbs));
+  const [goalFat, setGoalFat] = useState(String(goals.fat));
 
   const totals = entries.reduce(
     (acc, e) => ({
@@ -53,7 +82,7 @@ export default function NutritionScreen() {
         protein: parseFloat(protein) || 0,
         carbs: parseFloat(carbs) || 0,
         fat: parseFloat(fat) || 0,
-        meal: "snack",
+        meal,
         logged_date: today,
       });
       setName("");
@@ -61,9 +90,28 @@ export default function NutritionScreen() {
       setProtein("");
       setCarbs("");
       setFat("");
+      setMeal("snack");
       setShowForm(false);
     } catch (err: any) {
       Alert.alert(t("common.error"), err.message ?? t("nutrition.failedAddEntry"));
+    }
+  }
+
+  async function handleSaveGoals() {
+    if (!userId) return;
+    const newGoals: MacroGoals = {
+      calories: parseFloat(goalCalories) || DEFAULT_GOALS.calories,
+      protein: parseFloat(goalProtein) || DEFAULT_GOALS.protein,
+      carbs: parseFloat(goalCarbs) || DEFAULT_GOALS.carbs,
+      fat: parseFloat(goalFat) || DEFAULT_GOALS.fat,
+    };
+    try {
+      await updateGoals.mutateAsync({ userId, goals: newGoals });
+      if (profile) setProfile({ ...profile, nutrition_goals: newGoals });
+      setShowGoalsForm(false);
+      Alert.alert(t("common.ok"), t("nutrition.goalsUpdated"));
+    } catch (err: any) {
+      Alert.alert(t("common.error"), err.message ?? t("nutrition.failedUpdateGoals"));
     }
   }
 
@@ -77,6 +125,25 @@ export default function NutritionScreen() {
       },
     ]);
   }
+
+  function openGoalsForm() {
+    setGoalCalories(String(goals.calories));
+    setGoalProtein(String(goals.protein));
+    setGoalCarbs(String(goals.carbs));
+    setGoalFat(String(goals.fat));
+    setShowGoalsForm(true);
+    setShowForm(false);
+  }
+
+  const mealLabel = (m: MealType) => {
+    const map: Record<MealType, string> = {
+      breakfast: t("nutrition.mealBreakfast"),
+      lunch: t("nutrition.mealLunch"),
+      dinner: t("nutrition.mealDinner"),
+      snack: t("nutrition.mealSnack"),
+    };
+    return map[m];
+  };
 
   function MacroBar({
     label,
@@ -115,12 +182,21 @@ export default function NutritionScreen() {
       edges={["top"]}
     >
       <ScrollView contentContainerStyle={styles.content}>
-        <Text
-          variant="headlineMedium"
-          style={{ color: theme.colors.onSurface, fontWeight: "700" }}
-        >
-          {t("nutrition.title")}
-        </Text>
+        <View style={styles.titleRow}>
+          <Text
+            variant="headlineMedium"
+            style={{ color: theme.colors.onSurface, fontWeight: "700" }}
+          >
+            {t("nutrition.title")}
+          </Text>
+          <Pressable onPress={openGoalsForm}>
+            <MaterialCommunityIcons
+              name="target"
+              size={26}
+              color={theme.colors.primary}
+            />
+          </Pressable>
+        </View>
 
         <Card
           style={[styles.summaryCard, { backgroundColor: theme.colors.surface }]}
@@ -138,7 +214,7 @@ export default function NutritionScreen() {
                   variant="bodySmall"
                   style={{ color: theme.colors.onSurfaceVariant }}
                 >
-                  {t("nutrition.ofCal", { count: MACRO_GOALS.calories })}
+                  {t("nutrition.ofCal", { count: goals.calories })}
                 </Text>
               </View>
               <View style={styles.remainingBadge}>
@@ -146,7 +222,7 @@ export default function NutritionScreen() {
                   variant="titleMedium"
                   style={{ color: theme.colors.secondary, fontWeight: "700" }}
                 >
-                  {Math.max(MACRO_GOALS.calories - totals.calories, 0)}
+                  {Math.max(goals.calories - totals.calories, 0)}
                 </Text>
                 <Text
                   variant="labelSmall"
@@ -161,24 +237,97 @@ export default function NutritionScreen() {
               <MacroBar
                 label={t("nutrition.protein")}
                 current={totals.protein}
-                goal={MACRO_GOALS.protein}
+                goal={goals.protein}
                 color="#EF4444"
               />
               <MacroBar
                 label={t("nutrition.carbs")}
                 current={totals.carbs}
-                goal={MACRO_GOALS.carbs}
+                goal={goals.carbs}
                 color="#F59E0B"
               />
               <MacroBar
                 label={t("nutrition.fat")}
                 current={totals.fat}
-                goal={MACRO_GOALS.fat}
+                goal={goals.fat}
                 color="#3B82F6"
               />
             </View>
           </Card.Content>
         </Card>
+
+        {showGoalsForm && (
+          <Card
+            style={[styles.formCard, { backgroundColor: theme.colors.surface }]}
+          >
+            <Card.Content>
+              <Text
+                variant="titleMedium"
+                style={{ color: theme.colors.onSurface, fontWeight: "700", marginBottom: 12 }}
+              >
+                {t("nutrition.goalsTitle")}
+              </Text>
+              <TextInput
+                mode="outlined"
+                label={t("nutrition.caloriesGoal")}
+                value={goalCalories}
+                onChangeText={setGoalCalories}
+                keyboardType="numeric"
+                style={styles.formInput}
+                outlineStyle={styles.outline}
+                dense
+              />
+              <View style={styles.formRow}>
+                <TextInput
+                  mode="outlined"
+                  label={t("nutrition.proteinGoal")}
+                  value={goalProtein}
+                  onChangeText={setGoalProtein}
+                  keyboardType="numeric"
+                  style={[styles.formInput, { flex: 1 }]}
+                  outlineStyle={styles.outline}
+                  dense
+                />
+                <TextInput
+                  mode="outlined"
+                  label={t("nutrition.carbsGoal")}
+                  value={goalCarbs}
+                  onChangeText={setGoalCarbs}
+                  keyboardType="numeric"
+                  style={[styles.formInput, { flex: 1 }]}
+                  outlineStyle={styles.outline}
+                  dense
+                />
+              </View>
+              <TextInput
+                mode="outlined"
+                label={t("nutrition.fatGoal")}
+                value={goalFat}
+                onChangeText={setGoalFat}
+                keyboardType="numeric"
+                style={styles.formInput}
+                outlineStyle={styles.outline}
+                dense
+              />
+              <View style={styles.formRow}>
+                <AuthButton
+                  onPress={handleSaveGoals}
+                  loading={updateGoals.isPending}
+                  disabled={updateGoals.isPending}
+                  style={{ flex: 1, marginTop: 8 }}
+                >
+                  {t("nutrition.saveGoals")}
+                </AuthButton>
+                <Pressable
+                  onPress={() => setShowGoalsForm(false)}
+                  style={[styles.cancelButton, { borderColor: theme.colors.outline }]}
+                >
+                  <Text style={{ color: theme.colors.onSurface }}>{t("common.cancel")}</Text>
+                </Pressable>
+              </View>
+            </Card.Content>
+          </Card>
+        )}
 
         <View style={styles.entriesHeader}>
           <Text
@@ -187,7 +336,7 @@ export default function NutritionScreen() {
           >
             {t("nutrition.foodLog")}
           </Text>
-          <Pressable onPress={() => setShowForm(!showForm)}>
+          <Pressable onPress={() => { setShowForm(!showForm); setShowGoalsForm(false); }}>
             <MaterialCommunityIcons
               name={showForm ? "close" : "plus-circle"}
               size={28}
@@ -210,6 +359,32 @@ export default function NutritionScreen() {
                 outlineStyle={styles.outline}
                 dense
               />
+              <Text
+                variant="labelMedium"
+                style={{ color: theme.colors.onSurfaceVariant, marginBottom: 6 }}
+              >
+                {t("nutrition.mealLabel")}
+              </Text>
+              <View style={styles.mealChips}>
+                {MEAL_TYPES.map((m) => (
+                  <Chip
+                    key={m}
+                    selected={meal === m}
+                    onPress={() => setMeal(m)}
+                    compact
+                    style={[
+                      styles.mealChip,
+                      meal === m && { backgroundColor: theme.colors.primaryContainer },
+                    ]}
+                    textStyle={{
+                      color: meal === m ? theme.colors.primary : theme.colors.onSurfaceVariant,
+                      fontWeight: meal === m ? "700" : "400",
+                    }}
+                  >
+                    {mealLabel(m)}
+                  </Chip>
+                ))}
+              </View>
               <View style={styles.formRow}>
                 <TextInput
                   mode="outlined"
@@ -297,12 +472,23 @@ export default function NutritionScreen() {
                   >
                     {entry.name}
                   </Text>
-                  <Text
-                    variant="bodySmall"
-                    style={{ color: theme.colors.onSurfaceVariant, marginTop: 2 }}
-                  >
-                    P: {entry.protein}g · C: {entry.carbs}g · F: {entry.fat}g
-                  </Text>
+                  <View style={styles.entryMeta}>
+                    <Text
+                      variant="bodySmall"
+                      style={{ color: theme.colors.onSurfaceVariant }}
+                    >
+                      P: {entry.protein}g · C: {entry.carbs}g · F: {entry.fat}g
+                    </Text>
+                    {entry.meal && (
+                      <Chip
+                        compact
+                        style={[styles.mealBadge, { backgroundColor: theme.colors.surfaceVariant }]}
+                        textStyle={{ fontSize: 10, color: theme.colors.onSurfaceVariant }}
+                      >
+                        {mealLabel(entry.meal as MealType)}
+                      </Chip>
+                    )}
+                  </View>
                 </View>
                 <View style={{ alignItems: "center", marginRight: 4 }}>
                   <Text
@@ -336,6 +522,12 @@ export default function NutritionScreen() {
 const styles = StyleSheet.create({
   container: { flex: 1 },
   content: { padding: 16, paddingBottom: 32 },
+  titleRow: {
+    flexDirection: "row",
+    justifyContent: "space-between",
+    alignItems: "center",
+    marginBottom: 0,
+  },
   summaryCard: { borderRadius: 20, elevation: 0, marginTop: 16, marginBottom: 20 },
   calorieRow: {
     flexDirection: "row",
@@ -362,7 +554,21 @@ const styles = StyleSheet.create({
   formInput: { marginBottom: 8 },
   formRow: { flexDirection: "row", gap: 8 },
   outline: { borderRadius: 10 },
+  mealChips: { flexDirection: "row", flexWrap: "wrap", gap: 6, marginBottom: 10 },
+  mealChip: { borderRadius: 20 },
+  mealBadge: { marginTop: 4, alignSelf: "flex-start", borderRadius: 20 },
   entryCard: { borderRadius: 14, elevation: 0, marginBottom: 8 },
   entryContent: { flexDirection: "row", alignItems: "center", gap: 4 },
+  entryMeta: { marginTop: 2, gap: 4 },
   emptyState: { alignItems: "center", paddingVertical: 48 },
+  cancelButton: {
+    flex: 1,
+    marginTop: 8,
+    marginLeft: 8,
+    justifyContent: "center",
+    alignItems: "center",
+    borderWidth: 1,
+    borderRadius: 8,
+    paddingVertical: 10,
+  },
 });

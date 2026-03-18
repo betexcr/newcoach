@@ -1,4 +1,8 @@
 import { defineConfig } from "@playwright/test";
+import { config } from "dotenv";
+import path from "path";
+
+config({ path: path.resolve(__dirname, "e2e/.env") });
 
 export default defineConfig({
   testDir: "./e2e",

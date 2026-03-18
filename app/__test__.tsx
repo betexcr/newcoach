@@ -57,6 +57,8 @@ const routes = {
 };
 
 export default function TestHarness() {
+  if (!__DEV__) return null;
+
   const theme = useTheme();
   const router = useRouter();
   const { setProfile, setSession } = useAuthStore();

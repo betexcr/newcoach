@@ -103,3 +103,55 @@ export function useDeleteProgram() {
     },
   });
 }
+
+export function useUpdateProgram() {
+  const queryClient = useQueryClient();
+  return useMutation({
+    mutationFn: async ({
+      id,
+      ...updates
+    }: {
+      id: string;
+      name?: string;
+      description?: string | null;
+      duration_weeks?: number;
+    }) => {
+      const { data, error } = await supabase
+        .from("programs")
+        .update(updates)
+        .eq("id", id)
+        .select()
+        .single();
+      if (error) throw error;
+      return data as Program;
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: PROGRAM_KEYS.all });
+    },
+  });
+}
+
+export function useDeleteProgramWorkout() {
+  const queryClient = useQueryClient();
+  return useMutation({
+    mutationFn: async ({
+      id,
+      programId,
+    }: {
+      id: string;
+      programId: string;
+    }) => {
+      const { error } = await supabase
+        .from("program_workouts")
+        .delete()
+        .eq("id", id);
+      if (error) throw error;
+      return programId;
+    },
+    onSuccess: (programId) => {
+      queryClient.invalidateQueries({
+        queryKey: PROGRAM_KEYS.workouts(programId),
+      });
+    },
+  });
+}

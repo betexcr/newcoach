@@ -12,8 +12,8 @@ test("calendar workout card click test", async ({ page }) => {
   const signInBtn = page.getByRole("button", { name: /sign in/i });
   if (await signInBtn.isVisible({ timeout: 3000 }).catch(() => false)) {
     const inputs = page.locator("input");
-    await inputs.first().fill("client@test.com");
-    await inputs.nth(1).fill("Test1234!");
+    await inputs.first().fill(process.env.TEST_CLIENT_EMAIL ?? "client@test.com");
+    await inputs.nth(1).fill(process.env.TEST_PASSWORD ?? "Test1234!");
     await signInBtn.click();
     await page.waitForURL(/client|today|calendar/, { timeout: 15_000 });
   }

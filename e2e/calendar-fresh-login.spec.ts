@@ -22,8 +22,8 @@ test("calendar fresh login - clear storage and verify", async ({ page }) => {
 
   // 5-7. Login
   const inputs = page.locator("input");
-  await inputs.first().fill("client@test.com");
-  await inputs.nth(1).fill("Test1234!");
+  await inputs.first().fill(process.env.TEST_CLIENT_EMAIL ?? "client@test.com");
+  await inputs.nth(1).fill(process.env.TEST_PASSWORD ?? "Test1234!");
   await page.getByRole("button", { name: /sign in/i }).click();
 
   // 8. Wait 3 sec, screenshot

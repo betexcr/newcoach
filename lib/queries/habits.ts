@@ -116,3 +116,32 @@ export function useDeleteHabit() {
     },
   });
 }
+
+export function useUpdateHabit() {
+  const queryClient = useQueryClient();
+  return useMutation({
+    mutationFn: async ({
+      id,
+      name,
+      description,
+      frequency,
+    }: {
+      id: string;
+      name?: string;
+      description?: string | null;
+      frequency?: string;
+    }) => {
+      const { data, error } = await supabase
+        .from("habits")
+        .update({ name, description, frequency })
+        .eq("id", id)
+        .select()
+        .single();
+      if (error) throw error;
+      return data as Habit;
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: HABIT_KEYS.all });
+    },
+  });
+}

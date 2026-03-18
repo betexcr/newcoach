@@ -45,7 +45,7 @@ export async function registerForPushNotifications(
 
   await supabase
     .from("profiles")
-    .update({ push_token: token } as any)
+    .update({ push_token: token })
     .eq("id", userId);
 
   return token;

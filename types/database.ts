@@ -1,11 +1,20 @@
 export type UserRole = "coach" | "client";
 
+export interface MacroGoals {
+  calories: number;
+  protein: number;
+  carbs: number;
+  fat: number;
+}
+
 export interface Profile {
   id: string;
   email: string;
   full_name: string | null;
   avatar_url: string | null;
   role: UserRole | null;
+  push_token: string | null;
+  nutrition_goals: MacroGoals | null;
   created_at: string;
   updated_at: string;
 }
@@ -184,6 +193,8 @@ export type Database = {
           full_name?: string | null;
           avatar_url?: string | null;
           role?: UserRole | null;
+          push_token?: string | null;
+          nutrition_goals?: MacroGoals | null;
           updated_at?: string;
         };
         Relationships: [];
@@ -357,6 +368,28 @@ export type Database = {
         };
         Update: {
           completed?: boolean;
+        };
+        Relationships: [];
+      };
+      nutrition_logs: {
+        Row: NutritionLog;
+        Insert: {
+          client_id: string;
+          name: string;
+          calories: number;
+          protein: number;
+          carbs: number;
+          fat: number;
+          meal: string;
+          logged_date: string;
+        };
+        Update: {
+          name?: string;
+          calories?: number;
+          protein?: number;
+          carbs?: number;
+          fat?: number;
+          meal?: string;
         };
         Relationships: [];
       };

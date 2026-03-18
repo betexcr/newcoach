@@ -185,6 +185,57 @@ export function useCoachRecentWorkouts(coachId: string, limit = 10) {
   });
 }
 
+export function useAssignProgram() {
+  const queryClient = useQueryClient();
+  return useMutation({
+    mutationFn: async ({
+      programId,
+      coachId,
+      clientId,
+      startDate,
+    }: {
+      programId: string;
+      coachId: string;
+      clientId: string;
+      startDate: string;
+    }) => {
+      const { data: programWorkouts, error: fetchError } = await supabase
+        .from("program_workouts")
+        .select("*")
+        .eq("program_id", programId)
+        .order("week_number", { ascending: true })
+        .order("day_number", { ascending: true });
+      if (fetchError) throw fetchError;
+
+      const base = new Date(startDate);
+      const assignments = (programWorkouts ?? []).map((pw) => {
+        const offsetDays = (pw.week_number - 1) * 7 + (pw.day_number - 1);
+        const scheduled = new Date(base);
+        scheduled.setDate(base.getDate() + offsetDays);
+        return {
+          coach_id: coachId,
+          client_id: clientId,
+          program_id: programId,
+          name: pw.name,
+          scheduled_date: scheduled.toISOString().split("T")[0],
+          exercises: pw.exercises ?? [],
+          status: "pending",
+        };
+      });
+
+      const { data, error } = await supabase
+        .from("assigned_workouts")
+        .insert(assignments)
+        .select();
+      if (error) throw error;
+      return data as AssignedWorkout[];
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: WORKOUT_KEYS.assigned });
+    },
+  });
+}
+
 export function useUpdateWorkoutStatus() {
   const queryClient = useQueryClient();
   return useMutation({

@@ -1,7 +1,13 @@
 import { test, expect, Page } from "@playwright/test";
 
-const COACH = { email: "coach@test.com", password: "Test1234!" };
-const CLIENT = { email: "client@test.com", password: "Test1234!" };
+const COACH = {
+  email: process.env.TEST_COACH_EMAIL ?? "coach@test.com",
+  password: process.env.TEST_PASSWORD ?? "Test1234!",
+};
+const CLIENT = {
+  email: process.env.TEST_CLIENT_EMAIL ?? "client@test.com",
+  password: process.env.TEST_PASSWORD ?? "Test1234!",
+};
 
 async function login(page: Page, creds: { email: string; password: string }) {
   await page.goto("/");
@@ -119,7 +125,7 @@ test.describe("Auth validation", () => {
     await page.waitForURL(/login/, { timeout: 20_000 });
 
     const inputs = page.locator("input");
-    await inputs.first().fill("coach@test.com");
+    await inputs.first().fill(process.env.TEST_COACH_EMAIL ?? "coach@test.com");
     await inputs.nth(1).fill("WrongPassword123!");
     await page.getByRole("button", { name: "Sign In" }).click();
 

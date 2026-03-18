@@ -25,11 +25,13 @@ import { useAuthStore } from "@/stores/auth-store";
 import { useClientWorkouts } from "@/lib/queries/workouts";
 import { useClientResults } from "@/lib/queries/results";
 import { useClientHabits } from "@/lib/queries/habits";
+import { useNutritionLogs } from "@/lib/queries/nutrition";
 import { useRemoveClient, type ClientWithProfile } from "@/lib/queries/clients";
 import { useWorkoutBuilderStore } from "@/stores/workout-builder-store";
-import type { AssignedWorkout, WorkoutResult, Habit } from "@/types/database";
+import { formatDate } from "@/lib/date-utils";
+import type { AssignedWorkout, WorkoutResult, Habit, NutritionLog } from "@/types/database";
 
-type ProfileTab = "workouts" | "progress" | "habits";
+type ProfileTab = "workouts" | "progress" | "habits" | "nutrition";
 
 export default function ClientProfileScreen() {
   const { t } = useTranslation();
@@ -52,9 +54,11 @@ export default function ClientProfileScreen() {
   const userId = useAuthStore((s) => s.user?.id);
   const [tab, setTab] = useState<ProfileTab>("workouts");
 
+  const today = formatDate(new Date());
   const { data: workouts = [], isLoading: loadingWorkouts } = useClientWorkouts(clientId ?? "");
   const { data: results = [], isLoading: loadingResults } = useClientResults(clientId ?? "");
   const { data: habits = [], isLoading: loadingHabits } = useClientHabits(clientId ?? "");
+  const { data: nutritionEntries = [], isLoading: loadingNutrition } = useNutritionLogs(clientId ?? "", today);
   const removeClient = useRemoveClient();
 
   const completedCount = useMemo(
@@ -240,6 +244,20 @@ export default function ClientProfileScreen() {
             </Text>
           </Pressable>
           <Pressable
+            style={[styles.actionButton, { backgroundColor: theme.colors.tertiary ?? theme.colors.secondary }]}
+            onPress={() =>
+              router.push({
+                pathname: "/(coach)/clients/assign-program",
+                params: { clientId, clientName },
+              } as any)
+            }
+          >
+            <MaterialCommunityIcons name="clipboard-list" size={20} color="#FFF" />
+            <Text style={{ color: "#FFF", fontWeight: "600", marginLeft: 6 }}>
+              {t("clientProfile.assignProgram")}
+            </Text>
+          </Pressable>
+          <Pressable
             style={[styles.actionButton, { backgroundColor: theme.colors.secondary }]}
             onPress={handleMessageClient}
           >
@@ -257,6 +275,7 @@ export default function ClientProfileScreen() {
             { value: "workouts", label: t("clientProfile.tabWorkouts") },
             { value: "progress", label: t("clientProfile.tabProgress") },
             { value: "habits", label: t("clientProfile.tabHabits") },
+            { value: "nutrition", label: t("clientProfile.tabNutrition") },
           ]}
           style={styles.tabs}
         />
@@ -290,6 +309,14 @@ export default function ClientProfileScreen() {
             router={router}
             coachId={userId ?? ""}
             clientId={clientId ?? ""}
+          />
+        )}
+        {tab === "nutrition" && (
+          <NutritionTab
+            entries={nutritionEntries}
+            loading={loadingNutrition}
+            theme={theme}
+            t={t}
           />
         )}
       </ScrollView>
@@ -545,6 +572,92 @@ function HabitsTab({
   );
 }
 
+function NutritionTab({
+  entries,
+  loading,
+  theme,
+  t,
+}: {
+  entries: NutritionLog[];
+  loading: boolean;
+  theme: any;
+  t: any;
+}) {
+  if (loading) {
+    return (
+      <View style={styles.loadingContainer}>
+        <ActivityIndicator size="large" color={theme.colors.primary} />
+      </View>
+    );
+  }
+
+  const totals = entries.reduce(
+    (acc, e) => ({
+      calories: acc.calories + e.calories,
+      protein: acc.protein + e.protein,
+      carbs: acc.carbs + e.carbs,
+      fat: acc.fat + e.fat,
+    }),
+    { calories: 0, protein: 0, carbs: 0, fat: 0 }
+  );
+
+  return (
+    <View>
+      <Text
+        variant="titleMedium"
+        style={{ color: theme.colors.onSurface, fontWeight: "700", marginBottom: 12 }}
+      >
+        {t("clientProfile.todaysNutrition")}
+      </Text>
+      {entries.length === 0 ? (
+        <View style={styles.emptyTab}>
+          <MaterialCommunityIcons
+            name="food-apple-outline"
+            size={40}
+            color={theme.colors.onSurfaceVariant}
+          />
+          <Text variant="bodyMedium" style={{ color: theme.colors.onSurfaceVariant, marginTop: 8 }}>
+            {t("nutrition.noEntriesCoach")}
+          </Text>
+        </View>
+      ) : (
+        <>
+          <View style={[styles.nutritionSummary, { backgroundColor: theme.colors.primaryContainer }]}>
+            <Text variant="titleLarge" style={{ color: theme.colors.primary, fontWeight: "800" }}>
+              {Math.round(totals.calories)} {t("nutrition.cal")}
+            </Text>
+            <Text variant="bodySmall" style={{ color: theme.colors.onSurfaceVariant, marginTop: 2 }}>
+              {t("clientProfile.nutritionMacros", {
+                protein: Math.round(totals.protein),
+                carbs: Math.round(totals.carbs),
+                fat: Math.round(totals.fat),
+              })}
+            </Text>
+          </View>
+          {entries.map((e) => (
+            <View
+              key={e.id}
+              style={[styles.nutritionRow, { backgroundColor: theme.colors.surface }]}
+            >
+              <View style={{ flex: 1 }}>
+                <Text variant="titleSmall" style={{ color: theme.colors.onSurface, fontWeight: "600" }}>
+                  {e.name}
+                </Text>
+                <Text variant="bodySmall" style={{ color: theme.colors.onSurfaceVariant }}>
+                  P: {e.protein}g · C: {e.carbs}g · F: {e.fat}g
+                </Text>
+              </View>
+              <Text variant="titleSmall" style={{ color: theme.colors.primary, fontWeight: "700" }}>
+                {e.calories} {t("nutrition.cal")}
+              </Text>
+            </View>
+          ))}
+        </>
+      )}
+    </View>
+  );
+}
+
 const styles = StyleSheet.create({
   container: { flex: 1 },
   topBar: {
@@ -608,5 +721,18 @@ const styles = StyleSheet.create({
     borderStyle: "dashed",
     borderRadius: 12,
     marginTop: 8,
+  },
+  nutritionSummary: {
+    padding: 16,
+    borderRadius: 14,
+    marginBottom: 10,
+    alignItems: "center",
+  },
+  nutritionRow: {
+    flexDirection: "row",
+    alignItems: "center",
+    padding: 12,
+    borderRadius: 12,
+    marginBottom: 8,
   },
 });
