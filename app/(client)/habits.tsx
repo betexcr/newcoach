@@ -1,5 +1,5 @@
 import { useTranslation } from "react-i18next";
-import { View, StyleSheet, ScrollView, Pressable, RefreshControl } from "react-native";
+import { View, StyleSheet, ScrollView, Pressable, RefreshControl, Alert } from "react-native";
 import { Text, useTheme, Card, ActivityIndicator } from "react-native-paper";
 import { SafeAreaView } from "react-native-safe-area-context";
 import { MaterialCommunityIcons } from "@expo/vector-icons";
@@ -37,11 +37,10 @@ function HabitItem({ habit }: { habit: Habit }) {
           ]}
           disabled={toggleLog.isPending}
           onPress={() =>
-            toggleLog.mutate({
-              habitId: habit.id,
-              date: today,
-              completed: !isCompleted,
-            })
+            toggleLog.mutate(
+              { habitId: habit.id, date: today, completed: !isCompleted },
+              { onError: () => Alert.alert(t("common.error"), t("common.errorGeneric")) },
+            )
           }
         >
           {isCompleted && (

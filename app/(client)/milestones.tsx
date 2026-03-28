@@ -1,6 +1,6 @@
 import { useMemo } from "react";
 import { useTranslation } from "react-i18next";
-import { View, StyleSheet, ScrollView } from "react-native";
+import { View, StyleSheet, ScrollView, RefreshControl } from "react-native";
 import { Text, useTheme, Card, ActivityIndicator } from "react-native-paper";
 import { SafeAreaView } from "react-native-safe-area-context";
 import { MaterialCommunityIcons } from "@expo/vector-icons";
@@ -89,10 +89,10 @@ export default function MilestonesScreen() {
   const { t } = useTranslation();
   const theme = useTheme<AppTheme>();
   const userId = useAuthStore((s) => s.user?.id);
-  const { data: workouts = [], isLoading: workoutsLoading, isError: workoutsError, refetch: refetchWorkouts } = useClientWorkouts(
+  const { data: workouts = [], isLoading: workoutsLoading, isError: workoutsError, refetch: refetchWorkouts, isRefetching: isRefetchingW } = useClientWorkouts(
     userId ?? ""
   );
-  const { data: results = [], isLoading: resultsLoading, isError: resultsError, refetch: refetchResults } = useClientResults(
+  const { data: results = [], isLoading: resultsLoading, isError: resultsError, refetch: refetchResults, isRefetching: isRefetchingR } = useClientResults(
     userId ?? ""
   );
 
@@ -133,7 +133,17 @@ export default function MilestonesScreen() {
       style={[styles.container, { backgroundColor: theme.colors.background }]}
       edges={["top"]}
     >
-      <ScrollView contentContainerStyle={styles.content}>
+      <ScrollView
+        contentContainerStyle={styles.content}
+        refreshControl={
+          <RefreshControl
+            refreshing={isRefetchingW || isRefetchingR}
+            onRefresh={() => { refetchWorkouts(); refetchResults(); }}
+            colors={[theme.colors.primary]}
+            tintColor={theme.colors.primary}
+          />
+        }
+      >
         <Text
           variant="headlineMedium"
           style={{ color: theme.colors.onSurface, fontWeight: "700" }}

@@ -27,7 +27,7 @@ export default function ProgramsScreen() {
         {
           text: t("common.delete"),
           style: "destructive",
-          onPress: () => deleteProgram.mutate(program.id),
+          onPress: () => deleteProgram.mutate(program.id, { onError: () => Alert.alert(t("common.error"), t("common.errorGeneric")) }),
         },
       ]
     );

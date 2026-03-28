@@ -45,7 +45,7 @@ export default function TodayScreen() {
   const userId = useAuthStore((s) => s.user?.id);
 
   const todayStr = formatDate(new Date());
-  const week = useMemo(() => getWeekRange(), []);
+  const week = useMemo(() => getWeekRange(), [todayStr]);
 
   const {
     data: weekWorkouts = [],

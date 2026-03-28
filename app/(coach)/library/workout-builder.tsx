@@ -302,7 +302,6 @@ export default function WorkoutBuilderScreen() {
       return;
     }
 
-    setShowClientPicker(false);
     try {
       await assignWorkout.mutateAsync({
         coach_id: userId,
@@ -311,11 +310,13 @@ export default function WorkoutBuilderScreen() {
         scheduled_date: formatDate(new Date()),
         exercises,
       });
+      setShowClientPicker(false);
       reset();
       Alert.alert(t("library.assignedTitle"), t("library.assignedMessage", { name: clientName }), [
         { text: t("common.ok"), onPress: () => router.back() },
       ]);
     } catch (err: any) {
+      setShowClientPicker(false);
       Alert.alert(t("common.error"), err.message ?? t("library.failedAssignWorkout"));
     }
   }
@@ -359,7 +360,7 @@ export default function WorkoutBuilderScreen() {
         <View style={{ width: 24 }} />
       </View>
 
-      <ScrollView contentContainerStyle={styles.content}>
+      <ScrollView contentContainerStyle={styles.content} keyboardShouldPersistTaps="handled">
         <TextInput
           mode="outlined"
           label={t("library.workoutNameLabel")}

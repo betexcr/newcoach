@@ -1,4 +1,4 @@
-import { useState, useMemo, useEffect, useRef } from "react";
+import { useState, useMemo, useEffect, useRef, useCallback } from "react";
 import { useTranslation } from "react-i18next";
 import { View, StyleSheet, FlatList, Pressable, Alert } from "react-native";
 import { Text, useTheme, Searchbar, Avatar, ActivityIndicator } from "react-native-paper";
@@ -25,6 +25,7 @@ export default function NewChatScreen() {
   const { data: conversations = [], isLoading: conversationsLoading } = useConversations(userId);
   const createConversation = useCreateConversation();
   const [search, setSearch] = useState("");
+  const selectingRef = useRef(false);
 
   const filtered = useMemo(() => {
     const active = clients.filter((c) => c.status === "active");
@@ -37,14 +38,21 @@ export default function NewChatScreen() {
     );
   }, [clients, search]);
 
-  async function handleSelect(client: ClientWithProfile) {
+  const handleSelect = useCallback(async (client: ClientWithProfile) => {
+    if (selectingRef.current) return;
+    selectingRef.current = true;
     const clientName = client.profile?.full_name ?? t("dashboard.fallbackClient");
 
-    // Check for existing direct conversation by participant, not name
-    const { data: sharedConvs } = await supabase
+    const { data: sharedConvs, error: lookupError } = await supabase
       .from("conversation_participants")
       .select("conversation_id")
       .eq("user_id", client.client_id);
+
+    if (lookupError) {
+      selectingRef.current = false;
+      Alert.alert(t("common.error"), t("common.errorGeneric"));
+      return;
+    }
 
     const clientConvIds = new Set((sharedConvs ?? []).map((p) => p.conversation_id));
     const existingDirect = conversations.find(
@@ -71,9 +79,10 @@ export default function NewChatScreen() {
         params: { conversationId: conv.id, name: clientName },
       });
     } catch (err: any) {
+      selectingRef.current = false;
       Alert.alert(t("common.error"), err.message);
     }
-  }
+  }, [userId, conversations, t, createConversation, router]);
 
   const autoSelectDone = useRef(false);
   useEffect(() => {

@@ -101,7 +101,7 @@ export default function ProgramDetailScreen() {
         </View>
       </View>
 
-      <ScrollView contentContainerStyle={styles.content}>
+      <ScrollView contentContainerStyle={styles.content} keyboardShouldPersistTaps="handled">
         {isError ? (
           <ErrorState onRetry={refetch} />
         ) : isLoading ? (

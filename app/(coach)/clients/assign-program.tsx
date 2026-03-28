@@ -101,7 +101,7 @@ export default function AssignProgramScreen() {
         </Text>
       </View>
 
-      <ScrollView contentContainerStyle={styles.content}>
+      <ScrollView contentContainerStyle={styles.content} keyboardShouldPersistTaps="handled">
         <Text
           variant="titleMedium"
           style={{ color: theme.colors.onSurface, fontWeight: "700", marginBottom: 12 }}

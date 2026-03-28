@@ -290,7 +290,7 @@ export default function LibraryScreen() {
               if (deleteTemplate.isPending) return;
               Alert.alert(t("common.delete"), t("library.deleteTemplateConfirm"), [
                 { text: t("common.cancel"), style: "cancel" },
-                { text: t("common.delete"), style: "destructive", onPress: () => deleteTemplate.mutate(id) },
+                { text: t("common.delete"), style: "destructive", onPress: () => deleteTemplate.mutate(id, { onError: () => Alert.alert(t("common.error"), t("common.errorGeneric")) }) },
               ]);
             }}
           />

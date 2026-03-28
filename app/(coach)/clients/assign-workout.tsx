@@ -91,7 +91,7 @@ export default function AssignWorkoutScreen() {
         <View style={{ width: 24 }} />
       </View>
 
-      <ScrollView contentContainerStyle={styles.content}>
+      <ScrollView contentContainerStyle={styles.content} keyboardShouldPersistTaps="handled">
         <View
           style={[styles.clientBadge, { backgroundColor: theme.colors.primaryContainer }]}
         >

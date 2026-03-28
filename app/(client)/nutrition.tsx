@@ -161,7 +161,7 @@ export default function NutritionScreen() {
       {
         text: t("common.delete"),
         style: "destructive",
-        onPress: () => deleteEntry.mutate(id),
+        onPress: () => deleteEntry.mutate(id, { onError: () => Alert.alert(t("common.error"), t("common.errorGeneric")) }),
       },
     ]);
   }
@@ -192,6 +192,7 @@ export default function NutritionScreen() {
     >
       <ScrollView
         contentContainerStyle={styles.content}
+        keyboardShouldPersistTaps="handled"
         refreshControl={
           <RefreshControl refreshing={isRefetching} onRefresh={refetch} />
         }

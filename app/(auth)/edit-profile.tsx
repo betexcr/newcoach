@@ -60,6 +60,7 @@ export default function EditProfileScreen() {
     }
 
     const ext = avatarUri.split(".").pop() ?? "jpg";
+    const mime = ext.toLowerCase() === "jpg" ? "jpeg" : ext.toLowerCase();
     const fileName = `${profile.id}/avatar.${ext}`;
 
     const response = await fetch(avatarUri);
@@ -67,7 +68,7 @@ export default function EditProfileScreen() {
 
     const { error: uploadError } = await supabase.storage
       .from("avatars")
-      .upload(fileName, blob, { upsert: true, contentType: `image/${ext}` });
+      .upload(fileName, blob, { upsert: true, contentType: `image/${mime}` });
 
     if (uploadError) {
       throw uploadError;
@@ -144,7 +145,7 @@ export default function EditProfileScreen() {
         <View style={{ width: 24 }} />
       </View>
 
-      <ScrollView contentContainerStyle={styles.content}>
+      <ScrollView contentContainerStyle={styles.content} keyboardShouldPersistTaps="handled">
         <Pressable style={styles.avatarSection} onPress={pickImage}>
           {avatarUri ? (
             <Image source={{ uri: avatarUri }} style={styles.avatarImage} />
