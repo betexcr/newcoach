@@ -3,12 +3,24 @@ import { View, ActivityIndicator, StyleSheet } from "react-native";
 import { useRouter } from "expo-router";
 import { useAuthStore, selectIsAuthenticated, selectNeedsRole } from "@/stores/auth-store";
 
+const INIT_TIMEOUT_MS = 8000;
+
 export default function Index() {
   const router = useRouter();
   const isInitialized = useAuthStore((s) => s.isInitialized);
   const isAuthenticated = useAuthStore(selectIsAuthenticated);
   const needsRole = useAuthStore(selectNeedsRole);
   const role = useAuthStore((s) => s.profile?.role);
+
+  useEffect(() => {
+    const timeout = setTimeout(() => {
+      if (!useAuthStore.getState().isInitialized) {
+        console.warn("Auth init timed out — redirecting to login");
+        useAuthStore.getState().setInitialized(true);
+      }
+    }, INIT_TIMEOUT_MS);
+    return () => clearTimeout(timeout);
+  }, []);
 
   useEffect(() => {
     if (!isInitialized) return;

@@ -1,4 +1,4 @@
-import { View, StyleSheet, ScrollView, Pressable, Alert } from "react-native";
+import { View, StyleSheet, ScrollView, Pressable, Alert, Platform } from "react-native";
 import { Text, useTheme, Avatar, Divider, SegmentedButtons } from "react-native-paper";
 import { SafeAreaView } from "react-native-safe-area-context";
 import { MaterialCommunityIcons } from "@expo/vector-icons";
@@ -20,18 +20,22 @@ export default function SettingsScreen() {
   const setThemePref = useSettingsStore((s) => s.setTheme);
   const setLanguagePref = useSettingsStore((s) => s.setLanguage);
 
-  async function handleLogout() {
+  async function doLogout() {
+    await supabase.auth.signOut();
+    reset();
+    router.replace("/(auth)/login");
+  }
+
+  function handleLogout() {
+    if (Platform.OS === "web") {
+      if (window.confirm(t("settings.signOutConfirm"))) {
+        doLogout();
+      }
+      return;
+    }
     Alert.alert(t("settings.signOut"), t("settings.signOutConfirm"), [
       { text: t("common.cancel"), style: "cancel" },
-      {
-        text: t("settings.signOut"),
-        style: "destructive",
-        onPress: async () => {
-          await supabase.auth.signOut();
-          reset();
-          router.replace("/(auth)/login");
-        },
-      },
+      { text: t("settings.signOut"), style: "destructive", onPress: doLogout },
     ]);
   }
 
