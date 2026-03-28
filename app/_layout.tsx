@@ -1,5 +1,5 @@
-import { useEffect, useCallback } from "react";
-import { useColorScheme, View } from "react-native";
+import { useEffect, useCallback, useState } from "react";
+import { useColorScheme, Platform } from "react-native";
 import { Stack } from "expo-router";
 import { PaperProvider } from "react-native-paper";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
@@ -27,8 +27,9 @@ export default function RootLayout() {
   const colorScheme = useColorScheme();
   const themePref = useSettingsStore((s) => s.theme);
   const initSettings = useSettingsStore((s) => s.initSettings);
+  const [ready, setReady] = useState(false);
 
-  const [fontsLoaded] = useFonts({
+  const [fontsLoaded, fontError] = useFonts({
     ...MaterialCommunityIcons.font,
   });
 
@@ -36,33 +37,39 @@ export default function RootLayout() {
     initSettings();
   }, []);
 
-  const onLayoutReady = useCallback(async () => {
-    if (fontsLoaded) {
-      await SplashScreen.hideAsync();
+  useEffect(() => {
+    if (fontsLoaded || fontError) {
+      SplashScreen.hideAsync();
+      setReady(true);
     }
-  }, [fontsLoaded]);
+    if (Platform.OS === "web") {
+      const timer = setTimeout(() => {
+        SplashScreen.hideAsync();
+        setReady(true);
+      }, 3000);
+      return () => clearTimeout(timer);
+    }
+  }, [fontsLoaded, fontError]);
 
-  if (!fontsLoaded) return null;
+  if (!ready) return null;
 
   const resolvedScheme =
     themePref === "auto" ? colorScheme : themePref;
   const theme = resolvedScheme === "dark" ? darkTheme : lightTheme;
 
   return (
-    <View style={{ flex: 1 }} onLayout={onLayoutReady}>
-      <QueryClientProvider client={queryClient}>
-        <PaperProvider theme={theme}>
-          <AuthProvider>
-            <StatusBar style={resolvedScheme === "dark" ? "light" : "dark"} />
-            <Stack screenOptions={{ headerShown: false }}>
-              <Stack.Screen name="index" />
-              <Stack.Screen name="(auth)" />
-              <Stack.Screen name="(coach)" />
-              <Stack.Screen name="(client)" />
-            </Stack>
-          </AuthProvider>
-        </PaperProvider>
-      </QueryClientProvider>
-    </View>
+    <QueryClientProvider client={queryClient}>
+      <PaperProvider theme={theme}>
+        <AuthProvider>
+          <StatusBar style={resolvedScheme === "dark" ? "light" : "dark"} />
+          <Stack screenOptions={{ headerShown: false }}>
+            <Stack.Screen name="index" />
+            <Stack.Screen name="(auth)" />
+            <Stack.Screen name="(coach)" />
+            <Stack.Screen name="(client)" />
+          </Stack>
+        </AuthProvider>
+      </PaperProvider>
+    </QueryClientProvider>
   );
 }
