@@ -1,8 +1,9 @@
-import { Platform } from "react-native";
+import { View, Platform } from "react-native";
 import { Tabs } from "expo-router";
-import { useTheme } from "react-native-paper";
+import { useTheme, ActivityIndicator } from "react-native-paper";
 import { MaterialCommunityIcons } from "@expo/vector-icons";
 import { useTranslation } from "react-i18next";
+import { useRequireAuth } from "@/lib/use-require-auth";
 
 type TabIcon = React.ComponentProps<typeof MaterialCommunityIcons>["name"];
 
@@ -17,6 +18,15 @@ const tabDefs: { name: string; titleKey: string; icon: TabIcon; focusedIcon: Tab
 export default function ClientLayout() {
   const theme = useTheme();
   const { t } = useTranslation();
+  const authLoading = useRequireAuth();
+
+  if (authLoading) {
+    return (
+      <View style={{ flex: 1, justifyContent: "center", alignItems: "center", backgroundColor: theme.colors.background }}>
+        <ActivityIndicator size="large" color={theme.colors.primary} />
+      </View>
+    );
+  }
 
   return (
     <Tabs

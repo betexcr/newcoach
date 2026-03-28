@@ -141,7 +141,7 @@ export default function AssignWorkoutScreen() {
               </Text>
               {exercises.map((ex, i) => (
                 <View
-                  key={i}
+                  key={`${ex.exercise_id}-${i}`}
                   style={[styles.summaryItem, { borderBottomColor: theme.colors.outline }]}
                 >
                   <Text variant="bodyMedium" style={{ color: theme.colors.onSurface, flex: 1 }}>

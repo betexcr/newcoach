@@ -10,7 +10,7 @@ const RESULT_KEYS = {
     [...RESULT_KEYS.all, "exercise-history", clientId, exerciseId] as const,
 };
 
-export function useWorkoutResult(workoutId: string) {
+export function useWorkoutResult(workoutId: string, ready = true) {
   return useQuery({
     queryKey: RESULT_KEYS.byWorkout(workoutId),
     queryFn: async () => {
@@ -22,7 +22,7 @@ export function useWorkoutResult(workoutId: string) {
       if (error) throw error;
       return data as WorkoutResult | null;
     },
-    enabled: !!workoutId,
+    enabled: !!workoutId && ready,
   });
 }
 

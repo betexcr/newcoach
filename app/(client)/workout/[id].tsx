@@ -16,6 +16,7 @@ import { SafeAreaView } from "react-native-safe-area-context";
 import { MaterialCommunityIcons } from "@expo/vector-icons";
 import { useRouter, useLocalSearchParams } from "expo-router";
 import { useAuthStore } from "@/stores/auth-store";
+import { supabase } from "@/lib/supabase";
 import { useWorkoutById, useUpdateWorkoutStatus } from "@/lib/queries/workouts";
 import { useSaveResult, useWorkoutResult } from "@/lib/queries/results";
 import { useExercisesByIds } from "@/lib/queries/exercises";
@@ -59,7 +60,7 @@ export default function WorkoutScreen() {
     return map;
   }, [exerciseDetails]);
 
-  const { data: savedResult } = useWorkoutResult(id ?? "");
+  const { data: savedResult } = useWorkoutResult(id ?? "", !!userId);
   const [mode, setMode] = useState<ScreenMode>("detail");
   const [currentStep, setCurrentStep] = useState(0);
 
@@ -110,13 +111,18 @@ export default function WorkoutScreen() {
     }));
 
     try {
-      await saveResult.mutateAsync({
+      const result = await saveResult.mutateAsync({
         assigned_workout_id: workout.id,
         client_id: userId,
         logged_sets: logged,
         notes: notes.trim() || undefined,
       });
-      await updateStatus.mutateAsync({ id: workout.id, status: "completed" });
+      try {
+        await updateStatus.mutateAsync({ id: workout.id, status: "completed" });
+      } catch (statusErr) {
+        await supabase.from("workout_results").delete().eq("id", result.id);
+        throw statusErr;
+      }
       Alert.alert(t("workout.completeTitle"), t("workout.completeMessage"), [
         { text: t("common.ok"), onPress: () => router.back() },
       ]);
@@ -125,7 +131,7 @@ export default function WorkoutScreen() {
     }
   }
 
-  if (workoutsLoading || !userId) {
+  if (workoutsLoading) {
     return (
       <SafeAreaView style={[styles.container, { backgroundColor: theme.colors.background }]}>
         <View style={styles.centered}>

@@ -393,7 +393,7 @@ function WorkoutsTab({
                 {w.name}
               </Text>
               <Text variant="bodySmall" style={{ color: theme.colors.onSurfaceVariant }}>
-                {new Date(w.scheduled_date).toLocaleDateString()} · {w.exercises?.length ?? 0} {t("clients.exercises").toLowerCase()}
+                {new Date(w.scheduled_date + "T12:00:00").toLocaleDateString()} · {w.exercises?.length ?? 0} {t("clients.exercises").toLowerCase()}
               </Text>
             </View>
             <View style={{ alignItems: "flex-end" }}>

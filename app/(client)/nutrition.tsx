@@ -113,7 +113,11 @@ export default function NutritionScreen() {
   );
 
   async function handleAdd() {
-    if (!name.trim() || !userId) return;
+    if (!name.trim()) {
+      Alert.alert(t("common.error"), t("nutrition.nameRequired"));
+      return;
+    }
+    if (!userId) return;
     try {
       await addEntry.mutateAsync({
         client_id: userId,

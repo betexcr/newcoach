@@ -423,6 +423,7 @@ const es: TranslationKeys = {
     addEntry: "Agregar Entrada",
     emptyMessage: "Sin entradas aún. Toca + para registrar alimentos.",
     cal: "cal",
+    nameRequired: "Ingresa un nombre de alimento.",
     failedAddEntry: "Error al agregar entrada.",
     deleteEntry: "Eliminar Entrada",
     deleteEntryConfirm: "¿Eliminar esta entrada de alimento?",

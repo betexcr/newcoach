@@ -421,6 +421,7 @@ const en = {
     addEntry: "Add Entry",
     emptyMessage: "No entries yet. Tap + to log food.",
     cal: "cal",
+    nameRequired: "Please enter a food name.",
     failedAddEntry: "Failed to add entry.",
     deleteEntry: "Delete Entry",
     deleteEntryConfirm: "Remove this food entry?",

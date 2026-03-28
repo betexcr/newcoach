@@ -389,8 +389,8 @@ export default function WorkoutBuilderScreen() {
           </Text>
         </View>
 
-        {exercises.map((_, index) => (
-          <ExerciseBlock key={index} exerciseIndex={index} />
+        {exercises.map((ex, index) => (
+          <ExerciseBlock key={`${ex.exercise_id}-${index}`} exerciseIndex={index} />
         ))}
 
         <Pressable
