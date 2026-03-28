@@ -251,7 +251,6 @@ const styles = StyleSheet.create({
     alignItems: "center",
     paddingVertical: 8,
     borderBottomWidth: 0.5,
-    borderBottomColor: "#E2E8F0",
   },
   addExerciseButton: {
     flexDirection: "row",

@@ -27,6 +27,7 @@ import { useCoachClients } from "@/lib/queries/clients";
 import { useAuthStore } from "@/stores/auth-store";
 import { AuthButton } from "@/components/AuthButton";
 import { formatDate } from "@/lib/date-utils";
+import type { AppTheme } from "@/lib/theme";
 import type { ExerciseSet } from "@/types/database";
 
 function SetRow({
@@ -453,7 +454,7 @@ export default function WorkoutBuilderScreen() {
         transparent
         onRequestClose={() => setShowClientPicker(false)}
       >
-        <View style={styles.modalOverlay}>
+        <View style={[styles.modalOverlay, { backgroundColor: (theme as AppTheme).custom.scrim }]}>
           <View style={[styles.modalContent, { backgroundColor: theme.colors.surface }]}>
             <View style={styles.modalHeader}>
               <Text variant="titleLarge" style={{ color: theme.colors.onSurface, fontWeight: "700" }}>
@@ -561,7 +562,6 @@ const styles = StyleSheet.create({
     marginRight: 10,
   },
   orderText: {
-    color: "#FFFFFF",
     fontWeight: "700",
     fontSize: 13,
   },
@@ -627,8 +627,7 @@ const styles = StyleSheet.create({
   },
   modalOverlay: {
     flex: 1,
-    backgroundColor: "rgba(0,0,0,0.5)",
-    justifyContent: "flex-end",
+    justifyContent: "flex-end" as const,
   },
   modalContent: {
     maxHeight: "70%",
@@ -648,6 +647,5 @@ const styles = StyleSheet.create({
     paddingVertical: 12,
     paddingHorizontal: 8,
     borderBottomWidth: 0.5,
-    borderBottomColor: "#E2E8F0",
   },
 });

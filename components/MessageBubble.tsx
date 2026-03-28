@@ -42,11 +42,11 @@ export function MessageBubble({
           <MaterialCommunityIcons
             name="microphone"
             size={20}
-            color={isOwn ? "#FFFFFF" : theme.colors.primary}
+            color={isOwn ? theme.colors.onPrimary : theme.colors.primary}
           />
           <Text
             variant="bodySmall"
-            style={{ color: isOwn ? "rgba(255,255,255,0.8)" : theme.colors.onSurfaceVariant, marginLeft: 6 }}
+            style={{ color: isOwn ? theme.colors.onPrimary : theme.colors.onSurfaceVariant, marginLeft: 6, opacity: isOwn ? 0.8 : 1 }}
           >
             {t("messages.voiceMessage")}
           </Text>
@@ -56,7 +56,7 @@ export function MessageBubble({
         <Text
           variant="bodyMedium"
           style={{
-            color: isOwn ? "#FFFFFF" : theme.colors.onSurface,
+            color: isOwn ? theme.colors.onPrimary : theme.colors.onSurface,
             lineHeight: 20,
           }}
         >
@@ -66,7 +66,8 @@ export function MessageBubble({
       <Text
         variant="labelSmall"
         style={{
-          color: isOwn ? "rgba(255,255,255,0.6)" : theme.colors.onSurfaceVariant,
+          color: isOwn ? theme.colors.onPrimary : theme.colors.onSurfaceVariant,
+          opacity: isOwn ? 0.6 : 1,
           marginTop: 4,
           alignSelf: isOwn ? "flex-end" : "flex-start",
         }}

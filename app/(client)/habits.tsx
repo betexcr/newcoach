@@ -48,7 +48,7 @@ function HabitItem({ habit }: { habit: Habit }) {
             <MaterialCommunityIcons
               name="check"
               size={18}
-              color="#FFFFFF"
+              color={theme.colors.onPrimary}
             />
           )}
         </Pressable>

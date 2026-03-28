@@ -167,7 +167,7 @@ export default function SelectRoleScreen() {
                   <MaterialCommunityIcons
                     name="check"
                     size={16}
-                    color="#FFFFFF"
+                    color={theme.colors.onPrimary}
                   />
                 </View>
               )}

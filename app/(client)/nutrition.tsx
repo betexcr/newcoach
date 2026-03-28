@@ -31,6 +31,7 @@ import {
 } from "@/lib/queries/nutrition";
 import { formatDate } from "@/lib/date-utils";
 import type { MacroGoals } from "@/types/database";
+import type { AppTheme } from "@/lib/theme";
 
 const DEFAULT_GOALS: MacroGoals = {
   calories: 2200,
@@ -44,7 +45,7 @@ type MealType = (typeof MEAL_TYPES)[number];
 
 export default function NutritionScreen() {
   const { t } = useTranslation();
-  const theme = useTheme();
+  const theme = useTheme<AppTheme>();
   const user = useAuthStore((s) => s.user);
   const profile = useAuthStore((s) => s.profile);
   const setProfile = useAuthStore((s) => s.setProfile);
@@ -251,19 +252,19 @@ export default function NutritionScreen() {
                 label={t("nutrition.protein")}
                 current={totals.protein}
                 goal={goals.protein}
-                color="#EF4444"
+                color={theme.colors.error}
               />
               <MacroBar
                 label={t("nutrition.carbs")}
                 current={totals.carbs}
                 goal={goals.carbs}
-                color="#F59E0B"
+                color={theme.custom.warning}
               />
               <MacroBar
                 label={t("nutrition.fat")}
                 current={totals.fat}
                 goal={goals.fat}
-                color="#3B82F6"
+                color={theme.custom.info}
               />
             </View>
           </Card.Content>
@@ -548,7 +549,7 @@ function MacroBar({
   goal: number;
   color: string;
 }) {
-  const theme = useTheme();
+  const theme = useTheme<AppTheme>();
   const progress = goal > 0 ? Math.min(current / goal, 1) : 0;
   return (
     <View style={styles.macroBar}>

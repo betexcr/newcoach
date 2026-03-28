@@ -10,6 +10,10 @@ const brandColors = {
   error: "#EF4444",
   success: "#22C55E",
   warning: "#F59E0B",
+  partial: "#F97316",
+  purple: "#8B5CF6",
+  info: "#3B82F6",
+  scrim: "rgba(0,0,0,0.5)",
 };
 
 export const lightTheme = {
@@ -17,8 +21,10 @@ export const lightTheme = {
   colors: {
     ...MD3LightTheme.colors,
     primary: brandColors.primary,
+    onPrimary: "#FFFFFF",
     primaryContainer: "#EEF2FF",
     secondary: brandColors.secondary,
+    onSecondary: "#FFFFFF",
     secondaryContainer: "#D1FAE5",
     error: brandColors.error,
     errorContainer: "#FEE2E2",
@@ -44,8 +50,10 @@ export const darkTheme = {
   colors: {
     ...MD3DarkTheme.colors,
     primary: brandColors.primaryLight,
+    onPrimary: "#1E1B4B",
     primaryContainer: "#312E81",
     secondary: brandColors.secondaryLight,
+    onSecondary: "#064E3B",
     secondaryContainer: "#065F46",
     error: "#F87171",
     errorContainer: "#7F1D1D",

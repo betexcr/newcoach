@@ -112,7 +112,7 @@ export default function ProgramsScreen() {
       <FAB
         icon="plus"
         style={[styles.fab, { backgroundColor: theme.colors.primary }]}
-        color="#FFFFFF"
+        color={theme.colors.onPrimary}
         onPress={() => router.push("/(coach)/library/create-program")}
         label={t("programs.newProgram")}
       />

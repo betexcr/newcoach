@@ -82,7 +82,7 @@ export default function PickExerciseScreen() {
             ]}
             textStyle={[
               { textTransform: "capitalize", fontSize: 13 },
-              selectedMuscle === item && { color: "#FFFFFF" },
+              selectedMuscle === item && { color: theme.colors.onPrimary },
             ]}
           >
             {item === "all" ? t("pickExercise.all") : item}

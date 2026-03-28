@@ -27,6 +27,7 @@ import { useNutritionLogs } from "@/lib/queries/nutrition";
 import { useRemoveClient } from "@/lib/queries/clients";
 import { useWorkoutBuilderStore } from "@/stores/workout-builder-store";
 import { ErrorState } from "@/components/ErrorState";
+import type { AppTheme } from "@/lib/theme";
 import { computeStreak } from "@/lib/streak";
 import { formatDate } from "@/lib/date-utils";
 import type { AssignedWorkout, WorkoutResult, Habit, NutritionLog } from "@/types/database";
@@ -35,7 +36,7 @@ type ProfileTab = "workouts" | "progress" | "habits" | "nutrition";
 
 export default function ClientProfileScreen() {
   const { t } = useTranslation();
-  const theme = useTheme();
+  const theme = useTheme<AppTheme>();
   const router = useRouter();
   const {
     clientId,
@@ -83,10 +84,10 @@ export default function ClientProfileScreen() {
 
   const statusColor =
     clientStatus === "active"
-      ? "#22C55E"
+      ? theme.custom.success
       : clientStatus === "pending"
-        ? "#F59E0B"
-        : "#9CA3AF";
+        ? theme.custom.warning
+        : theme.colors.onSurfaceVariant;
 
   function handleRemoveClient() {
     Alert.alert(
@@ -232,8 +233,8 @@ export default function ClientProfileScreen() {
               } as any);
             }}
           >
-            <MaterialCommunityIcons name="dumbbell" size={20} color="#FFF" />
-            <Text style={{ color: "#FFF", fontWeight: "600", marginLeft: 6 }}>
+            <MaterialCommunityIcons name="dumbbell" size={20} color={theme.colors.onPrimary} />
+            <Text style={{ color: theme.colors.onPrimary, fontWeight: "600", marginLeft: 6 }}>
               {t("clientProfile.assignWorkout")}
             </Text>
           </Pressable>
@@ -246,8 +247,8 @@ export default function ClientProfileScreen() {
               } as any)
             }
           >
-            <MaterialCommunityIcons name="clipboard-list" size={20} color="#FFF" />
-            <Text style={{ color: "#FFF", fontWeight: "600", marginLeft: 6 }}>
+            <MaterialCommunityIcons name="clipboard-list" size={20} color={theme.colors.onPrimary} />
+            <Text style={{ color: theme.colors.onPrimary, fontWeight: "600", marginLeft: 6 }}>
               {t("clientProfile.assignProgram")}
             </Text>
           </Pressable>
@@ -255,8 +256,8 @@ export default function ClientProfileScreen() {
             style={[styles.actionButton, { backgroundColor: theme.colors.secondary }]}
             onPress={handleMessageClient}
           >
-            <MaterialCommunityIcons name="message" size={20} color="#FFF" />
-            <Text style={{ color: "#FFF", fontWeight: "600", marginLeft: 6 }}>
+            <MaterialCommunityIcons name="message" size={20} color={theme.colors.onPrimary} />
+            <Text style={{ color: theme.colors.onPrimary, fontWeight: "600", marginLeft: 6 }}>
               {t("clientProfile.message")}
             </Text>
           </Pressable>
@@ -367,12 +368,12 @@ function WorkoutsTab({
     <View>
       {sorted.map((w) => {
         const statusColors: Record<string, string> = {
-          completed: "#22C55E",
-          pending: "#F59E0B",
-          missed: "#EF4444",
-          partial: "#F97316",
+          completed: theme.custom.success,
+          pending: theme.custom.warning,
+          missed: theme.colors.error,
+          partial: theme.custom.partial,
         };
-        const color = statusColors[w.status] ?? "#9CA3AF";
+        const color = statusColors[w.status] ?? theme.colors.onSurfaceVariant;
         const result = resultMap[w.id];
 
         return (

@@ -27,12 +27,13 @@ import type {
   WorkoutExercise,
   Exercise,
 } from "@/types/database";
+import type { AppTheme } from "@/lib/theme";
 
 type ScreenMode = "detail" | "execution" | "results";
 
 export default function WorkoutScreen() {
   const { t } = useTranslation();
-  const theme = useTheme();
+  const theme = useTheme<AppTheme>();
   const router = useRouter();
   const { id } = useLocalSearchParams<{ id: string }>();
   const userId = useAuthStore((s) => s.user?.id);
@@ -438,7 +439,7 @@ function ExerciseDetailCard({
       </View>
 
       {expanded && (
-        <View style={[styles.expandedContent, { borderTopColor: theme.colors.outlineVariant }]}>
+        <View style={[styles.expandedContent, { borderTopColor: theme.colors.outline }]}>
           {detail?.description ? (
             <Text
               variant="bodyMedium"
@@ -608,8 +609,13 @@ function ExecutionView({
 
       {isLastStep ? (
         <ScrollView contentContainerStyle={styles.summaryContent}>
-          <View style={styles.finishIcon}>
-            <MaterialCommunityIcons name="trophy" size={64} color="#F59E0B" />
+          <View
+            style={[
+              styles.finishIcon,
+              { backgroundColor: theme.custom.warning + "20" },
+            ]}
+          >
+            <MaterialCommunityIcons name="trophy" size={64} color={theme.custom.warning} />
           </View>
           <Text
             variant="headlineMedium"
@@ -1146,12 +1152,11 @@ const styles = StyleSheet.create({
     justifyContent: "center",
     alignItems: "center",
   },
-  orderText: { color: "#FFFFFF", fontWeight: "700", fontSize: 12 },
+  orderText: { fontWeight: "700", fontSize: 12 },
   expandedContent: {
     paddingHorizontal: 12,
     paddingBottom: 16,
     borderTopWidth: 0.5,
-    borderTopColor: "rgba(255,255,255,0.1)",
     paddingTop: 12,
   },
   coachNote: {
@@ -1291,7 +1296,6 @@ const styles = StyleSheet.create({
     width: 120,
     height: 120,
     borderRadius: 60,
-    backgroundColor: "#F59E0B20",
     justifyContent: "center",
     alignItems: "center",
     marginTop: 40,

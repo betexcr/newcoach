@@ -24,6 +24,7 @@ import { useAuthStore } from "@/stores/auth-store";
 import { useWorkoutBuilderStore } from "@/stores/workout-builder-store";
 import { ErrorState } from "@/components/ErrorState";
 import type { Exercise, WorkoutTemplate } from "@/types/database";
+import type { AppTheme } from "@/lib/theme";
 
 const muscleGroupIcons: Record<string, string> = {
   chest: "human-handsup",
@@ -36,7 +37,7 @@ const muscleGroupIcons: Record<string, string> = {
 };
 
 function ExerciseCard({ exercise, onPress }: { exercise: Exercise; onPress: () => void }) {
-  const theme = useTheme();
+  const theme = useTheme<AppTheme>();
   const { t } = useTranslation();
 
   return (
@@ -125,13 +126,13 @@ function ExerciseDetailModal({
   visible: boolean;
   onClose: () => void;
 }) {
-  const theme = useTheme();
+  const theme = useTheme<AppTheme>();
   const { t } = useTranslation();
   if (!exercise) return null;
 
   return (
     <Modal visible={visible} animationType="slide" transparent onRequestClose={onClose}>
-      <View style={styles.modalOverlay}>
+      <View style={[styles.modalOverlay, { backgroundColor: theme.custom.scrim }]}>
         <View style={[styles.modalContent, { backgroundColor: theme.colors.surface }]}>
           <View style={styles.modalHeader}>
             <Text variant="titleLarge" style={{ color: theme.colors.onSurface, fontWeight: "700", flex: 1 }}>
@@ -194,7 +195,7 @@ type LibraryTab = "exercises" | "templates";
 
 export default function LibraryScreen() {
   const { t } = useTranslation();
-  const theme = useTheme();
+  const theme = useTheme<AppTheme>();
   const router = useRouter();
   const userId = useAuthStore((s) => s.user?.id) ?? "";
   const [libraryTab, setLibraryTab] = useState<LibraryTab>("exercises");
@@ -248,7 +249,7 @@ export default function LibraryScreen() {
           onPress={() => setLibraryTab("exercises")}
         >
           <Text style={{
-            color: libraryTab === "exercises" ? "#FFF" : theme.colors.onSurface,
+            color: libraryTab === "exercises" ? theme.colors.onPrimary : theme.colors.onSurface,
             fontWeight: "600", fontSize: 13,
           }}>
             {t("library.exercisesTab")} ({exercises.length})
@@ -262,7 +263,7 @@ export default function LibraryScreen() {
           onPress={() => setLibraryTab("templates")}
         >
           <Text style={{
-            color: libraryTab === "templates" ? "#FFF" : theme.colors.onSurface,
+            color: libraryTab === "templates" ? theme.colors.onPrimary : theme.colors.onSurface,
             fontWeight: "600", fontSize: 13,
           }}>
             {t("library.templatesTab")} ({templates.length})
@@ -323,7 +324,7 @@ export default function LibraryScreen() {
             ]}
             textStyle={[
               { textTransform: "capitalize", fontSize: 13 },
-              selectedMuscle === item && { color: "#FFFFFF" },
+              selectedMuscle === item && { color: theme.colors.onPrimary },
             ]}
           >
             {item === "all" ? t("library.filterAll") : item}
@@ -363,7 +364,7 @@ export default function LibraryScreen() {
       <FAB
         icon="plus"
         style={[styles.fab, { backgroundColor: theme.colors.primary }]}
-        color="#FFFFFF"
+        color={theme.colors.onPrimary}
         onPress={() => router.push("/(coach)/library/create-exercise")}
         label={t("library.newExercise")}
       />
@@ -548,8 +549,7 @@ const styles = StyleSheet.create({
   },
   modalOverlay: {
     flex: 1,
-    backgroundColor: "rgba(0,0,0,0.5)",
-    justifyContent: "flex-end",
+    justifyContent: "flex-end" as const,
   },
   modalContent: {
     maxHeight: "80%",

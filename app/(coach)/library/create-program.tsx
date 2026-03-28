@@ -132,7 +132,7 @@ export default function CreateProgramScreen() {
                 <Text
                   variant="labelLarge"
                   style={{
-                    color: selected ? "#FFFFFF" : theme.colors.onSurface,
+                    color: selected ? theme.colors.onPrimary : theme.colors.onSurface,
                     fontWeight: "600",
                   }}
                 >

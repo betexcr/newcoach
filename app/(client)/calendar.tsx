@@ -10,6 +10,7 @@ import { useAuthStore } from "@/stores/auth-store";
 import { ErrorState } from "@/components/ErrorState";
 import { formatDate } from "@/lib/date-utils";
 import type { AssignedWorkout } from "@/types/database";
+import type { AppTheme } from "@/lib/theme";
 
 function getWeekDates(referenceDate: Date): Date[] {
   const start = new Date(referenceDate);
@@ -25,7 +26,7 @@ function getWeekDates(referenceDate: Date): Date[] {
 
 export default function CalendarScreen() {
   const { t } = useTranslation();
-  const theme = useTheme();
+  const theme = useTheme<AppTheme>();
   const router = useRouter();
   const userId = useAuthStore((s) => s.user?.id);
   const [weekOffset, setWeekOffset] = useState(0);
@@ -252,10 +253,10 @@ function WorkoutCard({
 }) {
   const router = useRouter();
   const statusConfig: Record<string, { icon: string; color: string }> = {
-    pending: { icon: "clock-outline", color: "#F59E0B" },
+    pending: { icon: "clock-outline", color: theme.custom.warning },
     completed: { icon: "check-circle", color: theme.colors.secondary },
     missed: { icon: "close-circle", color: theme.colors.error },
-    partial: { icon: "circle-half-full", color: "#F97316" },
+    partial: { icon: "circle-half-full", color: theme.custom.partial },
   };
   const status = statusConfig[workout.status] ?? statusConfig.pending;
   const exerciseCount = workout.exercises?.length ?? 0;

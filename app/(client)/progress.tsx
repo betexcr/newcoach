@@ -11,6 +11,7 @@ import { ErrorState } from "@/components/ErrorState";
 import { computeStreak } from "@/lib/streak";
 import { formatDate } from "@/lib/date-utils";
 import type { AssignedWorkout, WorkoutResult, LoggedExercise } from "@/types/database";
+import type { AppTheme } from "@/lib/theme";
 
 function calculateCompliance(
   workouts: AssignedWorkout[],
@@ -80,7 +81,7 @@ function ComplianceRing({
   color: string;
   size?: number;
 }) {
-  const theme = useTheme();
+  const theme = useTheme<AppTheme>();
 
   return (
     <View style={styles.ringContainer}>
@@ -150,7 +151,7 @@ function ComplianceRing({
 
 export default function ProgressScreen() {
   const { t } = useTranslation();
-  const theme = useTheme();
+  const theme = useTheme<AppTheme>();
   const userId = useAuthStore((s) => s.user?.id);
 
   const {
@@ -243,7 +244,7 @@ export default function ProgressScreen() {
               <MaterialCommunityIcons
                 name="fire"
                 size={24}
-                color="#F59E0B"
+                color={theme.custom.warning}
               />
               <Text
                 variant="headlineSmall"
@@ -264,7 +265,7 @@ export default function ProgressScreen() {
               <MaterialCommunityIcons
                 name="check-circle"
                 size={24}
-                color="#22C55E"
+                color={theme.custom.success}
               />
               <Text
                 variant="headlineSmall"
@@ -322,21 +323,21 @@ export default function ProgressScreen() {
               label={t("progress.days7")}
               completed={compliance7.completed}
               total={compliance7.total}
-              color="#22C55E"
+              color={theme.custom.success}
             />
             <ComplianceRing
               rate={compliance30.rate}
               label={t("progress.days30")}
               completed={compliance30.completed}
               total={compliance30.total}
-              color="#4F46E5"
+              color={theme.colors.primary}
             />
             <ComplianceRing
               rate={compliance90.rate}
               label={t("progress.days90")}
               completed={compliance90.completed}
               total={compliance90.total}
-              color="#F59E0B"
+              color={theme.custom.warning}
             />
           </Card.Content>
         </Card>

@@ -13,6 +13,7 @@ import {
 } from "@/lib/queries/workouts";
 import { useConversations } from "@/lib/queries/messaging";
 import { ErrorState } from "@/components/ErrorState";
+import type { AppTheme } from "@/lib/theme";
 import type { AssignedWorkout } from "@/types/database";
 import type { ClientWithProfile } from "@/lib/queries/clients";
 
@@ -36,7 +37,7 @@ function buildActivityFeed(
   recentWorkouts: AssignedWorkout[],
   clients: ClientWithProfile[],
   t: (key: string, opts?: Record<string, unknown>) => string,
-  theme: { colors: { primary: string; secondary: string } }
+  theme: AppTheme
 ): ActivityItem[] {
   const items: ActivityItem[] = [];
 
@@ -104,7 +105,7 @@ function buildActivityFeed(
 
 export default function CoachDashboard() {
   const { t } = useTranslation();
-  const theme = useTheme();
+  const theme = useTheme<AppTheme>();
   const router = useRouter();
   const profile = useAuthStore((s) => s.profile);
   const userId = useAuthStore((s) => s.user?.id) ?? "";
@@ -198,13 +199,13 @@ export default function CoachDashboard() {
     {
       label: t("dashboard.newProgram"),
       icon: "clipboard-list",
-      color: "#F59E0B",
+      color: theme.custom.warning,
       onPress: () => router.push("/(coach)/library/create-program"),
     },
     {
       label: t("dashboard.broadcast"),
       icon: "bullhorn",
-      color: "#8B5CF6",
+      color: theme.custom.purple,
       onPress: () => router.push("/(coach)/messages/broadcast"),
     },
   ];

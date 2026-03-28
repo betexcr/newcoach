@@ -220,7 +220,7 @@ export default function ProgramDetailScreen() {
         <FAB
           icon="plus"
           style={[styles.fab, { backgroundColor: theme.colors.primary }]}
-          color="#FFFFFF"
+          color={theme.colors.onPrimary}
           onPress={() => {
             useWorkoutBuilderStore.getState().reset();
             setAddingWorkout(true);

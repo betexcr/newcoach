@@ -9,11 +9,12 @@ import { useWorkoutById } from "@/lib/queries/workouts";
 import { useWorkoutResult } from "@/lib/queries/results";
 import { useExercisesByIds } from "@/lib/queries/exercises";
 import { ErrorState } from "@/components/ErrorState";
+import type { AppTheme } from "@/lib/theme";
 import type { WorkoutExercise, LoggedExercise } from "@/types/database";
 
 export default function CoachWorkoutDetailScreen() {
   const { t } = useTranslation();
-  const theme = useTheme();
+  const theme = useTheme<AppTheme>();
   const router = useRouter();
   const { workoutId, clientName } = useLocalSearchParams<{
     workoutId: string;
@@ -46,9 +47,9 @@ export default function CoachWorkoutDetailScreen() {
   const status = useMemo(() => {
     const statusConfig: Record<string, { label: string; color: string; icon: string }> = {
       completed: { label: t("clients.statusCompleted"), color: theme.colors.secondary, icon: "check-circle" },
-      pending: { label: t("clients.statusPending"), color: "#F59E0B", icon: "clock-outline" },
+      pending: { label: t("clients.statusPending"), color: theme.custom.warning, icon: "clock-outline" },
       missed: { label: t("clients.statusMissed"), color: theme.colors.error, icon: "close-circle-outline" },
-      partial: { label: t("clients.statusPartial"), color: "#3B82F6", icon: "circle-half-full" },
+      partial: { label: t("clients.statusPartial"), color: theme.custom.info, icon: "circle-half-full" },
     };
     return statusConfig[workout?.status ?? "pending"] ?? statusConfig.pending;
   }, [t, theme, workout?.status]);
@@ -350,9 +351,9 @@ const styles = StyleSheet.create({
     alignItems: "center",
     marginRight: 10,
   },
-  orderText: { color: "#FFFFFF", fontWeight: "700", fontSize: 13 },
+  orderText: { fontWeight: "700", fontSize: 13 },
   setsTable: { gap: 4 },
-  setsHeaderRow: { flexDirection: "row", paddingBottom: 4, borderBottomWidth: 0.5, borderBottomColor: "#E2E8F0" },
+  setsHeaderRow: { flexDirection: "row", paddingBottom: 4, borderBottomWidth: 0.5 },
   setsDataRow: { flexDirection: "row", paddingVertical: 4 },
   setCol: { flex: 1 },
 });

@@ -159,10 +159,10 @@ export default function EditProfileScreen() {
           <View
             style={[
               styles.editBadge,
-              { backgroundColor: theme.colors.primary },
+              { backgroundColor: theme.colors.primary, borderColor: theme.colors.background },
             ]}
           >
-            <MaterialCommunityIcons name="camera" size={18} color="#FFFFFF" />
+            <MaterialCommunityIcons name="camera" size={18} color={theme.colors.onPrimary} />
           </View>
         </Pressable>
 
@@ -245,7 +245,6 @@ const styles = StyleSheet.create({
     justifyContent: "center",
     alignItems: "center",
     borderWidth: 3,
-    borderColor: "#FFFFFF",
   },
   error: {
     textAlign: "center",

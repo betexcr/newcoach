@@ -9,9 +9,10 @@ import { useClientWorkouts } from "@/lib/queries/workouts";
 import { useClientResults } from "@/lib/queries/results";
 import { ErrorState } from "@/components/ErrorState";
 import { computeMilestones, type Milestone } from "@/lib/milestones";
+import type { AppTheme } from "@/lib/theme";
 
 function MilestoneBadge({ milestone }: { milestone: Milestone }) {
-  const theme = useTheme();
+  const theme = useTheme<AppTheme>();
 
   return (
     <Card
@@ -75,7 +76,7 @@ function MilestoneBadge({ milestone }: { milestone: Milestone }) {
             <MaterialCommunityIcons
               name="check-circle"
               size={16}
-              color="#22C55E"
+              color={theme.custom.success}
             />
           </View>
         )}
@@ -86,7 +87,7 @@ function MilestoneBadge({ milestone }: { milestone: Milestone }) {
 
 export default function MilestonesScreen() {
   const { t } = useTranslation();
-  const theme = useTheme();
+  const theme = useTheme<AppTheme>();
   const userId = useAuthStore((s) => s.user?.id);
   const { data: workouts = [], isLoading: workoutsLoading, isError: workoutsError, refetch: refetchWorkouts } = useClientWorkouts(
     userId ?? ""

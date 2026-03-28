@@ -12,6 +12,7 @@ import { ErrorState } from "@/components/ErrorState";
 import { computeStreak } from "@/lib/streak";
 import { formatDate } from "@/lib/date-utils";
 import type { AssignedWorkout } from "@/types/database";
+import type { AppTheme } from "@/lib/theme";
 
 function getWeekRange() {
   const now = new Date();
@@ -29,13 +30,13 @@ function getWeekRange() {
 
 export default function TodayScreen() {
   const { t } = useTranslation();
-  const theme = useTheme();
+  const theme = useTheme<AppTheme>();
   const statusColors = useMemo(
     () => ({
       completed: theme.colors.secondary,
-      pending: "#F59E0B",
+      pending: theme.custom.warning,
       missed: theme.colors.error,
-      partial: "#F97316",
+      partial: theme.custom.partial,
     }),
     [theme]
   );
@@ -313,7 +314,7 @@ export default function TodayScreen() {
                 label: t("today.streak"),
                 value: t(streak === 1 ? "today.dayCount_one" : "today.dayCount_other", { count: streak }),
                 icon: "fire",
-                color: "#F59E0B",
+                color: theme.custom.warning,
               },
               {
                 label: t("today.thisWeek"),

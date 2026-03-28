@@ -203,7 +203,7 @@ export default function ClientMessagesScreen() {
       <FAB
         icon="message-plus"
         style={[styles.fab, { backgroundColor: theme.colors.primary }]}
-        color="#FFFFFF"
+        color={theme.colors.onPrimary}
         onPress={handleNewChat}
         loading={creatingChat}
         label={t("messages.newMessage")}

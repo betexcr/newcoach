@@ -16,13 +16,14 @@ import { useRouter } from "expo-router";
 import { useAuthStore } from "@/stores/auth-store";
 import { useCoachClients, type ClientWithProfile } from "@/lib/queries/clients";
 import { ErrorState } from "@/components/ErrorState";
+import type { AppTheme } from "@/lib/theme";
 
 const STATUS_FILTERS = ["All", "Active", "Pending", "Inactive"] as const;
 type StatusFilter = (typeof STATUS_FILTERS)[number];
 
 export default function ClientsScreen() {
   const { t } = useTranslation();
-  const theme = useTheme();
+  const theme = useTheme<AppTheme>();
   const router = useRouter();
   const userId = useAuthStore((s) => s.user?.id);
   const {
@@ -182,7 +183,7 @@ export default function ClientsScreen() {
       <FAB
         icon="plus"
         style={[styles.fab, { backgroundColor: theme.colors.primary }]}
-        color="#FFFFFF"
+        color={theme.colors.onPrimary}
         onPress={() => router.push("/(coach)/clients/add-client")}
         label={t("clients.addClient")}
       />
@@ -190,19 +191,13 @@ export default function ClientsScreen() {
   );
 }
 
-const statusColors: Record<string, string> = {
-  active: "#22C55E",
-  pending: "#F59E0B",
-  inactive: "#9CA3AF",
-};
-
 function ClientRow({
   client,
   theme,
   onPress,
 }: {
   client: ClientWithProfile;
-  theme: any;
+  theme: AppTheme;
   onPress: () => void;
 }) {
   const { t } = useTranslation();
@@ -214,7 +209,12 @@ function ClientRow({
         .join("")
         .toUpperCase()
     : "?";
-  const color = statusColors[client.status] ?? statusColors.inactive;
+  const statusColors: Record<string, string> = {
+    active: theme.custom.success,
+    pending: theme.custom.warning,
+    inactive: theme.colors.onSurfaceVariant,
+  };
+  const color = statusColors[client.status] ?? theme.colors.onSurfaceVariant;
 
   return (
     <Pressable

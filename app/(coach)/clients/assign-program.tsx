@@ -167,7 +167,7 @@ export default function AssignProgramScreen() {
                       <MaterialCommunityIcons
                         name="clipboard-list"
                         size={22}
-                        color={isSelected ? "#FFF" : theme.colors.primary}
+                        color={isSelected ? theme.colors.onPrimary : theme.colors.primary}
                       />
                     </View>
                     <View style={{ flex: 1 }}>

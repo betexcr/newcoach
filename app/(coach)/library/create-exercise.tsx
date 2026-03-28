@@ -134,7 +134,7 @@ export default function CreateExerciseScreen() {
                   {
                     color:
                       muscleGroup === group
-                        ? "#FFFFFF"
+                        ? theme.colors.onPrimary
                         : theme.colors.onSurface,
                   },
                 ]}
@@ -178,7 +178,7 @@ export default function CreateExerciseScreen() {
                   {
                     color:
                       equipment === item
-                        ? "#FFFFFF"
+                        ? theme.colors.onPrimary
                         : theme.colors.onSurface,
                   },
                 ]}

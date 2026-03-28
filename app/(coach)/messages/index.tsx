@@ -169,7 +169,7 @@ export default function CoachMessagesScreen() {
         <FAB
           icon="message-plus"
           style={[styles.fab, { backgroundColor: theme.colors.primary }]}
-          color="#FFFFFF"
+          color={theme.colors.onPrimary}
           onPress={() => router.push("/(coach)/messages/new-chat")}
           label={t("messages.newMessage")}
         />
