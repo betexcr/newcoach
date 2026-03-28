@@ -1,4 +1,4 @@
-import { useState, useMemo } from "react";
+import { useState, useMemo, useRef } from "react";
 import { useTranslation } from "react-i18next";
 import {
   View,
@@ -8,6 +8,7 @@ import {
   Alert,
   TextInput as RNTextInput,
   Image,
+  Platform,
   useWindowDimensions,
 } from "react-native";
 import { Text, useTheme, Card, Button, ProgressBar, Chip, ActivityIndicator } from "react-native-paper";
@@ -35,10 +36,16 @@ export default function WorkoutScreen() {
   const { t } = useTranslation();
   const theme = useTheme<AppTheme>();
   const router = useRouter();
-  const { id } = useLocalSearchParams<{ id: string }>();
+  const { id: paramId } = useLocalSearchParams<{ id: string }>();
   const userId = useAuthStore((s) => s.user?.id);
 
-  const { data: workout, isLoading: workoutsLoading, isError, refetch } = useWorkoutById(id ?? "");
+  const stableId = useRef(paramId);
+  if (paramId) stableId.current = paramId;
+  const id = stableId.current ?? (
+    Platform.OS === "web" ? window.location.pathname.split("/").pop() : undefined
+  );
+
+  const { data: workout, isLoading: workoutsLoading, isError, refetch } = useWorkoutById(id ?? "", !!userId);
 
   const exerciseIds = useMemo(
     () => (workout?.exercises ?? []).map((ex) => ex.exercise_id),
@@ -118,7 +125,7 @@ export default function WorkoutScreen() {
     }
   }
 
-  if (workoutsLoading) {
+  if (workoutsLoading || !userId) {
     return (
       <SafeAreaView style={[styles.container, { backgroundColor: theme.colors.background }]}>
         <View style={styles.centered}>

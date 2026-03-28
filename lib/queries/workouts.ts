@@ -137,7 +137,7 @@ export function useClientWorkouts(clientId: string, startDate?: string, endDate?
   });
 }
 
-export function useWorkoutById(workoutId: string) {
+export function useWorkoutById(workoutId: string, ready = true) {
   return useQuery({
     queryKey: [...WORKOUT_KEYS.assigned, "single", workoutId],
     queryFn: async () => {
@@ -149,7 +149,7 @@ export function useWorkoutById(workoutId: string) {
       if (error) throw error;
       return data as AssignedWorkout;
     },
-    enabled: !!workoutId,
+    enabled: !!workoutId && ready,
   });
 }
 
