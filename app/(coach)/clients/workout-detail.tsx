@@ -1,7 +1,7 @@
 import { useMemo } from "react";
 import { useTranslation } from "react-i18next";
 import { View, StyleSheet, ScrollView, Pressable } from "react-native";
-import { Text, useTheme, Card, Chip, Avatar } from "react-native-paper";
+import { Text, useTheme, Card, Chip, Avatar, ActivityIndicator } from "react-native-paper";
 import { SafeAreaView } from "react-native-safe-area-context";
 import { MaterialCommunityIcons } from "@expo/vector-icons";
 import { useRouter, useLocalSearchParams } from "expo-router";
@@ -42,13 +42,15 @@ export default function CoachWorkoutDetailScreen() {
     return map;
   }, [result]);
 
-  const statusConfig: Record<string, { label: string; color: string; icon: string }> = {
-    completed: { label: t("clients.statusCompleted"), color: "#22C55E", icon: "check-circle" },
-    pending: { label: t("clients.statusPending"), color: "#F59E0B", icon: "clock-outline" },
-    missed: { label: t("clients.statusMissed"), color: "#EF4444", icon: "close-circle-outline" },
-    partial: { label: t("clients.statusPartial"), color: "#3B82F6", icon: "circle-half-full" },
-  };
-  const status = statusConfig[workout?.status ?? "pending"] ?? statusConfig.pending;
+  const status = useMemo(() => {
+    const statusConfig: Record<string, { label: string; color: string; icon: string }> = {
+      completed: { label: t("clients.statusCompleted"), color: theme.colors.secondary, icon: "check-circle" },
+      pending: { label: t("clients.statusPending"), color: "#F59E0B", icon: "clock-outline" },
+      missed: { label: t("clients.statusMissed"), color: theme.colors.error, icon: "close-circle-outline" },
+      partial: { label: t("clients.statusPartial"), color: "#3B82F6", icon: "circle-half-full" },
+    };
+    return statusConfig[workout?.status ?? "pending"] ?? statusConfig.pending;
+  }, [t, theme, workout?.status]);
 
   if (loadingWorkout || !workout) {
     return (
@@ -63,9 +65,7 @@ export default function CoachWorkoutDetailScreen() {
           <View style={{ width: 24 }} />
         </View>
         <View style={styles.loadingState}>
-          <Text variant="bodyMedium" style={{ color: theme.colors.onSurfaceVariant }}>
-            {t("common.loading")}
-          </Text>
+          <ActivityIndicator size="large" color={theme.colors.primary} />
         </View>
       </SafeAreaView>
     );
@@ -205,7 +205,7 @@ function ExerciseResultCard({
       <Card.Content>
         <View style={styles.exerciseHeader}>
           <View style={[styles.orderBadge, { backgroundColor: theme.colors.primary }]}>
-            <Text style={styles.orderText}>{index + 1}</Text>
+            <Text style={[styles.orderText, { color: theme.colors.onPrimary }]}>{index + 1}</Text>
           </View>
           <View style={{ flex: 1 }}>
             <Text
@@ -225,12 +225,12 @@ function ExerciseResultCard({
             )}
           </View>
           {logged && (
-            <MaterialCommunityIcons name="check-circle" size={22} color="#22C55E" />
+            <MaterialCommunityIcons name="check-circle" size={22} color={theme.colors.secondary} />
           )}
         </View>
 
         <View style={styles.setsTable}>
-          <View style={styles.setsHeaderRow}>
+          <View style={[styles.setsHeaderRow, { borderBottomColor: theme.colors.outline }]}>
             <Text variant="labelSmall" style={[styles.setCol, { color: theme.colors.onSurfaceVariant }]}>
               {t("clients.setColumn")}
             </Text>
@@ -260,7 +260,7 @@ function ExerciseResultCard({
                     style={[
                       styles.setCol,
                       {
-                        color: loggedSet?.completed ? "#22C55E" : theme.colors.onSurfaceVariant,
+                        color: loggedSet?.completed ? theme.colors.secondary : theme.colors.onSurfaceVariant,
                         fontWeight: loggedSet?.completed ? "700" : "400",
                       },
                     ]}

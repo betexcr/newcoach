@@ -10,9 +10,9 @@ export default defineConfig({
   expect: { timeout: 10_000 },
   use: {
     baseURL: "http://localhost:8081",
-    headless: false,
+    headless: !!process.env.CI,
     viewport: { width: 430, height: 932 },
-    launchOptions: { slowMo: 300 },
+    launchOptions: { slowMo: process.env.CI ? 0 : 300 },
     screenshot: "only-on-failure",
   },
   projects: [{ name: "chromium", use: { browserName: "chromium" } }],

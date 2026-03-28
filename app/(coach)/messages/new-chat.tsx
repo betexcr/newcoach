@@ -1,4 +1,4 @@
-import { useState, useMemo } from "react";
+import { useState, useMemo, useEffect, useRef } from "react";
 import { useTranslation } from "react-i18next";
 import { View, StyleSheet, FlatList, Pressable, Alert } from "react-native";
 import { Text, useTheme, Searchbar, Avatar, ActivityIndicator } from "react-native-paper";
@@ -66,18 +66,24 @@ export default function NewChatScreen() {
     }
   }
 
-  if (preselectedClientId) {
+  const autoSelectDone = useRef(false);
+  useEffect(() => {
+    if (autoSelectDone.current || !preselectedClientId || !clients.length) return;
     const match = clients.find((c) => c.client_id === preselectedClientId);
     if (match) {
+      autoSelectDone.current = true;
       handleSelect(match);
-      return (
-        <SafeAreaView style={[styles.container, { backgroundColor: theme.colors.background }]}>
-          <View style={styles.loadingContainer}>
-            <ActivityIndicator size="large" color={theme.colors.primary} />
-          </View>
-        </SafeAreaView>
-      );
     }
+  }, [preselectedClientId, clients]);
+
+  if (preselectedClientId && !autoSelectDone.current) {
+    return (
+      <SafeAreaView style={[styles.container, { backgroundColor: theme.colors.background }]}>
+        <View style={styles.loadingContainer}>
+          <ActivityIndicator size="large" color={theme.colors.primary} />
+        </View>
+      </SafeAreaView>
+    );
   }
 
   return (

@@ -188,7 +188,7 @@ export default function ClientProfileScreen() {
                 variant="labelMedium"
                 style={{ color: statusColor, textTransform: "capitalize", fontWeight: "600" }}
               >
-                {clientStatus}
+                {t(`status.${clientStatus ?? "inactive"}`)}
               </Text>
             </View>
           </View>
@@ -406,7 +406,7 @@ function WorkoutsTab({
                 textStyle={{ fontSize: 10, color, fontWeight: "600" }}
                 style={{ backgroundColor: `${color}15` }}
               >
-                {w.status}
+                {t(`status.${w.status}`)}
               </Chip>
               {result && (
                 <Text variant="labelSmall" style={{ color: theme.colors.onSurfaceVariant, marginTop: 2 }}>
@@ -490,7 +490,7 @@ function ProgressTab({
             </View>
             {stat.maxWeight > 0 && (
               <Chip compact textStyle={{ fontSize: 11, fontWeight: "600" }}>
-                {t("clientProfile.pr")}: {stat.maxWeight} lbs
+                {t("clientProfile.pr")}: {stat.maxWeight} {t("workout.lbs")}
               </Chip>
             )}
           </View>
@@ -627,7 +627,7 @@ function NutritionTab({
               {Math.round(totals.calories)} {t("nutrition.cal")}
             </Text>
             <Text variant="bodySmall" style={{ color: theme.colors.onSurfaceVariant, marginTop: 2 }}>
-              {t("clientProfile.nutritionMacros", {
+              {t("nutrition.macroLine", {
                 protein: Math.round(totals.protein),
                 carbs: Math.round(totals.carbs),
                 fat: Math.round(totals.fat),
@@ -644,7 +644,11 @@ function NutritionTab({
                   {e.name}
                 </Text>
                 <Text variant="bodySmall" style={{ color: theme.colors.onSurfaceVariant }}>
-                  P: {e.protein}g · C: {e.carbs}g · F: {e.fat}g
+                  {t("nutrition.macroLine", {
+                    protein: e.protein,
+                    carbs: e.carbs,
+                    fat: e.fat,
+                  })}
                 </Text>
               </View>
               <Text variant="titleSmall" style={{ color: theme.colors.primary, fontWeight: "700" }}>

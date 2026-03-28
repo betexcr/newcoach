@@ -21,7 +21,8 @@ export function useExercises(filters?: ExerciseFilters) {
       let query = supabase
         .from("exercises")
         .select("*")
-        .order("name", { ascending: true });
+        .order("name", { ascending: true })
+        .limit(200);
 
       if (filters?.search) {
         query = query.ilike("name", `%${filters.search}%`);

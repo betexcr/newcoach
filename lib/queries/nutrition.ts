@@ -69,6 +69,7 @@ export function useDeleteNutritionLog() {
 }
 
 export function useUpdateNutritionGoals() {
+  const queryClient = useQueryClient();
   return useMutation({
     mutationFn: async ({
       userId,
@@ -82,6 +83,9 @@ export function useUpdateNutritionGoals() {
         .update({ nutrition_goals: goals })
         .eq("id", userId);
       if (error) throw error;
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: NUTRITION_KEYS.all });
     },
   });
 }

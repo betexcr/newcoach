@@ -9,8 +9,9 @@ import {
   KeyboardAvoidingView,
   Platform,
   Image,
+  Alert,
 } from "react-native";
-import { Text, useTheme, IconButton } from "react-native-paper";
+import { Text, useTheme, IconButton, ActivityIndicator } from "react-native-paper";
 import { SafeAreaView } from "react-native-safe-area-context";
 import { MaterialCommunityIcons } from "@expo/vector-icons";
 import { useRouter, useLocalSearchParams } from "expo-router";
@@ -99,7 +100,9 @@ export default function ClientChatScreen() {
     name: string;
   }>();
   const userId = useAuthStore((s) => s.user?.id);
-  const { data: messages = [] } = useMessages(conversationId ?? "");
+  const { data: messages = [], isLoading: messagesLoading } = useMessages(
+    conversationId ?? ""
+  );
   const sendMessage = useSendMessage();
 
   const [text, setText] = useState("");
@@ -117,11 +120,30 @@ export default function ClientChatScreen() {
     const body = text.trim();
     setText("");
 
-    await sendMessage.mutateAsync({
-      conversation_id: conversationId,
-      sender_id: userId,
-      body,
-    });
+    try {
+      await sendMessage.mutateAsync({
+        conversation_id: conversationId,
+        sender_id: userId,
+        body,
+      });
+    } catch (err: unknown) {
+      setText(body);
+      const message =
+        err instanceof Error ? err.message : t("messages.sendFailed");
+      Alert.alert(t("common.error"), message);
+    }
+  }
+
+  if (messagesLoading) {
+    return (
+      <SafeAreaView
+        style={[styles.container, { backgroundColor: theme.colors.background }]}
+      >
+        <View style={{ flex: 1, justifyContent: "center", alignItems: "center" }}>
+          <ActivityIndicator size="large" color={theme.colors.primary} />
+        </View>
+      </SafeAreaView>
+    );
   }
 
   return (

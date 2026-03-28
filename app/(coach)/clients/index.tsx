@@ -241,7 +241,7 @@ function ClientRow({
           variant="labelSmall"
           style={{ color, textTransform: "capitalize", fontWeight: "600" }}
         >
-          {client.status === "pending" ? t("clients.pendingLabel") : client.status}
+          {t(`status.${client.status}`)}
         </Text>
       </View>
       <MaterialCommunityIcons

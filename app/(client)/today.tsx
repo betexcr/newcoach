@@ -1,7 +1,7 @@
 import { useMemo } from "react";
 import { useTranslation } from "react-i18next";
 import { View, StyleSheet, ScrollView, Pressable } from "react-native";
-import { Text, useTheme, Card, Button } from "react-native-paper";
+import { Text, useTheme, Card, Button, ActivityIndicator } from "react-native-paper";
 import { SafeAreaView } from "react-native-safe-area-context";
 import { MaterialCommunityIcons } from "@expo/vector-icons";
 import { useRouter } from "expo-router";
@@ -23,15 +23,18 @@ function getWeekRange() {
   };
 }
 
-const statusColors: Record<string, string> = {
-  completed: "#22C55E",
-  pending: "#F59E0B",
-  missed: "#EF4444",
-};
-
 export default function TodayScreen() {
   const { t } = useTranslation();
   const theme = useTheme();
+  const statusColors = useMemo(
+    () => ({
+      completed: theme.colors.secondary,
+      pending: "#F59E0B",
+      missed: theme.colors.error,
+      partial: "#F97316",
+    }),
+    [theme]
+  );
   const router = useRouter();
   const profile = useAuthStore((s) => s.profile);
   const userId = useAuthStore((s) => s.user?.id);
@@ -39,13 +42,11 @@ export default function TodayScreen() {
   const todayStr = formatDate(new Date());
   const week = useMemo(() => getWeekRange(), []);
 
-  const { data: weekWorkouts = [] } = useClientWorkouts(
-    userId ?? "",
-    week.start,
-    week.end
-  );
+  const { data: weekWorkouts = [], isLoading: weekWorkoutsLoading } =
+    useClientWorkouts(userId ?? "", week.start, week.end);
 
-  const { data: allWorkouts = [] } = useClientWorkouts(userId ?? "");
+  const { data: allWorkouts = [], isLoading: allWorkoutsLoading } =
+    useClientWorkouts(userId ?? "");
   const { data: pendingInvites = [] } = usePendingInvites(userId ?? "");
 
   const todayWorkouts = useMemo(
@@ -88,7 +89,7 @@ export default function TodayScreen() {
       : 0;
   }, [allWorkouts, todayStr]);
 
-  const today = new Date().toLocaleDateString("en-US", {
+  const today = new Date().toLocaleDateString(undefined, {
     weekday: "long",
     month: "long",
     day: "numeric",
@@ -107,6 +108,19 @@ export default function TodayScreen() {
       return { label, dateStr, isToday: dateStr === todayStr, workout };
     });
   }, [weekWorkouts, todayStr, t]);
+
+  if (weekWorkoutsLoading || allWorkoutsLoading) {
+    return (
+      <SafeAreaView
+        style={[styles.container, { backgroundColor: theme.colors.background }]}
+        edges={["top"]}
+      >
+        <View style={{ flex: 1, justifyContent: "center", alignItems: "center" }}>
+          <ActivityIndicator size="large" color={theme.colors.primary} />
+        </View>
+      </SafeAreaView>
+    );
+  }
 
   return (
     <SafeAreaView
@@ -283,7 +297,7 @@ export default function TodayScreen() {
                 label: t("today.thisWeek"),
                 value: `${weekCompleted}/${weekWorkouts.length}`,
                 icon: "check-circle",
-                color: "#22C55E",
+                color: theme.colors.secondary,
               },
               {
                 label: t("today.compliance"),
@@ -358,7 +372,7 @@ function TodayWorkoutCard({
             styles.workoutIcon,
             {
               backgroundColor: isCompleted
-                ? "#22C55E20"
+                ? `${theme.colors.secondary}20`
                 : theme.colors.primaryContainer,
             },
           ]}
@@ -366,7 +380,7 @@ function TodayWorkoutCard({
           <MaterialCommunityIcons
             name={isCompleted ? "check-circle" : "dumbbell"}
             size={40}
-            color={isCompleted ? "#22C55E" : theme.colors.primary}
+            color={isCompleted ? theme.colors.secondary : theme.colors.primary}
           />
         </View>
         <Text

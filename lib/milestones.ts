@@ -1,3 +1,4 @@
+import type { TFunction } from "i18next";
 import type { AssignedWorkout, WorkoutResult } from "@/types/database";
 
 export interface Milestone {
@@ -11,7 +12,8 @@ export interface Milestone {
 
 export function computeMilestones(
   workouts: AssignedWorkout[],
-  results: WorkoutResult[]
+  results: WorkoutResult[],
+  t: TFunction
 ): Milestone[] {
   const completedWorkouts = workouts.filter((w) => w.status === "completed");
   const completedCount = completedWorkouts.length;
@@ -39,7 +41,7 @@ export function computeMilestones(
   for (const result of results) {
     const logged = result.logged_sets;
     if (!Array.isArray(logged)) continue;
-    for (const ex of logged as any[]) {
+    for (const ex of logged) {
       for (const set of ex.sets ?? []) {
         if (set.weight && set.weight > maxWeight) {
           maxWeight = set.weight;
@@ -51,79 +53,79 @@ export function computeMilestones(
   const milestones: Milestone[] = [
     {
       id: "first-workout",
-      title: "First Steps",
-      description: "Complete your first workout",
+      title: t("milestones.firstSteps.title"),
+      description: t("milestones.firstSteps.description"),
       icon: "shoe-print",
       earned: completedCount >= 1,
       earnedDate: sortedCompleted[0]?.scheduled_date,
     },
     {
       id: "five-workouts",
-      title: "Getting Started",
-      description: "Complete 5 workouts",
+      title: t("milestones.gettingStarted.title"),
+      description: t("milestones.gettingStarted.description"),
       icon: "star-outline",
       earned: completedCount >= 5,
     },
     {
       id: "ten-workouts",
-      title: "Dedicated",
-      description: "Complete 10 workouts",
+      title: t("milestones.dedicated.title"),
+      description: t("milestones.dedicated.description"),
       icon: "star-half-full",
       earned: completedCount >= 10,
     },
     {
       id: "twentyfive-workouts",
-      title: "Committed",
-      description: "Complete 25 workouts",
+      title: t("milestones.committed.title"),
+      description: t("milestones.committed.description"),
       icon: "star",
       earned: completedCount >= 25,
     },
     {
       id: "fifty-workouts",
-      title: "Unstoppable",
-      description: "Complete 50 workouts",
+      title: t("milestones.unstoppable.title"),
+      description: t("milestones.unstoppable.description"),
       icon: "trophy",
       earned: completedCount >= 50,
     },
     {
       id: "hundred-workouts",
-      title: "Century Club",
-      description: "Complete 100 workouts",
+      title: t("milestones.centuryClub.title"),
+      description: t("milestones.centuryClub.description"),
       icon: "medal",
       earned: completedCount >= 100,
     },
     {
       id: "seven-day-streak",
-      title: "Week Warrior",
-      description: "7-day workout streak",
+      title: t("milestones.weekWarrior.title"),
+      description: t("milestones.weekWarrior.description"),
       icon: "fire",
       earned: maxStreak >= 7,
     },
     {
       id: "thirty-day-streak",
-      title: "Month of Iron",
-      description: "30-day workout streak",
+      title: t("milestones.monthOfIron.title"),
+      description: t("milestones.monthOfIron.description"),
       icon: "lightning-bolt",
       earned: maxStreak >= 30,
     },
     {
       id: "pr-100",
-      title: "Heavy Hitter",
-      description: "Lift 100+ lbs in a single set",
+      title: t("milestones.heavyHitter.title"),
+      description: t("milestones.heavyHitter.description"),
       icon: "weight-lifter",
       earned: maxWeight >= 100,
     },
     {
       id: "pr-200",
-      title: "Beast Mode",
-      description: "Lift 200+ lbs in a single set",
+      title: t("milestones.beastMode.title"),
+      description: t("milestones.beastMode.description"),
       icon: "arm-flex",
       earned: maxWeight >= 200,
     },
     {
       id: "pr-300",
-      title: "Elite Lifter",
-      description: "Lift 300+ lbs in a single set",
+      title: t("milestones.eliteLifter.title"),
+      description: t("milestones.eliteLifter.description"),
       icon: "shield-star",
       earned: maxWeight >= 300,
     },

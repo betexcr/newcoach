@@ -1,4 +1,5 @@
 import { useState, useMemo } from "react";
+import { useTranslation } from "react-i18next";
 import { View, StyleSheet, FlatList, Pressable } from "react-native";
 import { Text, useTheme, Searchbar, Chip } from "react-native-paper";
 import { SafeAreaView } from "react-native-safe-area-context";
@@ -9,6 +10,7 @@ import { useWorkoutBuilderStore } from "@/stores/workout-builder-store";
 import type { Exercise } from "@/types/database";
 
 export default function PickExerciseScreen() {
+  const { t } = useTranslation();
   const theme = useTheme();
   const router = useRouter();
   const addExercise = useWorkoutBuilderStore((s) => s.addExercise);
@@ -46,13 +48,13 @@ export default function PickExerciseScreen() {
           variant="titleLarge"
           style={{ color: theme.colors.onSurface, fontWeight: "700" }}
         >
-          Add Exercise
+          {t("pickExercise.title")}
         </Text>
         <View style={{ width: 24 }} />
       </View>
 
       <Searchbar
-        placeholder="Search exercises..."
+        placeholder={t("pickExercise.searchPlaceholder")}
         onChangeText={setSearch}
         value={search}
         style={[styles.searchBar, { backgroundColor: theme.colors.surface }]}
@@ -82,7 +84,7 @@ export default function PickExerciseScreen() {
               selectedMuscle === item && { color: "#FFFFFF" },
             ]}
           >
-            {item === "all" ? "All" : item}
+            {item === "all" ? t("pickExercise.all") : item}
           </Chip>
         )}
       />
@@ -131,7 +133,7 @@ export default function PickExerciseScreen() {
               variant="bodyMedium"
               style={{ color: theme.colors.onSurfaceVariant }}
             >
-              {isLoading ? "Loading..." : "No exercises found"}
+              {isLoading ? t("common.loading") : t("pickExercise.noResults")}
             </Text>
           </View>
         }

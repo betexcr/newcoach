@@ -51,7 +51,7 @@ export function useMessages(conversationId: string) {
         .select("*")
         .eq("conversation_id", conversationId)
         .order("created_at", { ascending: true })
-        .limit(100);
+        .limit(200);
       if (error) throw error;
       return data as Message[];
     },

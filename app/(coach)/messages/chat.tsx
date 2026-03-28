@@ -10,7 +10,7 @@ import {
   Platform,
   Image,
 } from "react-native";
-import { Text, useTheme, IconButton } from "react-native-paper";
+import { Text, useTheme, IconButton, ActivityIndicator } from "react-native-paper";
 import { SafeAreaView } from "react-native-safe-area-context";
 import { MaterialCommunityIcons } from "@expo/vector-icons";
 import { useRouter, useLocalSearchParams } from "expo-router";
@@ -99,7 +99,9 @@ export default function ChatScreen() {
     name: string;
   }>();
   const userId = useAuthStore((s) => s.user?.id);
-  const { data: messages = [] } = useMessages(conversationId ?? "");
+  const { data: messages = [], isLoading: messagesLoading } = useMessages(
+    conversationId ?? ""
+  );
   const sendMessage = useSendMessage();
 
   const [text, setText] = useState("");
@@ -117,11 +119,30 @@ export default function ChatScreen() {
     const body = text.trim();
     setText("");
 
-    await sendMessage.mutateAsync({
-      conversation_id: conversationId,
-      sender_id: userId,
-      body,
-    });
+    try {
+      await sendMessage.mutateAsync({
+        conversation_id: conversationId,
+        sender_id: userId,
+        body,
+      });
+    } catch {
+      setText(body);
+    }
+  }
+
+  if (messagesLoading) {
+    return (
+      <SafeAreaView
+        style={[styles.container, { backgroundColor: theme.colors.background }]}
+        edges={["top"]}
+      >
+        <View
+          style={{ flex: 1, justifyContent: "center", alignItems: "center" }}
+        >
+          <ActivityIndicator size="large" color={theme.colors.primary} />
+        </View>
+      </SafeAreaView>
+    );
   }
 
   return (

@@ -9,6 +9,7 @@ import {
   ProgressBar,
   IconButton,
   Chip,
+  ActivityIndicator,
 } from "react-native-paper";
 import { SafeAreaView } from "react-native-safe-area-context";
 import { MaterialCommunityIcons } from "@expo/vector-icons";
@@ -43,7 +44,8 @@ export default function NutritionScreen() {
   const goals: MacroGoals = profile?.nutrition_goals ?? DEFAULT_GOALS;
 
   const today = formatDate(new Date());
-  const { data: entries = [] } = useNutritionLogs(userId ?? "", today);
+  const { data: entries = [], isLoading: nutritionLogsLoading } =
+    useNutritionLogs(userId ?? "", today);
   const addEntry = useAddNutritionLog();
   const deleteEntry = useDeleteNutritionLog();
   const updateGoals = useUpdateNutritionGoals();
@@ -61,6 +63,19 @@ export default function NutritionScreen() {
   const [goalProtein, setGoalProtein] = useState(String(goals.protein));
   const [goalCarbs, setGoalCarbs] = useState(String(goals.carbs));
   const [goalFat, setGoalFat] = useState(String(goals.fat));
+
+  if (nutritionLogsLoading) {
+    return (
+      <SafeAreaView
+        style={[styles.container, { backgroundColor: theme.colors.background }]}
+        edges={["top"]}
+      >
+        <View style={{ flex: 1, justifyContent: "center", alignItems: "center" }}>
+          <ActivityIndicator size="large" color={theme.colors.primary} />
+        </View>
+      </SafeAreaView>
+    );
+  }
 
   const totals = entries.reduce(
     (acc, e) => ({
@@ -477,7 +492,11 @@ export default function NutritionScreen() {
                       variant="bodySmall"
                       style={{ color: theme.colors.onSurfaceVariant }}
                     >
-                      P: {entry.protein}g · C: {entry.carbs}g · F: {entry.fat}g
+                      {t("nutrition.macroLine", {
+                        protein: entry.protein,
+                        carbs: entry.carbs,
+                        fat: entry.fat,
+                      })}
                     </Text>
                     {entry.meal && (
                       <Chip

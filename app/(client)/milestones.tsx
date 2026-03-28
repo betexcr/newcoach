@@ -1,7 +1,7 @@
 import { useMemo } from "react";
 import { useTranslation } from "react-i18next";
 import { View, StyleSheet, ScrollView } from "react-native";
-import { Text, useTheme, Card } from "react-native-paper";
+import { Text, useTheme, Card, ActivityIndicator } from "react-native-paper";
 import { SafeAreaView } from "react-native-safe-area-context";
 import { MaterialCommunityIcons } from "@expo/vector-icons";
 import { useAuthStore } from "@/stores/auth-store";
@@ -87,16 +87,33 @@ export default function MilestonesScreen() {
   const { t } = useTranslation();
   const theme = useTheme();
   const userId = useAuthStore((s) => s.user?.id);
-  const { data: workouts = [] } = useClientWorkouts(userId ?? "");
-  const { data: results = [] } = useClientResults(userId ?? "");
+  const { data: workouts = [], isLoading: workoutsLoading } = useClientWorkouts(
+    userId ?? ""
+  );
+  const { data: results = [], isLoading: resultsLoading } = useClientResults(
+    userId ?? ""
+  );
 
   const milestones = useMemo(
-    () => computeMilestones(workouts, results),
-    [workouts, results]
+    () => computeMilestones(workouts, results, t),
+    [workouts, results, t]
   );
 
   const earned = milestones.filter((m) => m.earned);
   const remaining = milestones.filter((m) => !m.earned);
+
+  if (workoutsLoading || resultsLoading) {
+    return (
+      <SafeAreaView
+        style={[styles.container, { backgroundColor: theme.colors.background }]}
+        edges={["top"]}
+      >
+        <View style={{ flex: 1, justifyContent: "center", alignItems: "center" }}>
+          <ActivityIndicator size="large" color={theme.colors.primary} />
+        </View>
+      </SafeAreaView>
+    );
+  }
 
   return (
     <SafeAreaView

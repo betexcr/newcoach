@@ -2,7 +2,7 @@ import { test } from "@playwright/test";
 
 const CLIENT = {
   email: process.env.TEST_CLIENT_EMAIL ?? "client@test.com",
-  password: process.env.TEST_PASSWORD ?? "password123",
+  password: process.env.TEST_PASSWORD ?? "Test1234!",
 };
 
 test("calendar: select Tue 10 → workout card → click → detail page", async ({

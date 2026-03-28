@@ -13,7 +13,7 @@ export interface ClientWithProfile {
   id: string;
   coach_id: string;
   client_id: string;
-  status: string;
+  status: CoachClient["status"];
   created_at: string;
   profile: Profile;
 }

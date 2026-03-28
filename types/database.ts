@@ -173,6 +173,12 @@ export interface NutritionLog {
   created_at: string;
 }
 
+export interface ConversationParticipant {
+  conversation_id: string;
+  user_id: string;
+  joined_at: string;
+}
+
 export type Database = {
   public: {
     Tables: {
@@ -184,6 +190,8 @@ export type Database = {
           full_name?: string | null;
           avatar_url?: string | null;
           role?: UserRole | null;
+          push_token?: string | null;
+          nutrition_goals?: MacroGoals | null;
           created_at?: string;
           updated_at?: string;
         };
@@ -204,12 +212,12 @@ export type Database = {
         Insert: {
           coach_id: string;
           client_id: string;
-          status?: string;
+          status?: CoachClient["status"];
         };
         Update: {
           coach_id?: string;
           client_id?: string;
-          status?: string;
+          status?: CoachClient["status"];
         };
         Relationships: [];
       };
@@ -292,13 +300,13 @@ export type Database = {
           scheduled_date: string;
           exercises?: WorkoutExercise[];
           program_id?: string | null;
-          status?: string;
+          status?: AssignedWorkout["status"];
         };
         Update: {
           name?: string;
           scheduled_date?: string;
           exercises?: WorkoutExercise[];
-          status?: string;
+          status?: AssignedWorkout["status"];
         };
         Relationships: [];
       };
@@ -320,12 +328,24 @@ export type Database = {
       conversations: {
         Row: Conversation;
         Insert: {
-          type: string;
+          type: Conversation["type"];
           name?: string | null;
           created_by: string;
         };
         Update: {
           name?: string | null;
+        };
+        Relationships: [];
+      };
+      conversation_participants: {
+        Row: ConversationParticipant;
+        Insert: {
+          conversation_id: string;
+          user_id: string;
+        };
+        Update: {
+          conversation_id?: string;
+          user_id?: string;
         };
         Relationships: [];
       };
@@ -350,12 +370,12 @@ export type Database = {
           client_id: string;
           name: string;
           description?: string | null;
-          frequency: string;
+          frequency: Habit["frequency"];
         };
         Update: {
           name?: string;
           description?: string | null;
-          frequency?: string;
+          frequency?: Habit["frequency"];
         };
         Relationships: [];
       };

@@ -1,7 +1,7 @@
 import { useState, useMemo } from "react";
 import { useTranslation } from "react-i18next";
 import { View, StyleSheet, Pressable } from "react-native";
-import { Text, useTheme } from "react-native-paper";
+import { Text, useTheme, ActivityIndicator } from "react-native-paper";
 import { SafeAreaView } from "react-native-safe-area-context";
 import { MaterialCommunityIcons } from "@expo/vector-icons";
 import { useRouter } from "expo-router";
@@ -19,13 +19,6 @@ function getWeekDates(referenceDate: Date): Date[] {
     return d;
   });
 }
-
-const statusConfig: Record<string, { icon: string; color: string }> = {
-  pending: { icon: "clock-outline", color: "#F59E0B" },
-  completed: { icon: "check-circle", color: "#22C55E" },
-  missed: { icon: "close-circle", color: "#EF4444" },
-  partial: { icon: "circle-half-full", color: "#F97316" },
-};
 
 export default function CalendarScreen() {
   const { t } = useTranslation();
@@ -45,7 +38,7 @@ export default function CalendarScreen() {
   const startDate = formatDate(weekDates[0]);
   const endDate = formatDate(weekDates[6]);
 
-  const { data: workouts = [] } = useClientWorkouts(
+  const { data: workouts = [], isLoading: workoutsLoading } = useClientWorkouts(
     userId ?? "",
     startDate,
     endDate
@@ -60,13 +53,26 @@ export default function CalendarScreen() {
 
   const today = formatDate(new Date());
 
-  const weekLabel = `${weekDates[0].toLocaleDateString("en-US", {
+  const weekLabel = `${weekDates[0].toLocaleDateString(undefined, {
     month: "short",
     day: "numeric",
-  })} - ${weekDates[6].toLocaleDateString("en-US", {
+  })} - ${weekDates[6].toLocaleDateString(undefined, {
     month: "short",
     day: "numeric",
   })}`;
+
+  if (workoutsLoading) {
+    return (
+      <SafeAreaView
+        style={[styles.container, { backgroundColor: theme.colors.background }]}
+        edges={["top"]}
+      >
+        <View style={{ flex: 1, justifyContent: "center", alignItems: "center" }}>
+          <ActivityIndicator size="large" color={theme.colors.primary} />
+        </View>
+      </SafeAreaView>
+    );
+  }
 
   return (
     <SafeAreaView
@@ -130,17 +136,17 @@ export default function CalendarScreen() {
                 variant="labelSmall"
                 style={{
                   color: isSelected
-                    ? "#FFFFFF"
+                    ? theme.colors.onPrimary
                     : theme.colors.onSurfaceVariant,
                   fontWeight: isToday ? "800" : "400",
                 }}
               >
-                {date.toLocaleDateString("en-US", { weekday: "short" })}
+                {date.toLocaleDateString(undefined, { weekday: "short" })}
               </Text>
               <Text
                 variant="titleMedium"
                 style={{
-                  color: isSelected ? "#FFFFFF" : theme.colors.onSurface,
+                  color: isSelected ? theme.colors.onPrimary : theme.colors.onSurface,
                   fontWeight: "700",
                   marginTop: 4,
                 }}
@@ -153,7 +159,7 @@ export default function CalendarScreen() {
                     styles.workoutDot,
                     {
                       backgroundColor: isSelected
-                        ? "#FFFFFF"
+                        ? theme.colors.onPrimary
                         : theme.colors.primary,
                     },
                   ]}
@@ -173,7 +179,7 @@ export default function CalendarScreen() {
             marginBottom: 12,
           }}
         >
-          {new Date(selectedDate + "T12:00:00").toLocaleDateString("en-US", {
+          {new Date(selectedDate + "T12:00:00").toLocaleDateString(undefined, {
             weekday: "long",
             month: "long",
             day: "numeric",
@@ -219,6 +225,12 @@ function WorkoutCard({
   t: (key: string, opts?: Record<string, unknown>) => string;
 }) {
   const router = useRouter();
+  const statusConfig: Record<string, { icon: string; color: string }> = {
+    pending: { icon: "clock-outline", color: "#F59E0B" },
+    completed: { icon: "check-circle", color: theme.colors.secondary },
+    missed: { icon: "close-circle", color: theme.colors.error },
+    partial: { icon: "circle-half-full", color: "#F97316" },
+  };
   const status = statusConfig[workout.status] ?? statusConfig.pending;
   const exerciseCount = workout.exercises?.length ?? 0;
   const totalSets = workout.exercises?.reduce(
@@ -255,7 +267,7 @@ function WorkoutCard({
             color={status.color}
           />
           <Text style={[styles.statusText, { color: status.color }]}>
-            {workout.status}
+            {t(`status.${workout.status}`)}
           </Text>
         </View>
       </View>

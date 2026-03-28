@@ -97,9 +97,11 @@ export function useDeleteProgram() {
     mutationFn: async (id: string) => {
       const { error } = await supabase.from("programs").delete().eq("id", id);
       if (error) throw error;
+      return id;
     },
-    onSuccess: () => {
+    onSuccess: (deletedId) => {
       queryClient.invalidateQueries({ queryKey: PROGRAM_KEYS.all });
+      queryClient.removeQueries({ queryKey: PROGRAM_KEYS.workouts(deletedId) });
     },
   });
 }

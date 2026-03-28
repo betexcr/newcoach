@@ -131,7 +131,10 @@ export default function AssignWorkoutScreen() {
                 {exercises.reduce((sum, ex) => sum + ex.sets.length, 0)} {t("clients.totalSets")}
               </Text>
               {exercises.map((ex, i) => (
-                <View key={i} style={styles.summaryItem}>
+                <View
+                  key={i}
+                  style={[styles.summaryItem, { borderBottomColor: theme.colors.outline }]}
+                >
                   <Text variant="bodyMedium" style={{ color: theme.colors.onSurface, flex: 1 }}>
                     {i + 1}. {ex.exercise_name}
                   </Text>

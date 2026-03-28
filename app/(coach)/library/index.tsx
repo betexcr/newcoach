@@ -9,6 +9,7 @@ import {
   Chip,
   Card,
   IconButton,
+  ActivityIndicator,
 } from "react-native-paper";
 import { SafeAreaView } from "react-native-safe-area-context";
 import { useRouter } from "expo-router";
@@ -199,7 +200,8 @@ export default function LibraryScreen() {
   const [search, setSearch] = useState("");
   const [selectedMuscle, setSelectedMuscle] = useState("all");
 
-  const { data: templates = [] } = useWorkoutTemplates(userId);
+  const { data: templates = [], isLoading: templatesLoading } =
+    useWorkoutTemplates(userId);
   const deleteTemplate = useDeleteTemplate();
 
   const filters: ExerciseFilters = useMemo(
@@ -268,18 +270,26 @@ export default function LibraryScreen() {
       </View>
 
       {libraryTab === "templates" ? (
-        <TemplatesListView
-          templates={templates}
-          theme={theme}
-          t={t}
-          router={router}
-          onDelete={(id) => {
-            Alert.alert(t("common.delete"), t("library.deleteTemplateConfirm"), [
-              { text: t("common.cancel"), style: "cancel" },
-              { text: t("common.delete"), style: "destructive", onPress: () => deleteTemplate.mutate(id) },
-            ]);
-          }}
-        />
+        templatesLoading ? (
+          <View
+            style={{ flex: 1, justifyContent: "center", alignItems: "center" }}
+          >
+            <ActivityIndicator size="large" color={theme.colors.primary} />
+          </View>
+        ) : (
+          <TemplatesListView
+            templates={templates}
+            theme={theme}
+            t={t}
+            router={router}
+            onDelete={(id) => {
+              Alert.alert(t("common.delete"), t("library.deleteTemplateConfirm"), [
+                { text: t("common.cancel"), style: "cancel" },
+                { text: t("common.delete"), style: "destructive", onPress: () => deleteTemplate.mutate(id) },
+              ]);
+            }}
+          />
+        )
       ) : (
       <>
       <Searchbar

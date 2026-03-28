@@ -31,7 +31,8 @@ interface ActivityItem {
 function buildActivityFeed(
   recentWorkouts: AssignedWorkout[],
   clients: ClientWithProfile[],
-  t: (key: string, opts?: Record<string, unknown>) => string
+  t: (key: string, opts?: Record<string, unknown>) => string,
+  theme: { colors: { primary: string; secondary: string } }
 ): ActivityItem[] {
   const items: ActivityItem[] = [];
 
@@ -56,7 +57,7 @@ function buildActivityFeed(
         minute: "2-digit",
       }),
       icon: w.status === "completed" ? "check-circle" : "dumbbell",
-      color: w.status === "completed" ? "#22C55E" : "#4F46E5",
+      color: w.status === "completed" ? theme.colors.secondary : theme.colors.primary,
       timestamp: w.created_at,
       workoutId: w.id,
       clientId: w.client_id,
@@ -76,7 +77,7 @@ function buildActivityFeed(
         minute: "2-digit",
       }),
       icon: "account-plus",
-      color: "#10B981",
+      color: theme.colors.secondary,
       timestamp: c.created_at,
       clientId: c.client_id,
       clientName: c.profile?.full_name ?? t("dashboard.fallbackClient"),
@@ -97,10 +98,19 @@ export default function CoachDashboard() {
   const profile = useAuthStore((s) => s.profile);
   const userId = useAuthStore((s) => s.user?.id) ?? "";
 
-  const { data: clients = [] } = useCoachClients(userId);
-  const { data: todayWorkouts = [] } = useCoachWorkoutsToday(userId);
-  const { data: recentWorkouts = [] } = useCoachRecentWorkouts(userId);
-  const { data: conversations = [] } = useConversations(userId);
+  const { data: clients = [], isLoading: clientsLoading } = useCoachClients(userId);
+  const { data: todayWorkouts = [], isLoading: todayLoading } =
+    useCoachWorkoutsToday(userId);
+  const { data: recentWorkouts = [], isLoading: recentLoading } =
+    useCoachRecentWorkouts(userId);
+  const { data: conversations = [], isLoading: conversationsLoading } =
+    useConversations(userId);
+
+  const dashboardLoading =
+    clientsLoading ||
+    todayLoading ||
+    recentLoading ||
+    conversationsLoading;
 
   const activeClientCount = useMemo(
     () => clients.filter((c) => c.status === "active").length,
@@ -108,8 +118,8 @@ export default function CoachDashboard() {
   );
 
   const activityFeed = useMemo(
-    () => buildActivityFeed(recentWorkouts, clients, t),
-    [recentWorkouts, clients, t]
+    () => buildActivityFeed(recentWorkouts, clients, t, theme),
+    [recentWorkouts, clients, t, theme]
   );
 
   const stats = [
@@ -159,6 +169,21 @@ export default function CoachDashboard() {
       onPress: () => router.push("/(coach)/messages/broadcast"),
     },
   ];
+
+  if (dashboardLoading) {
+    return (
+      <SafeAreaView
+        style={[styles.container, { backgroundColor: theme.colors.background }]}
+        edges={["top"]}
+      >
+        <View
+          style={{ flex: 1, justifyContent: "center", alignItems: "center" }}
+        >
+          <ActivityIndicator size="large" color={theme.colors.primary} />
+        </View>
+      </SafeAreaView>
+    );
+  }
 
   return (
     <SafeAreaView

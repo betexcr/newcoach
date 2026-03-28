@@ -34,7 +34,8 @@ export function useClientResults(clientId: string) {
         .from("workout_results")
         .select("*")
         .eq("client_id", clientId)
-        .order("completed_at", { ascending: false });
+        .order("completed_at", { ascending: false })
+        .limit(100);
       if (error) throw error;
       return data as WorkoutResult[];
     },
@@ -52,30 +53,15 @@ export function useSaveResult() {
       logged_sets: LoggedExercise[];
       notes?: string;
     }) => {
-      const { data: existing } = await supabase
-        .from("workout_results")
-        .select("id")
-        .eq("assigned_workout_id", result.assigned_workout_id)
-        .maybeSingle();
-
-      if (existing) {
-        const { data, error } = await supabase
-          .from("workout_results")
-          .update({
-            logged_sets: result.logged_sets,
-            notes: result.notes,
-            completed_at: new Date().toISOString(),
-          })
-          .eq("id", existing.id)
-          .select()
-          .single();
-        if (error) throw error;
-        return data as WorkoutResult;
-      }
-
       const { data, error } = await supabase
         .from("workout_results")
-        .insert(result)
+        .upsert(
+          {
+            ...result,
+            completed_at: new Date().toISOString(),
+          },
+          { onConflict: "assigned_workout_id" }
+        )
         .select()
         .single();
       if (error) throw error;
@@ -94,14 +80,14 @@ export function useExerciseHistory(clientId: string, exerciseName: string) {
     queryFn: async () => {
       const { data, error } = await supabase
         .from("workout_results")
-        .select("*")
+        .select("id,logged_sets,completed_at")
         .eq("client_id", clientId)
         .order("completed_at", { ascending: false })
-        .limit(50);
+        .limit(30);
 
       if (error) throw error;
 
-      const results = data as WorkoutResult[];
+      const results = data as Pick<WorkoutResult, "id" | "logged_sets" | "completed_at">[];
       const history: {
         date: string;
         sets: { reps: number | null; weight: number | null }[];

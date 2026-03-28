@@ -11,7 +11,7 @@ import {
   Dimensions,
   Animated,
 } from "react-native";
-import { Text, useTheme, Card, Button, ProgressBar, Chip } from "react-native-paper";
+import { Text, useTheme, Card, Button, ProgressBar, Chip, ActivityIndicator } from "react-native-paper";
 import { SafeAreaView } from "react-native-safe-area-context";
 import { MaterialCommunityIcons } from "@expo/vector-icons";
 import { useRouter, useLocalSearchParams } from "expo-router";
@@ -39,7 +39,7 @@ export default function WorkoutScreen() {
   const { id } = useLocalSearchParams<{ id: string }>();
   const userId = useAuthStore((s) => s.user?.id);
 
-  const { data: allWorkouts = [] } = useClientWorkouts(userId ?? "");
+  const { data: allWorkouts = [], isLoading: workoutsLoading } = useClientWorkouts(userId ?? "");
   const workout = allWorkouts.find((w) => w.id === id);
 
   const exerciseIds = useMemo(
@@ -117,6 +117,16 @@ export default function WorkoutScreen() {
     } catch (err: any) {
       Alert.alert(t("common.error"), err.message ?? t("workout.failedSave"));
     }
+  }
+
+  if (workoutsLoading) {
+    return (
+      <SafeAreaView style={[styles.container, { backgroundColor: theme.colors.background }]}>
+        <View style={styles.centered}>
+          <ActivityIndicator size="large" color={theme.colors.primary} />
+        </View>
+      </SafeAreaView>
+    );
   }
 
   if (!workout) {
@@ -243,8 +253,8 @@ function DetailView({
         </View>
         {isCompleted && (
           <View style={styles.completedBadge}>
-            <MaterialCommunityIcons name="check-circle" size={20} color="#22C55E" />
-            <Text style={{ color: "#22C55E", fontWeight: "600", fontSize: 13, marginLeft: 4 }}>
+            <MaterialCommunityIcons name="check-circle" size={20} color={theme.colors.secondary} />
+            <Text style={{ color: theme.colors.secondary, fontWeight: "600", fontSize: 13, marginLeft: 4 }}>
               {t("workout.done")}
             </Text>
           </View>
@@ -386,7 +396,7 @@ function ExerciseDetailCard({
             <View
               style={[styles.orderBadge, { backgroundColor: theme.colors.primary }]}
             >
-              <Text style={styles.orderText}>{index + 1}</Text>
+              <Text style={[styles.orderText, { color: theme.colors.onPrimary }]}>{index + 1}</Text>
             </View>
             <Text
               variant="titleSmall"
@@ -417,13 +427,15 @@ function ExerciseDetailCard({
             variant="bodySmall"
             style={{ color: theme.colors.onSurfaceVariant, marginTop: 2 }}
           >
-            {exercise.sets.length} sets ·{" "}
+            {exercise.sets.length} {t("workout.sets")} ·{" "}
             {exercise.sets[0]?.reps
-              ? `${exercise.sets[0].reps} reps`
+              ? `${exercise.sets[0].reps} ${t("workout.repsUnit")}`
               : exercise.sets[0]?.duration_seconds
                 ? `${exercise.sets[0].duration_seconds}s`
-                : "—"}
-            {exercise.sets[0]?.weight ? ` @ ${exercise.sets[0].weight} lbs` : ""}
+                : t("common.dash")}
+            {exercise.sets[0]?.weight
+              ? ` @ ${exercise.sets[0].weight} ${t("workout.lbs")}`
+              : ""}
           </Text>
         </View>
 
@@ -435,7 +447,7 @@ function ExerciseDetailCard({
       </View>
 
       {expanded && (
-        <View style={styles.expandedContent}>
+        <View style={[styles.expandedContent, { borderTopColor: theme.colors.outlineVariant }]}>
           {detail?.description ? (
             <Text
               variant="bodyMedium"
@@ -491,10 +503,13 @@ function ExerciseDetailCard({
                   </Text>
                 </View>
                 <Text style={[styles.setColWide, { color: theme.colors.onSurface }]}>
-                  {set.reps ?? (set.duration_seconds ? `${set.duration_seconds}s` : "—")}
+                  {set.reps ??
+                    (set.duration_seconds ? `${set.duration_seconds}s` : t("common.dash"))}
                 </Text>
                 <Text style={[styles.setColWide, { color: theme.colors.onSurface }]}>
-                  {set.weight ? `${set.weight} lbs` : "—"}
+                  {set.weight
+                    ? `${set.weight} ${t("workout.lbs")}`
+                    : t("common.dash")}
                 </Text>
                 {set.rest_seconds != null && (
                   <Text style={[styles.setColWide, { color: theme.colors.onSurfaceVariant }]}>
@@ -644,7 +659,7 @@ function ExecutionView({
               <View
                 style={[styles.orderBadgeLarge, { backgroundColor: theme.colors.primary }]}
               >
-                <Text style={{ color: "#FFF", fontWeight: "700", fontSize: 16 }}>
+                <Text style={{ color: theme.colors.onPrimary, fontWeight: "700", fontSize: 16 }}>
                   {currentStep + 1}
                 </Text>
               </View>
@@ -839,7 +854,7 @@ function ExecutionView({
                     }
                   >
                     {set.completed && (
-                      <MaterialCommunityIcons name="check" size={16} color="#FFFFFF" />
+                      <MaterialCommunityIcons name="check" size={16} color={theme.colors.onPrimary} />
                     )}
                   </Pressable>
                 </View>
@@ -876,13 +891,13 @@ function ExecutionView({
             onPress={() => setCurrentStep(currentStep + 1)}
             style={[styles.navButton, { backgroundColor: theme.colors.primary }]}
           >
-            <Text style={{ color: "#FFF", fontWeight: "700" }}>
+            <Text style={{ color: theme.colors.onPrimary, fontWeight: "700" }}>
               {currentStep === total - 1 ? t("workout.finish") : t("workout.next")}
             </Text>
             <MaterialCommunityIcons
               name="chevron-right"
               size={24}
-              color="#FFF"
+              color={theme.colors.onPrimary}
             />
           </Pressable>
         </View>
@@ -927,7 +942,7 @@ function ResultsView({
 
       <ScrollView contentContainerStyle={styles.detailContent}>
         <View style={[styles.resultsBanner, { backgroundColor: theme.colors.primaryContainer }]}>
-          <MaterialCommunityIcons name="check-circle" size={32} color="#22C55E" />
+          <MaterialCommunityIcons name="check-circle" size={32} color={theme.colors.secondary} />
           <View style={{ marginLeft: 12, flex: 1 }}>
             <Text variant="titleMedium" style={{ color: theme.colors.onSurface, fontWeight: "700" }}>
               {workout.name}
@@ -958,7 +973,7 @@ function ResultsView({
               <View style={{ padding: 14 }}>
                 <View style={styles.exerciseNameRow}>
                   <View style={[styles.orderBadge, { backgroundColor: theme.colors.primary }]}>
-                    <Text style={styles.orderText}>{eIdx + 1}</Text>
+                    <Text style={[styles.orderText, { color: theme.colors.onPrimary }]}>{eIdx + 1}</Text>
                   </View>
                   <Text variant="titleSmall" style={{ color: theme.colors.onSurface, fontWeight: "700", flex: 1 }}>
                     {ex.exercise_name}
@@ -987,16 +1002,18 @@ function ResultsView({
                         </Text>
                       </View>
                       <Text style={[styles.setColWide, { color: theme.colors.onSurface, fontWeight: "600" }]}>
-                        {set.reps ?? "—"}
+                        {set.reps ?? t("common.dash")}
                       </Text>
                       <Text style={[styles.setColWide, { color: theme.colors.onSurface, fontWeight: "600" }]}>
-                        {set.weight ? `${set.weight} lbs` : "—"}
+                        {set.weight
+                          ? `${set.weight} ${t("workout.lbs")}`
+                          : t("common.dash")}
                       </Text>
                       <View style={{ width: 32, alignItems: "center" }}>
                         <MaterialCommunityIcons
                           name={set.completed ? "check-circle" : "circle-outline"}
                           size={18}
-                          color={set.completed ? "#22C55E" : theme.colors.onSurfaceVariant}
+                          color={set.completed ? theme.colors.secondary : theme.colors.onSurfaceVariant}
                         />
                       </View>
                     </View>

@@ -1,7 +1,7 @@
 import { useMemo } from "react";
 import { useTranslation } from "react-i18next";
 import { View, StyleSheet, ScrollView, Dimensions } from "react-native";
-import { Text, useTheme, Card } from "react-native-paper";
+import { Text, useTheme, Card, ActivityIndicator } from "react-native-paper";
 import { SafeAreaView } from "react-native-safe-area-context";
 import { MaterialCommunityIcons } from "@expo/vector-icons";
 import { useAuthStore } from "@/stores/auth-store";
@@ -154,8 +154,12 @@ export default function ProgressScreen() {
   const theme = useTheme();
   const userId = useAuthStore((s) => s.user?.id);
 
-  const { data: workouts = [] } = useClientWorkouts(userId ?? "");
-  const { data: results = [] } = useClientResults(userId ?? "");
+  const { data: workouts = [], isLoading: workoutsLoading } = useClientWorkouts(
+    userId ?? ""
+  );
+  const { data: results = [], isLoading: resultsLoading } = useClientResults(
+    userId ?? ""
+  );
 
   const compliance7 = useMemo(
     () => calculateCompliance(workouts, 7),
@@ -196,6 +200,19 @@ export default function ProgressScreen() {
     }
     return count;
   }, [workouts]);
+
+  if (workoutsLoading || resultsLoading) {
+    return (
+      <SafeAreaView
+        style={[styles.container, { backgroundColor: theme.colors.background }]}
+        edges={["top"]}
+      >
+        <View style={{ flex: 1, justifyContent: "center", alignItems: "center" }}>
+          <ActivityIndicator size="large" color={theme.colors.primary} />
+        </View>
+      </SafeAreaView>
+    );
+  }
 
   return (
     <SafeAreaView

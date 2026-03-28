@@ -1,7 +1,7 @@
 import { useMemo } from "react";
 import { useTranslation } from "react-i18next";
 import { View, StyleSheet, ScrollView, Pressable } from "react-native";
-import { Text, useTheme, Card } from "react-native-paper";
+import { Text, useTheme, Card, ActivityIndicator } from "react-native-paper";
 import { SafeAreaView } from "react-native-safe-area-context";
 import { MaterialCommunityIcons } from "@expo/vector-icons";
 import { useAuthStore } from "@/stores/auth-store";
@@ -97,7 +97,22 @@ export default function HabitsScreen() {
   const { t } = useTranslation();
   const theme = useTheme();
   const userId = useAuthStore((s) => s.user?.id);
-  const { data: habits = [] } = useClientHabits(userId ?? "");
+  const { data: habits = [], isLoading: habitsLoading } = useClientHabits(
+    userId ?? ""
+  );
+
+  if (habitsLoading) {
+    return (
+      <SafeAreaView
+        style={[styles.container, { backgroundColor: theme.colors.background }]}
+        edges={["top"]}
+      >
+        <View style={{ flex: 1, justifyContent: "center", alignItems: "center" }}>
+          <ActivityIndicator size="large" color={theme.colors.primary} />
+        </View>
+      </SafeAreaView>
+    );
+  }
 
   return (
     <SafeAreaView

@@ -170,7 +170,7 @@ export default function CreateProgramScreen() {
               variant="titleMedium"
               style={{ color: theme.colors.onSurface, fontWeight: "700" }}
             >
-              {name.trim() || "Untitled Program"}
+              {name.trim() || t("programs.untitled")}
             </Text>
             <Text
               variant="bodySmall"

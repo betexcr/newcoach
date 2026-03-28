@@ -166,7 +166,9 @@ function ExerciseBlock({ exerciseIndex }: { exerciseIndex: number }) {
                 { backgroundColor: theme.colors.primary },
               ]}
             >
-              <Text style={styles.orderText}>{exerciseIndex + 1}</Text>
+              <Text style={[styles.orderText, { color: theme.colors.onPrimary }]}>
+                {exerciseIndex + 1}
+              </Text>
             </View>
             <Text
               variant="titleMedium"
@@ -463,7 +465,7 @@ export default function WorkoutBuilderScreen() {
                   : "?";
                 return (
                   <Pressable
-                    style={styles.clientPickerRow}
+                    style={[styles.clientPickerRow, { borderBottomColor: theme.colors.outline }]}
                     onPress={() => handleAssignToClient(item.client_id, profile?.full_name ?? t("dashboard.fallbackClient"))}
                   >
                     <Avatar.Text

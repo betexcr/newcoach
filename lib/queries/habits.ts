@@ -33,7 +33,7 @@ export function useCreateHabit() {
       client_id: string;
       name: string;
       description?: string;
-      frequency: string;
+      frequency: Habit["frequency"];
     }) => {
       const { data, error } = await supabase
         .from("habits")
@@ -78,25 +78,13 @@ export function useToggleHabitLog() {
       date: string;
       completed: boolean;
     }) => {
-      const { data: existing } = await supabase
+      const { error } = await supabase
         .from("habit_logs")
-        .select("id")
-        .eq("habit_id", habitId)
-        .eq("logged_date", date)
-        .maybeSingle();
-
-      if (existing) {
-        const { error } = await supabase
-          .from("habit_logs")
-          .update({ completed })
-          .eq("id", existing.id);
-        if (error) throw error;
-      } else {
-        const { error } = await supabase
-          .from("habit_logs")
-          .insert({ habit_id: habitId, logged_date: date, completed });
-        if (error) throw error;
-      }
+        .upsert(
+          { habit_id: habitId, logged_date: date, completed },
+          { onConflict: "habit_id,logged_date" }
+        );
+      if (error) throw error;
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: HABIT_KEYS.all });

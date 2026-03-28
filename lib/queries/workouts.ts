@@ -239,7 +239,7 @@ export function useAssignProgram() {
 export function useUpdateWorkoutStatus() {
   const queryClient = useQueryClient();
   return useMutation({
-    mutationFn: async ({ id, status }: { id: string; status: string }) => {
+    mutationFn: async ({ id, status }: { id: string; status: AssignedWorkout["status"] }) => {
       const { data, error } = await supabase
         .from("assigned_workouts")
         .update({ status })
