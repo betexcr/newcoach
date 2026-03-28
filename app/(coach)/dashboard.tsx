@@ -139,6 +139,7 @@ export default function CoachDashboard() {
   } = useConversations(userId);
 
   const dashboardLoading =
+    !userId ||
     clientsLoading ||
     todayLoading ||
     recentLoading ||

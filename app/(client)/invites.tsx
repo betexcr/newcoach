@@ -149,7 +149,7 @@ export default function InvitesScreen() {
 
       {isError ? (
         <ErrorState onRetry={refetch} />
-      ) : isLoading ? (
+      ) : isLoading || !userId ? (
         <View style={styles.loadingContainer}>
           <ActivityIndicator size="large" color={theme.colors.primary} />
         </View>

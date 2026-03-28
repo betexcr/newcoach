@@ -71,10 +71,12 @@ export function MessageBubble({
           alignSelf: isOwn ? "flex-end" : "flex-start",
         }}
       >
-        {new Date(message.created_at).toLocaleTimeString([], {
-          hour: "2-digit",
-          minute: "2-digit",
-        })}
+        {(() => {
+          const d = new Date(message.created_at);
+          return Number.isNaN(d.getTime())
+            ? ""
+            : d.toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" });
+        })()}
       </Text>
     </View>
   );

@@ -4,7 +4,7 @@ import { useAuthStore } from "@/stores/auth-store";
 import { registerForPushNotifications } from "./notifications";
 
 export function AuthProvider({ children }: { children: React.ReactNode }) {
-  const { setSession, setProfile, setLoading, setInitialized } = useAuthStore();
+  const { setSession, setProfile, setProfileError, setLoading, setInitialized } = useAuthStore();
 
   useEffect(() => {
     async function init() {
@@ -59,7 +59,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     if (error) {
       console.warn("Failed to fetch profile:", error.message);
       if (useAuthStore.getState().user?.id === userId) {
-        setProfile(null);
+        setProfileError(true);
       }
       return;
     }

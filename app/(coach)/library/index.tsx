@@ -286,6 +286,7 @@ export default function LibraryScreen() {
             t={t}
             router={router}
             onDelete={(id) => {
+              if (deleteTemplate.isPending) return;
               Alert.alert(t("common.delete"), t("library.deleteTemplateConfirm"), [
                 { text: t("common.cancel"), style: "cancel" },
                 { text: t("common.delete"), style: "destructive", onPress: () => deleteTemplate.mutate(id) },

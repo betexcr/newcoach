@@ -43,8 +43,8 @@ export default function AssignProgramScreen() {
 
   async function handleAssign() {
     if (!selectedProgram) return;
-    if (!clientId?.trim()) {
-      Alert.alert(t("common.error"), t("assignProgram.noClient"));
+    if (!clientId?.trim() || !coachId) {
+      Alert.alert(t("common.error"), t("auth.sessionExpired"));
       return;
     }
     if (!startDate.trim()) {

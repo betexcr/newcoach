@@ -67,6 +67,14 @@ export const useWorkoutBuilderStore = create<WorkoutBuilderState>((set) => ({
 
   moveExercise: (fromIndex, toIndex) =>
     set((state) => {
+      if (
+        fromIndex === toIndex ||
+        fromIndex < 0 ||
+        toIndex < 0 ||
+        fromIndex >= state.exercises.length ||
+        toIndex >= state.exercises.length
+      )
+        return state;
       const exercises = [...state.exercises];
       const [moved] = exercises.splice(fromIndex, 1);
       exercises.splice(toIndex, 0, moved);

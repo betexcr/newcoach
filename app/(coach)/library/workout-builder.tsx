@@ -64,11 +64,12 @@ function SetRow({
         </Text>
         <RNTextInput
           value={set.reps?.toString() ?? ""}
-          onChangeText={(v) =>
+          onChangeText={(v) => {
+            const n = parseInt(v, 10);
             updateSet(exerciseIndex, setIndex, {
-              reps: v === "" ? null : parseInt(v, 10),
-            })
-          }
+              reps: v === "" ? null : Number.isNaN(n) ? set.reps : n,
+            });
+          }}
           keyboardType="numeric"
           style={[
             styles.setInput,
@@ -89,11 +90,12 @@ function SetRow({
         </Text>
         <RNTextInput
           value={set.weight?.toString() ?? ""}
-          onChangeText={(v) =>
+          onChangeText={(v) => {
+            const n = parseFloat(v);
             updateSet(exerciseIndex, setIndex, {
-              weight: v === "" ? null : parseFloat(v),
-            })
-          }
+              weight: v === "" ? null : Number.isNaN(n) ? set.weight : n,
+            });
+          }}
           keyboardType="decimal-pad"
           style={[
             styles.setInput,
@@ -114,11 +116,12 @@ function SetRow({
         </Text>
         <RNTextInput
           value={set.rest_seconds?.toString() ?? ""}
-          onChangeText={(v) =>
+          onChangeText={(v) => {
+            const n = parseInt(v, 10);
             updateSet(exerciseIndex, setIndex, {
-              rest_seconds: v === "" ? null : parseInt(v, 10),
-            })
-          }
+              rest_seconds: v === "" ? null : Number.isNaN(n) ? set.rest_seconds : n,
+            });
+          }}
           keyboardType="numeric"
           style={[
             styles.setInput,
@@ -265,7 +268,10 @@ export default function WorkoutBuilderScreen() {
       Alert.alert(t("common.required"), t("library.addAtLeastOneExercise"));
       return;
     }
-    if (!userId) return;
+    if (!userId) {
+      Alert.alert(t("common.error"), t("auth.sessionExpired"));
+      return;
+    }
 
     try {
       await createTemplate.mutateAsync({
@@ -290,7 +296,10 @@ export default function WorkoutBuilderScreen() {
       Alert.alert(t("common.required"), t("library.addAtLeastOneExercise"));
       return;
     }
-    if (!userId) return;
+    if (!userId) {
+      Alert.alert(t("common.error"), t("auth.sessionExpired"));
+      return;
+    }
 
     setShowClientPicker(false);
     try {

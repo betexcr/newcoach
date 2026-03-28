@@ -107,7 +107,7 @@ export default function HabitsScreen() {
     isRefetching,
   } = useClientHabits(userId ?? "");
 
-  if (habitsLoading) {
+  if (habitsLoading || !userId) {
     return (
       <SafeAreaView
         style={[styles.container, { backgroundColor: theme.colors.background }]}

@@ -25,7 +25,10 @@ export default function AddClientScreen() {
       Alert.alert(t("common.error"), t("auth.sessionExpired"));
       return;
     }
-    if (!email.trim()) return;
+    if (!email.trim()) {
+      Alert.alert(t("common.required"), t("auth.enterEmail"));
+      return;
+    }
 
     if (!isValidEmail(email)) {
       Alert.alert(t("common.error"), t("auth.invalidEmail"));

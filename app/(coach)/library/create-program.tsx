@@ -28,7 +28,10 @@ export default function CreateProgramScreen() {
       Alert.alert(t("common.required"), t("library.enterProgramName"));
       return;
     }
-    if (!userId) return;
+    if (!userId) {
+      Alert.alert(t("common.error"), t("auth.sessionExpired"));
+      return;
+    }
 
     const weeks = customDuration
       ? parseInt(customDuration, 10) || durationWeeks

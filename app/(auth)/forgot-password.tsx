@@ -39,7 +39,12 @@ export default function ForgotPasswordScreen() {
 
     const { error: resetError } = await supabase.auth.resetPasswordForEmail(
       email.trim().toLowerCase(),
-      { redirectTo: "newcoach://reset-password" }
+      {
+        redirectTo:
+          Platform.OS === "web"
+            ? `${window.location.origin}/reset-password`
+            : "newcoach://reset-password",
+      }
     );
 
     if (resetError) {

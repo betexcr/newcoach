@@ -37,7 +37,10 @@ export default function CreateExerciseScreen() {
       Alert.alert(t("common.required"), t("library.selectMuscleGroup"));
       return;
     }
-    if (!userId) return;
+    if (!userId) {
+      Alert.alert(t("common.error"), t("auth.sessionExpired"));
+      return;
+    }
 
     try {
       await createExercise.mutateAsync({

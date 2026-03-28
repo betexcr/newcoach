@@ -86,6 +86,7 @@ const es: TranslationKeys = {
     continue: "Continuar",
     sessionExpired: "Sesión expirada. Por favor inicia sesión de nuevo.",
     somethingWrong: "Algo salió mal",
+    profileLoadFailed: "No se pudo cargar tu perfil. Revisa tu conexión e intenta de nuevo.",
     resetPassword: "Restablecer Contraseña",
     resetPasswordSubtitle: "Ingresa tu correo y te enviaremos un enlace de restablecimiento",
     sendResetLink: "Enviar Enlace",

@@ -84,6 +84,7 @@ const en = {
     continue: "Continue",
     sessionExpired: "Session expired. Please log in again.",
     somethingWrong: "Something went wrong",
+    profileLoadFailed: "Unable to load your profile. Please check your connection and try again.",
     resetPassword: "Reset Password",
     resetPasswordSubtitle: "Enter your email and we'll send you a reset link",
     sendResetLink: "Send Reset Link",

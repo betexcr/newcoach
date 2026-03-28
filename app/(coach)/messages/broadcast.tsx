@@ -155,7 +155,10 @@ export default function BroadcastScreen() {
       Alert.alert(t("common.required"), t("messages.selectAtLeastOne"));
       return;
     }
-    if (!userId) return;
+    if (!userId) {
+      Alert.alert(t("common.error"), t("auth.sessionExpired"));
+      return;
+    }
 
     setIsSending(true);
     try {

@@ -18,6 +18,7 @@ export default function ProgramsScreen() {
   const deleteProgram = useDeleteProgram();
 
   function handleDelete(program: Program) {
+    if (deleteProgram.isPending) return;
     Alert.alert(
       t("common.delete"),
       t("programs.deleteConfirm", { name: program.name }),

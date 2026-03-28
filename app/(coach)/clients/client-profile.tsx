@@ -138,7 +138,11 @@ export default function ClientProfileScreen() {
           {clientName ?? t("clients.unknown")}
         </Text>
         {relationshipId ? (
-          <Pressable onPress={handleRemoveClient}>
+          <Pressable
+            onPress={handleRemoveClient}
+            disabled={removeClient.isPending}
+            style={{ opacity: removeClient.isPending ? 0.5 : 1 }}
+          >
             <MaterialCommunityIcons
               name="account-remove"
               size={24}

@@ -100,7 +100,7 @@ export default function ClientMessagesScreen() {
         </Text>
       </View>
 
-      {isLoading ? (
+      {isLoading || !userId ? (
         <View style={styles.emptyState}>
           <ActivityIndicator size="large" color={theme.colors.primary} />
         </View>
