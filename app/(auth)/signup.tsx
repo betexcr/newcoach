@@ -12,6 +12,7 @@ import { useTranslation } from "react-i18next";
 import { supabase } from "@/lib/supabase";
 import { AuthInput } from "@/components/AuthInput";
 import { AuthButton } from "@/components/AuthButton";
+import { isValidEmail } from "@/lib/validation";
 
 export default function SignUpScreen() {
   const theme = useTheme();
@@ -28,6 +29,11 @@ export default function SignUpScreen() {
   async function handleSignUp() {
     if (!fullName.trim() || !email.trim() || !password || !confirmPassword) {
       setError(t("auth.fillAllFields"));
+      return;
+    }
+
+    if (!isValidEmail(email)) {
+      setError(t("auth.invalidEmail"));
       return;
     }
 
@@ -74,12 +80,23 @@ export default function SignUpScreen() {
       data.user?.id ??
       (await supabase.auth.getUser().then((r) => r.data.user?.id));
 
+    if (!userId) {
+      setError(t("auth.somethingWrong"));
+      setLoading(false);
+      return;
+    }
+
     if (userId) {
-      await supabase.from("profiles").upsert({
+      const { error: profileError } = await supabase.from("profiles").upsert({
         id: userId,
         email: email.trim().toLowerCase(),
         full_name: fullName.trim(),
       });
+      if (profileError) {
+        setError(profileError.message);
+        setLoading(false);
+        return;
+      }
     }
 
     setLoading(false);

@@ -12,6 +12,10 @@ const es: TranslationKeys = {
     dash: "—",
     appName: "New Coach",
     version: "New Coach v1.0.0",
+    errorGeneric: "Algo salió mal. Por favor, inténtalo de nuevo.",
+    retry: "Reintentar",
+    errorBoundaryTitle: "Algo salió mal",
+    errorBoundaryMessage: "Ocurrió un error inesperado. Por favor, inténtalo de nuevo.",
   },
   status: {
     active: "Activo",
@@ -96,6 +100,7 @@ const es: TranslationKeys = {
     passwordUpdated: "Contraseña Actualizada",
     passwordUpdatedMessage: "Tu contraseña ha sido actualizada exitosamente. Ahora puedes iniciar sesión con tu nueva contraseña.",
     goToSignIn: "Ir a Iniciar Sesión",
+    invalidEmail: "Por favor, ingresa una dirección de correo válida",
     enterNewPassword: "Por favor ingresa una nueva contraseña",
     passwordMin6: "La contraseña debe tener al menos 6 caracteres",
     passwordsDoNotMatch: "Las contraseñas no coinciden",
@@ -290,6 +295,8 @@ const es: TranslationKeys = {
     failedAccept: "Error al aceptar invitación.",
     failedDecline: "Error al rechazar invitación.",
     declineConfirm: "¿Rechazar esta invitación de {{name}}?",
+    fallbackCoach: "este entrenador",
+    unknownCoach: "Entrenador",
   },
   today: {
     greeting: "¡Hola, {{name}}!",
@@ -527,6 +534,9 @@ const es: TranslationKeys = {
     previous: "Anterior",
     finish: "Finalizar",
     next: "Siguiente",
+    abandonTitle: "¿Abandonar entrenamiento?",
+    abandonMessage: "Tienes progreso sin guardar. ¿Estás seguro de que quieres salir?",
+    abandonConfirm: "Abandonar",
   },
 } as const;
 

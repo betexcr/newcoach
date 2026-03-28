@@ -41,12 +41,23 @@ export async function registerForPushNotifications(
     });
   }
 
-  const token = (await Notifications.getExpoPushTokenAsync()).data;
+  let token: string;
+  try {
+    token = (await Notifications.getExpoPushTokenAsync()).data;
+  } catch (err) {
+    console.error("Failed to get push token:", err);
+    return null;
+  }
 
-  await supabase
+  const { error: updateError } = await supabase
     .from("profiles")
     .update({ push_token: token })
     .eq("id", userId);
+
+  if (updateError) {
+    console.error("Failed to save push token:", updateError);
+    return null;
+  }
 
   return token;
 }

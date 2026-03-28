@@ -6,8 +6,10 @@ import { SafeAreaView } from "react-native-safe-area-context";
 import { MaterialCommunityIcons } from "@expo/vector-icons";
 import { useRouter, useLocalSearchParams } from "expo-router";
 import { useAuthStore } from "@/stores/auth-store";
+import { supabase } from "@/lib/supabase";
 import { useCoachClients, type ClientWithProfile } from "@/lib/queries/clients";
 import { useCreateConversation, useConversations } from "@/lib/queries/messaging";
+import { ErrorState } from "@/components/ErrorState";
 
 export default function NewChatScreen() {
   const { t } = useTranslation();
@@ -19,7 +21,7 @@ export default function NewChatScreen() {
     preselectedClientName?: string;
   }>();
 
-  const { data: clients = [], isLoading } = useCoachClients(userId);
+  const { data: clients = [], isLoading, isError: clientsError, refetch: refetchClients } = useCoachClients(userId);
   const { data: conversations = [] } = useConversations(userId);
   const createConversation = useCreateConversation();
   const [search, setSearch] = useState("");
@@ -38,8 +40,15 @@ export default function NewChatScreen() {
   async function handleSelect(client: ClientWithProfile) {
     const clientName = client.profile?.full_name ?? t("dashboard.fallbackClient");
 
+    // Check for existing direct conversation by participant, not name
+    const { data: sharedConvs } = await supabase
+      .from("conversation_participants")
+      .select("conversation_id")
+      .eq("user_id", client.client_id);
+
+    const clientConvIds = new Set((sharedConvs ?? []).map((p) => p.conversation_id));
     const existingDirect = conversations.find(
-      (c) => c.type === "direct" && c.name === clientName
+      (c) => c.type === "direct" && clientConvIds.has(c.id)
     );
 
     if (existingDirect) {
@@ -68,13 +77,15 @@ export default function NewChatScreen() {
 
   const autoSelectDone = useRef(false);
   useEffect(() => {
-    if (autoSelectDone.current || !preselectedClientId || !clients.length) return;
+    if (autoSelectDone.current || !preselectedClientId || isLoading) return;
     const match = clients.find((c) => c.client_id === preselectedClientId);
     if (match) {
       autoSelectDone.current = true;
       handleSelect(match);
+    } else {
+      autoSelectDone.current = true;
     }
-  }, [preselectedClientId, clients]);
+  }, [preselectedClientId, clients, isLoading]);
 
   if (preselectedClientId && !autoSelectDone.current) {
     return (
@@ -109,7 +120,9 @@ export default function NewChatScreen() {
         style={[styles.searchBar, { backgroundColor: theme.colors.surface }]}
       />
 
-      {isLoading ? (
+      {clientsError ? (
+        <ErrorState onRetry={refetchClients} />
+      ) : isLoading ? (
         <View style={styles.loadingContainer}>
           <ActivityIndicator size="large" color={theme.colors.primary} />
         </View>

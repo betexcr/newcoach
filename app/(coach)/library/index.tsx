@@ -22,6 +22,7 @@ import {
 import { useWorkoutTemplates, useDeleteTemplate } from "@/lib/queries/workouts";
 import { useAuthStore } from "@/stores/auth-store";
 import { useWorkoutBuilderStore } from "@/stores/workout-builder-store";
+import { ErrorState } from "@/components/ErrorState";
 import type { Exercise, WorkoutTemplate } from "@/types/database";
 
 const muscleGroupIcons: Record<string, string> = {
@@ -200,7 +201,7 @@ export default function LibraryScreen() {
   const [search, setSearch] = useState("");
   const [selectedMuscle, setSelectedMuscle] = useState("all");
 
-  const { data: templates = [], isLoading: templatesLoading } =
+  const { data: templates = [], isLoading: templatesLoading, isError: templatesError, refetch: refetchTemplates } =
     useWorkoutTemplates(userId);
   const deleteTemplate = useDeleteTemplate();
 
@@ -212,7 +213,7 @@ export default function LibraryScreen() {
     [search, selectedMuscle]
   );
 
-  const { data: exercises = [], isLoading } = useExercises(filters);
+  const { data: exercises = [], isLoading, isError, refetch: refetchExercises } = useExercises(filters);
   const [selectedExercise, setSelectedExercise] = useState<Exercise | null>(null);
 
   return (
@@ -270,7 +271,9 @@ export default function LibraryScreen() {
       </View>
 
       {libraryTab === "templates" ? (
-        templatesLoading ? (
+        templatesError ? (
+          <ErrorState onRetry={refetchTemplates} />
+        ) : templatesLoading ? (
           <View
             style={{ flex: 1, justifyContent: "center", alignItems: "center" }}
           >
@@ -333,6 +336,9 @@ export default function LibraryScreen() {
         contentContainerStyle={styles.list}
         renderItem={({ item }) => <ExerciseCard exercise={item} onPress={() => setSelectedExercise(item)} />}
         ListEmptyComponent={
+          isError ? (
+            <ErrorState onRetry={refetchExercises} />
+          ) : (
           <View style={styles.emptyState}>
             <MaterialCommunityIcons
               name="magnify"
@@ -349,6 +355,7 @@ export default function LibraryScreen() {
               {isLoading ? t("library.loadingExercises") : t("library.noExercises")}
             </Text>
           </View>
+          )
         }
       />
 

@@ -7,6 +7,9 @@
       "android": {
         "buildType": "apk"
       },
+      "ios": {
+        "simulator": false
+      },
       "distribution": "internal",
       "env": {
         "EXPO_PUBLIC_SUPABASE_URL": "https://fzucyfsggvpppwrwjdcd.supabase.co",
@@ -17,9 +20,21 @@
       "android": {
         "buildType": "app-bundle"
       },
+      "ios": {
+        "autoIncrement": true
+      },
       "env": {
         "EXPO_PUBLIC_SUPABASE_URL": "https://fzucyfsggvpppwrwjdcd.supabase.co",
         "EXPO_PUBLIC_SUPABASE_ANON_KEY": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImZ6dWN5ZnNnZ3ZwcHB3cndqZGNkIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzM1MDQ0NDAsImV4cCI6MjA4OTA4MDQ0MH0._PCPpdMlsCoq_nF3bkVKrSUe8M7a8rZI5NSY_dL2BxE"
+      }
+    }
+  },
+  "submit": {
+    "production": {
+      "ios": {
+        "ascApiKeyIssuerId": "APPLE_ASC_ISSUER_ID",
+        "ascApiKeyId": "APPLE_ASC_API_KEY_ID",
+        "ascApiKeyPath": "./ascApiKey.p8"
       }
     }
   }

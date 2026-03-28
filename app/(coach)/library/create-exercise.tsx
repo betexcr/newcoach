@@ -200,7 +200,7 @@ export default function CreateExerciseScreen() {
         <AuthButton
           onPress={handleCreate}
           loading={createExercise.isPending}
-          disabled={createExercise.isPending}
+          disabled={createExercise.isPending || !name.trim() || !muscleGroup}
           style={styles.createButton}
         >
           {t("library.createExerciseButton")}

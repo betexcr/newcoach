@@ -10,6 +10,7 @@ import { useAddClient } from "@/lib/queries/clients";
 import { useAuthStore } from "@/stores/auth-store";
 import { AuthInput } from "@/components/AuthInput";
 import { AuthButton } from "@/components/AuthButton";
+import { isValidEmail } from "@/lib/validation";
 
 export default function AddClientScreen() {
   const { t } = useTranslation();
@@ -20,7 +21,16 @@ export default function AddClientScreen() {
   const [email, setEmail] = useState("");
 
   async function handleAdd() {
-    if (!email.trim() || !userId) return;
+    if (!userId) {
+      Alert.alert(t("common.error"), t("auth.sessionExpired"));
+      return;
+    }
+    if (!email.trim()) return;
+
+    if (!isValidEmail(email)) {
+      Alert.alert(t("common.error"), t("auth.invalidEmail"));
+      return;
+    }
 
     try {
       await addClient.mutateAsync({

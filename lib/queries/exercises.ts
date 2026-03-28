@@ -45,7 +45,7 @@ export function useExercises(filters?: ExerciseFilters) {
 
 export function useExercisesByIds(ids: string[]) {
   return useQuery({
-    queryKey: [...EXERCISE_KEYS.all, "byIds", ids],
+    queryKey: [...EXERCISE_KEYS.all, "byIds", [...ids].sort()],
     queryFn: async () => {
       if (ids.length === 0) return [];
       const { data, error } = await supabase

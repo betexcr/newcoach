@@ -1,6 +1,6 @@
 import { useMemo } from "react";
 import { useTranslation } from "react-i18next";
-import { View, StyleSheet, ScrollView, Pressable } from "react-native";
+import { View, StyleSheet, ScrollView, Pressable, RefreshControl } from "react-native";
 import { Text, useTheme, Card, Avatar, ActivityIndicator } from "react-native-paper";
 import { SafeAreaView } from "react-native-safe-area-context";
 import { MaterialCommunityIcons } from "@expo/vector-icons";
@@ -12,6 +12,7 @@ import {
   useCoachRecentWorkouts,
 } from "@/lib/queries/workouts";
 import { useConversations } from "@/lib/queries/messaging";
+import { ErrorState } from "@/components/ErrorState";
 import type { AssignedWorkout } from "@/types/database";
 import type { ClientWithProfile } from "@/lib/queries/clients";
 
@@ -26,6 +27,9 @@ interface ActivityItem {
   workoutId?: string;
   clientId?: string;
   clientName?: string;
+  clientEmail?: string;
+  clientStatus?: string;
+  relationshipId?: string;
 }
 
 function buildActivityFeed(
@@ -36,12 +40,13 @@ function buildActivityFeed(
 ): ActivityItem[] {
   const items: ActivityItem[] = [];
 
-  const clientMap: Record<string, string> = {};
+  const clientLookup: Record<string, ClientWithProfile> = {};
   for (const c of clients) {
-    clientMap[c.client_id] = c.profile?.full_name ?? t("dashboard.fallbackClient");
+    clientLookup[c.client_id] = c;
   }
 
   for (const w of recentWorkouts) {
+    const cl = clientLookup[w.client_id];
     items.push({
       id: `w-${w.id}`,
       type:
@@ -61,7 +66,10 @@ function buildActivityFeed(
       timestamp: w.created_at,
       workoutId: w.id,
       clientId: w.client_id,
-      clientName: clientMap[w.client_id] ?? t("dashboard.fallbackClient"),
+      clientName: cl?.profile?.full_name ?? t("dashboard.fallbackClient"),
+      clientEmail: cl?.profile?.email ?? "",
+      clientStatus: cl?.status ?? "active",
+      relationshipId: cl?.id ?? "",
     });
   }
 
@@ -81,6 +89,9 @@ function buildActivityFeed(
       timestamp: c.created_at,
       clientId: c.client_id,
       clientName: c.profile?.full_name ?? t("dashboard.fallbackClient"),
+      clientEmail: c.profile?.email ?? "",
+      clientStatus: c.status ?? "active",
+      relationshipId: c.id ?? "",
     });
   }
 
@@ -98,19 +109,46 @@ export default function CoachDashboard() {
   const profile = useAuthStore((s) => s.profile);
   const userId = useAuthStore((s) => s.user?.id) ?? "";
 
-  const { data: clients = [], isLoading: clientsLoading } = useCoachClients(userId);
-  const { data: todayWorkouts = [], isLoading: todayLoading } =
-    useCoachWorkoutsToday(userId);
-  const { data: recentWorkouts = [], isLoading: recentLoading } =
-    useCoachRecentWorkouts(userId);
-  const { data: conversations = [], isLoading: conversationsLoading } =
-    useConversations(userId);
+  const {
+    data: clients = [],
+    isLoading: clientsLoading,
+    isError: clientsError,
+    refetch: refetchClients,
+    isRefetching: isRefetchingClients,
+  } = useCoachClients(userId);
+  const {
+    data: todayWorkouts = [],
+    isLoading: todayLoading,
+    isError: todayError,
+    refetch: refetchToday,
+    isRefetching: isRefetchingToday,
+  } = useCoachWorkoutsToday(userId);
+  const {
+    data: recentWorkouts = [],
+    isLoading: recentLoading,
+    isError: recentError,
+    refetch: refetchRecent,
+    isRefetching: isRefetchingRecent,
+  } = useCoachRecentWorkouts(userId);
+  const {
+    data: conversations = [],
+    isLoading: conversationsLoading,
+    isError: convosError,
+    refetch: refetchConvos,
+    isRefetching: isRefetchingConvos,
+  } = useConversations(userId);
 
   const dashboardLoading =
     clientsLoading ||
     todayLoading ||
     recentLoading ||
     conversationsLoading;
+
+  const dashboardError =
+    clientsError ||
+    todayError ||
+    recentError ||
+    convosError;
 
   const activeClientCount = useMemo(
     () => clients.filter((c) => c.status === "active").length,
@@ -185,12 +223,41 @@ export default function CoachDashboard() {
     );
   }
 
+  if (dashboardError) {
+    return (
+      <SafeAreaView
+        style={[styles.container, { backgroundColor: theme.colors.background }]}
+        edges={["top"]}
+      >
+        <ErrorState onRetry={() => { refetchClients(); refetchToday(); refetchRecent(); refetchConvos(); }} />
+      </SafeAreaView>
+    );
+  }
+
   return (
     <SafeAreaView
       style={[styles.container, { backgroundColor: theme.colors.background }]}
       edges={["top"]}
     >
-      <ScrollView contentContainerStyle={styles.content}>
+      <ScrollView
+        contentContainerStyle={styles.content}
+        refreshControl={
+          <RefreshControl
+            refreshing={
+              isRefetchingClients ||
+              isRefetchingToday ||
+              isRefetchingRecent ||
+              isRefetchingConvos
+            }
+            onRefresh={() => {
+              refetchClients();
+              refetchToday();
+              refetchRecent();
+              refetchConvos();
+            }}
+          />
+        }
+      >
         <View style={styles.greeting}>
           <View>
             <Text
@@ -365,7 +432,13 @@ export default function CoachDashboard() {
                     } else if (item.clientId) {
                       router.push({
                         pathname: "/(coach)/clients/client-profile",
-                        params: { clientId: item.clientId, clientName: item.clientName ?? t("dashboard.fallbackClient") },
+                        params: {
+                          clientId: item.clientId,
+                          clientName: item.clientName ?? t("dashboard.fallbackClient"),
+                          clientEmail: item.clientEmail ?? "",
+                          clientStatus: item.clientStatus ?? "active",
+                          relationshipId: item.relationshipId ?? "",
+                        },
                       } as any);
                     }
                   }}
@@ -408,7 +481,13 @@ export default function CoachDashboard() {
                             if (item.clientId) {
                               router.push({
                                 pathname: "/(coach)/clients/client-profile",
-                                params: { clientId: item.clientId, clientName: item.clientName ?? t("dashboard.fallbackClient") },
+                                params: {
+                                  clientId: item.clientId,
+                                  clientName: item.clientName ?? t("dashboard.fallbackClient"),
+                                  clientEmail: item.clientEmail ?? "",
+                                  clientStatus: item.clientStatus ?? "active",
+                                  relationshipId: item.relationshipId ?? "",
+                                },
                               } as any);
                             }
                           }}

@@ -1,4 +1,4 @@
-import { useState, useMemo } from "react";
+import { useState, useMemo, useEffect } from "react";
 import { useTranslation } from "react-i18next";
 import { View, StyleSheet, Pressable } from "react-native";
 import { Text, useTheme, ActivityIndicator } from "react-native-paper";
@@ -7,12 +7,15 @@ import { MaterialCommunityIcons } from "@expo/vector-icons";
 import { useRouter } from "expo-router";
 import { useClientWorkouts } from "@/lib/queries/workouts";
 import { useAuthStore } from "@/stores/auth-store";
+import { ErrorState } from "@/components/ErrorState";
 import { formatDate } from "@/lib/date-utils";
 import type { AssignedWorkout } from "@/types/database";
 
 function getWeekDates(referenceDate: Date): Date[] {
   const start = new Date(referenceDate);
-  start.setDate(start.getDate() - start.getDay() + 1);
+  const day = start.getDay();
+  const diff = day === 0 ? -6 : 1 - day;
+  start.setDate(start.getDate() + diff);
   return Array.from({ length: 7 }, (_, i) => {
     const d = new Date(start);
     d.setDate(start.getDate() + i);
@@ -38,13 +41,25 @@ export default function CalendarScreen() {
   const startDate = formatDate(weekDates[0]);
   const endDate = formatDate(weekDates[6]);
 
-  const { data: workouts = [], isLoading: workoutsLoading } = useClientWorkouts(
+  const { data: workouts = [], isLoading: workoutsLoading, isError, refetch } = useClientWorkouts(
     userId ?? "",
     startDate,
     endDate
   );
 
   const [selectedDate, setSelectedDate] = useState(formatDate(new Date()));
+
+  useEffect(() => {
+    const today = new Date();
+    const todayStr = formatDate(today);
+    const weekStart = formatDate(weekDates[0]);
+    const weekEnd = formatDate(weekDates[6]);
+    if (todayStr >= weekStart && todayStr <= weekEnd) {
+      setSelectedDate(todayStr);
+    } else {
+      setSelectedDate(weekStart);
+    }
+  }, [weekOffset]);
 
   const dayWorkouts = useMemo(
     () => workouts.filter((w) => w.scheduled_date === selectedDate),
@@ -70,6 +85,17 @@ export default function CalendarScreen() {
         <View style={{ flex: 1, justifyContent: "center", alignItems: "center" }}>
           <ActivityIndicator size="large" color={theme.colors.primary} />
         </View>
+      </SafeAreaView>
+    );
+  }
+
+  if (isError) {
+    return (
+      <SafeAreaView
+        style={[styles.container, { backgroundColor: theme.colors.background }]}
+        edges={["top"]}
+      >
+        <ErrorState onRetry={refetch} />
       </SafeAreaView>
     );
   }

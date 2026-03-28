@@ -1,11 +1,11 @@
-import { useMemo } from "react";
 import { useTranslation } from "react-i18next";
-import { View, StyleSheet, ScrollView, Pressable } from "react-native";
+import { View, StyleSheet, ScrollView, Pressable, RefreshControl } from "react-native";
 import { Text, useTheme, Card, ActivityIndicator } from "react-native-paper";
 import { SafeAreaView } from "react-native-safe-area-context";
 import { MaterialCommunityIcons } from "@expo/vector-icons";
 import { useAuthStore } from "@/stores/auth-store";
 import { useClientHabits, useHabitLogs, useToggleHabitLog } from "@/lib/queries/habits";
+import { ErrorState } from "@/components/ErrorState";
 import { formatDate } from "@/lib/date-utils";
 import type { Habit } from "@/types/database";
 
@@ -32,8 +32,10 @@ function HabitItem({ habit }: { habit: Habit }) {
             {
               borderColor: theme.colors.primary,
               backgroundColor: isCompleted ? theme.colors.primary : "transparent",
+              opacity: toggleLog.isPending ? 0.5 : 1,
             },
           ]}
+          disabled={toggleLog.isPending}
           onPress={() =>
             toggleLog.mutate({
               habitId: habit.id,
@@ -97,9 +99,13 @@ export default function HabitsScreen() {
   const { t } = useTranslation();
   const theme = useTheme();
   const userId = useAuthStore((s) => s.user?.id);
-  const { data: habits = [], isLoading: habitsLoading } = useClientHabits(
-    userId ?? ""
-  );
+  const {
+    data: habits = [],
+    isLoading: habitsLoading,
+    isError,
+    refetch,
+    isRefetching,
+  } = useClientHabits(userId ?? "");
 
   if (habitsLoading) {
     return (
@@ -114,12 +120,28 @@ export default function HabitsScreen() {
     );
   }
 
+  if (isError) {
+    return (
+      <SafeAreaView
+        style={[styles.container, { backgroundColor: theme.colors.background }]}
+        edges={["top"]}
+      >
+        <ErrorState onRetry={refetch} />
+      </SafeAreaView>
+    );
+  }
+
   return (
     <SafeAreaView
       style={[styles.container, { backgroundColor: theme.colors.background }]}
       edges={["top"]}
     >
-      <ScrollView contentContainerStyle={styles.content}>
+      <ScrollView
+        contentContainerStyle={styles.content}
+        refreshControl={
+          <RefreshControl refreshing={isRefetching} onRefresh={refetch} />
+        }
+      >
         <Text
           variant="headlineMedium"
           style={{ color: theme.colors.onSurface, fontWeight: "700" }}

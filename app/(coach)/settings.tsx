@@ -4,6 +4,7 @@ import { SafeAreaView } from "react-native-safe-area-context";
 import { MaterialCommunityIcons } from "@expo/vector-icons";
 import { useRouter } from "expo-router";
 import { useTranslation } from "react-i18next";
+import { useQueryClient } from "@tanstack/react-query";
 import { supabase } from "@/lib/supabase";
 import { useAuthStore } from "@/stores/auth-store";
 import { useSettingsStore } from "@/stores/settings-store";
@@ -13,6 +14,7 @@ export default function SettingsScreen() {
   const theme = useTheme();
   const router = useRouter();
   const { t } = useTranslation();
+  const queryClient = useQueryClient();
   const profile = useAuthStore((s) => s.profile);
   const reset = useAuthStore((s) => s.reset);
   const themePref = useSettingsStore((s) => s.theme);
@@ -22,6 +24,7 @@ export default function SettingsScreen() {
 
   async function doLogout() {
     await supabase.auth.signOut();
+    queryClient.clear();
     reset();
     router.replace("/(auth)/login");
   }

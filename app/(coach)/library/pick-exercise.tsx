@@ -7,6 +7,7 @@ import { MaterialCommunityIcons } from "@expo/vector-icons";
 import { useRouter } from "expo-router";
 import { useExercises, MUSCLE_GROUPS, type ExerciseFilters } from "@/lib/queries/exercises";
 import { useWorkoutBuilderStore } from "@/stores/workout-builder-store";
+import { ErrorState } from "@/components/ErrorState";
 import type { Exercise } from "@/types/database";
 
 export default function PickExerciseScreen() {
@@ -25,7 +26,7 @@ export default function PickExerciseScreen() {
     [search, selectedMuscle]
   );
 
-  const { data: exercises = [], isLoading } = useExercises(filters);
+  const { data: exercises = [], isLoading, isError, refetch } = useExercises(filters);
 
   function handleSelect(exercise: Exercise) {
     addExercise(exercise);
@@ -128,6 +129,9 @@ export default function PickExerciseScreen() {
           </Pressable>
         )}
         ListEmptyComponent={
+          isError ? (
+            <ErrorState onRetry={refetch} />
+          ) : (
           <View style={styles.emptyState}>
             <Text
               variant="bodyMedium"
@@ -136,6 +140,7 @@ export default function PickExerciseScreen() {
               {isLoading ? t("common.loading") : t("pickExercise.noResults")}
             </Text>
           </View>
+          )
         }
       />
     </SafeAreaView>

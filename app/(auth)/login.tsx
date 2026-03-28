@@ -12,6 +12,7 @@ import { useTranslation } from "react-i18next";
 import { supabase } from "@/lib/supabase";
 import { AuthInput } from "@/components/AuthInput";
 import { AuthButton } from "@/components/AuthButton";
+import { isValidEmail } from "@/lib/validation";
 
 export default function LoginScreen() {
   const theme = useTheme();
@@ -26,6 +27,11 @@ export default function LoginScreen() {
   async function handleLogin() {
     if (!email.trim() || !password) {
       setError(t("auth.fillAllFields"));
+      return;
+    }
+
+    if (!isValidEmail(email)) {
+      setError(t("auth.invalidEmail"));
       return;
     }
 

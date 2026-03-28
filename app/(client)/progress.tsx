@@ -1,12 +1,14 @@
 import { useMemo } from "react";
 import { useTranslation } from "react-i18next";
-import { View, StyleSheet, ScrollView, Dimensions } from "react-native";
+import { View, StyleSheet, ScrollView, RefreshControl } from "react-native";
 import { Text, useTheme, Card, ActivityIndicator } from "react-native-paper";
 import { SafeAreaView } from "react-native-safe-area-context";
 import { MaterialCommunityIcons } from "@expo/vector-icons";
 import { useAuthStore } from "@/stores/auth-store";
 import { useClientWorkouts } from "@/lib/queries/workouts";
 import { useClientResults } from "@/lib/queries/results";
+import { ErrorState } from "@/components/ErrorState";
+import { computeStreak } from "@/lib/streak";
 import { formatDate } from "@/lib/date-utils";
 import type { AssignedWorkout, WorkoutResult, LoggedExercise } from "@/types/database";
 
@@ -49,7 +51,7 @@ function getTopExercises(
         exerciseMap[ex.exercise_name] = { maxWeight: 0, count: 0 };
       }
       exerciseMap[ex.exercise_name].count++;
-      for (const set of ex.sets) {
+      for (const set of ex.sets ?? []) {
         if (set.weight && set.weight > exerciseMap[ex.exercise_name].maxWeight) {
           exerciseMap[ex.exercise_name].maxWeight = set.weight;
         }
@@ -79,9 +81,6 @@ function ComplianceRing({
   size?: number;
 }) {
   const theme = useTheme();
-
-  const circumference = Math.PI * (size - 6);
-  const filledLength = (rate / 100) * circumference;
 
   return (
     <View style={styles.ringContainer}>
@@ -154,12 +153,20 @@ export default function ProgressScreen() {
   const theme = useTheme();
   const userId = useAuthStore((s) => s.user?.id);
 
-  const { data: workouts = [], isLoading: workoutsLoading } = useClientWorkouts(
-    userId ?? ""
-  );
-  const { data: results = [], isLoading: resultsLoading } = useClientResults(
-    userId ?? ""
-  );
+  const {
+    data: workouts = [],
+    isLoading: workoutsLoading,
+    isError: workoutsError,
+    refetch: refetchWorkouts,
+    isRefetching: isRefetchingWorkouts,
+  } = useClientWorkouts(userId ?? "");
+  const {
+    data: results = [],
+    isLoading: resultsLoading,
+    isError: resultsError,
+    refetch: refetchResults,
+    isRefetching: isRefetchingResults,
+  } = useClientResults(userId ?? "");
 
   const compliance7 = useMemo(
     () => calculateCompliance(workouts, 7),
@@ -180,26 +187,7 @@ export default function ProgressScreen() {
     (w) => w.status === "completed"
   ).length;
 
-  const streak = useMemo(() => {
-    const sorted = [...workouts]
-      .filter((w) => w.status === "completed")
-      .sort((a, b) => b.scheduled_date.localeCompare(a.scheduled_date));
-
-    let count = 0;
-    const today = new Date();
-    for (let i = 0; i < sorted.length; i++) {
-      const workoutDate = new Date(sorted[i].scheduled_date + "T12:00:00");
-      const expectedDate = new Date(today);
-      expectedDate.setDate(expectedDate.getDate() - i);
-
-      if (workoutDate.toDateString() === expectedDate.toDateString()) {
-        count++;
-      } else {
-        break;
-      }
-    }
-    return count;
-  }, [workouts]);
+  const streak = useMemo(() => computeStreak(workouts), [workouts]);
 
   if (workoutsLoading || resultsLoading) {
     return (
@@ -214,12 +202,34 @@ export default function ProgressScreen() {
     );
   }
 
+  if (workoutsError || resultsError) {
+    return (
+      <SafeAreaView
+        style={[styles.container, { backgroundColor: theme.colors.background }]}
+        edges={["top"]}
+      >
+        <ErrorState onRetry={() => { refetchWorkouts(); refetchResults(); }} />
+      </SafeAreaView>
+    );
+  }
+
   return (
     <SafeAreaView
       style={[styles.container, { backgroundColor: theme.colors.background }]}
       edges={["top"]}
     >
-      <ScrollView contentContainerStyle={styles.content}>
+      <ScrollView
+        contentContainerStyle={styles.content}
+        refreshControl={
+          <RefreshControl
+            refreshing={isRefetchingWorkouts || isRefetchingResults}
+            onRefresh={() => {
+              refetchWorkouts();
+              refetchResults();
+            }}
+          />
+        }
+      >
         <Text
           variant="headlineMedium"
           style={{ color: theme.colors.onSurface, fontWeight: "700" }}

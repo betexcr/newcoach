@@ -1,5 +1,6 @@
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { supabase } from "@/lib/supabase";
+import { formatDate } from "@/lib/date-utils";
 import type { WorkoutTemplate, AssignedWorkout, WorkoutExercise } from "@/types/database";
 
 const WORKOUT_KEYS = {
@@ -19,7 +20,8 @@ export function useWorkoutTemplates(coachId: string) {
         .from("workout_templates")
         .select("*")
         .eq("coach_id", coachId)
-        .order("updated_at", { ascending: false });
+        .order("updated_at", { ascending: false })
+        .limit(100);
       if (error) throw error;
       return data as WorkoutTemplate[];
     },
@@ -125,6 +127,7 @@ export function useClientWorkouts(clientId: string, startDate?: string, endDate?
 
       if (startDate) query = query.gte("scheduled_date", startDate);
       if (endDate) query = query.lte("scheduled_date", endDate);
+      query = query.limit(startDate || endDate ? 500 : 200);
 
       const { data, error } = await query;
       if (error) throw error;
@@ -151,7 +154,7 @@ export function useWorkoutById(workoutId: string) {
 }
 
 export function useCoachWorkoutsToday(coachId: string) {
-  const today = new Date().toISOString().split("T")[0];
+  const today = formatDate(new Date());
   return useQuery({
     queryKey: [...WORKOUT_KEYS.assignedByCoach(coachId), "today", today],
     queryFn: async () => {
@@ -160,7 +163,8 @@ export function useCoachWorkoutsToday(coachId: string) {
         .select("*")
         .eq("coach_id", coachId)
         .eq("scheduled_date", today)
-        .order("created_at", { ascending: false });
+        .order("created_at", { ascending: false })
+        .limit(100);
       if (error) throw error;
       return data as AssignedWorkout[];
     },
@@ -204,10 +208,11 @@ export function useAssignProgram() {
         .select("*")
         .eq("program_id", programId)
         .order("week_number", { ascending: true })
-        .order("day_number", { ascending: true });
+        .order("day_number", { ascending: true })
+        .limit(200);
       if (fetchError) throw fetchError;
 
-      const base = new Date(startDate);
+      const base = new Date(startDate + "T12:00:00");
       const assignments = (programWorkouts ?? []).map((pw) => {
         const offsetDays = (pw.week_number - 1) * 7 + (pw.day_number - 1);
         const scheduled = new Date(base);
@@ -217,7 +222,7 @@ export function useAssignProgram() {
           client_id: clientId,
           program_id: programId,
           name: pw.name,
-          scheduled_date: scheduled.toISOString().split("T")[0],
+          scheduled_date: formatDate(scheduled),
           exercises: pw.exercises ?? [],
           status: "pending",
         };

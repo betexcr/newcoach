@@ -1,5 +1,6 @@
 import type { TFunction } from "i18next";
 import type { AssignedWorkout, WorkoutResult } from "@/types/database";
+import { computeMaxStreak } from "@/lib/streak";
 
 export interface Milestone {
   id: string;
@@ -18,24 +19,7 @@ export function computeMilestones(
   const completedWorkouts = workouts.filter((w) => w.status === "completed");
   const completedCount = completedWorkouts.length;
 
-  const sortedCompleted = [...completedWorkouts].sort((a, b) =>
-    a.scheduled_date.localeCompare(b.scheduled_date)
-  );
-
-  let maxStreak = 0;
-  let currentStreak = 0;
-  for (let i = 0; i < sortedCompleted.length; i++) {
-    if (i === 0) {
-      currentStreak = 1;
-    } else {
-      const prev = new Date(sortedCompleted[i - 1].scheduled_date + "T12:00:00");
-      const curr = new Date(sortedCompleted[i].scheduled_date + "T12:00:00");
-      const diffDays =
-        (curr.getTime() - prev.getTime()) / (1000 * 60 * 60 * 24);
-      currentStreak = diffDays <= 2 ? currentStreak + 1 : 1;
-    }
-    maxStreak = Math.max(maxStreak, currentStreak);
-  }
+  const maxStreak = computeMaxStreak(workouts);
 
   let maxWeight = 0;
   for (const result of results) {
@@ -57,7 +41,9 @@ export function computeMilestones(
       description: t("milestones.firstSteps.description"),
       icon: "shoe-print",
       earned: completedCount >= 1,
-      earnedDate: sortedCompleted[0]?.scheduled_date,
+      earnedDate: completedWorkouts.length > 0
+        ? [...completedWorkouts].sort((a, b) => a.scheduled_date.localeCompare(b.scheduled_date))[0]?.scheduled_date
+        : undefined,
     },
     {
       id: "five-workouts",

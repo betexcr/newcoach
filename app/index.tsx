@@ -1,5 +1,6 @@
 import { useEffect } from "react";
-import { View, ActivityIndicator, StyleSheet } from "react-native";
+import { View, StyleSheet } from "react-native";
+import { ActivityIndicator, useTheme } from "react-native-paper";
 import { useRouter } from "expo-router";
 import { useAuthStore, selectIsAuthenticated, selectNeedsRole } from "@/stores/auth-store";
 
@@ -7,6 +8,7 @@ const INIT_TIMEOUT_MS = 8000;
 
 export default function Index() {
   const router = useRouter();
+  const theme = useTheme();
   const isInitialized = useAuthStore((s) => s.isInitialized);
   const isAuthenticated = useAuthStore(selectIsAuthenticated);
   const needsRole = useAuthStore(selectNeedsRole);
@@ -16,6 +18,7 @@ export default function Index() {
     const timeout = setTimeout(() => {
       if (!useAuthStore.getState().isInitialized) {
         console.warn("Auth init timed out — redirecting to login");
+        useAuthStore.getState().setLoading(false);
         useAuthStore.getState().setInitialized(true);
       }
     }, INIT_TIMEOUT_MS);
@@ -43,8 +46,8 @@ export default function Index() {
   }, [isInitialized, isAuthenticated, needsRole, role]);
 
   return (
-    <View style={styles.container}>
-      <ActivityIndicator size="large" color="#4F46E5" />
+    <View style={[styles.container, { backgroundColor: theme.colors.background }]}>
+      <ActivityIndicator size="large" color={theme.colors.primary} />
     </View>
   );
 }
@@ -54,6 +57,5 @@ const styles = StyleSheet.create({
     flex: 1,
     justifyContent: "center",
     alignItems: "center",
-    backgroundColor: "#0F172A",
   },
 });

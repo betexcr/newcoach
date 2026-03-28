@@ -6,7 +6,6 @@ import {
   ScrollView,
   Pressable,
   Alert,
-  FlatList,
 } from "react-native";
 import {
   Text,
@@ -15,6 +14,7 @@ import {
   Avatar,
   Checkbox,
   Searchbar,
+  ActivityIndicator,
 } from "react-native-paper";
 import { SafeAreaView } from "react-native-safe-area-context";
 import { MaterialCommunityIcons } from "@expo/vector-icons";
@@ -26,6 +26,7 @@ import {
 } from "@/lib/queries/messaging";
 import { useAuthStore } from "@/stores/auth-store";
 import { AuthButton } from "@/components/AuthButton";
+import { ErrorState } from "@/components/ErrorState";
 
 function ClientRow({
   client,
@@ -103,7 +104,7 @@ export default function BroadcastScreen() {
   const theme = useTheme();
   const router = useRouter();
   const userId = useAuthStore((s) => s.user?.id);
-  const { data: clients = [] } = useCoachClients(userId ?? "");
+  const { data: clients = [], isLoading: clientsLoading, isError: clientsError, refetch: refetchClients } = useCoachClients(userId ?? "");
   const createConversation = useCreateConversation();
   const sendMessage = useSendMessage();
 
@@ -204,6 +205,13 @@ export default function BroadcastScreen() {
         <View style={{ width: 24 }} />
       </View>
 
+      {clientsError ? (
+        <ErrorState onRetry={refetchClients} />
+      ) : clientsLoading ? (
+        <View style={{ flex: 1, justifyContent: "center", alignItems: "center" }}>
+          <ActivityIndicator size="large" color={theme.colors.primary} />
+        </View>
+      ) : (
       <ScrollView contentContainerStyle={styles.content}>
         <TextInput
           mode="outlined"
@@ -298,6 +306,7 @@ export default function BroadcastScreen() {
           {t("messages.sendToClients", { count: selectedIds.size })}
         </AuthButton>
       </ScrollView>
+      )}
     </SafeAreaView>
   );
 }

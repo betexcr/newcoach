@@ -1,21 +1,34 @@
-import { useState, useMemo } from "react";
+import { useState } from "react";
 import { useTranslation } from "react-i18next";
-import { View, StyleSheet, FlatList, Pressable, Alert } from "react-native";
+import {
+  View,
+  StyleSheet,
+  FlatList,
+  Pressable,
+  Alert,
+  RefreshControl,
+} from "react-native";
 import { Text, useTheme, Avatar, FAB, ActivityIndicator } from "react-native-paper";
 import { SafeAreaView } from "react-native-safe-area-context";
 import { MaterialCommunityIcons } from "@expo/vector-icons";
 import { useRouter } from "expo-router";
-import { useConversations, useCreateConversation } from "@/lib/queries/messaging";
+import { useConversations, useCreateConversation, type ConversationWithLastMessage } from "@/lib/queries/messaging";
 import { useAuthStore } from "@/stores/auth-store";
+import { ErrorState } from "@/components/ErrorState";
 import { supabase } from "@/lib/supabase";
-import type { Conversation } from "@/types/database";
 
 export default function ClientMessagesScreen() {
   const { t } = useTranslation();
   const theme = useTheme();
   const router = useRouter();
   const userId = useAuthStore((s) => s.user?.id);
-  const { data: conversations = [], isLoading } = useConversations(userId ?? "");
+  const {
+    data: conversations = [],
+    isLoading,
+    isError,
+    refetch,
+    isRefetching,
+  } = useConversations(userId ?? "");
   const createConversation = useCreateConversation();
   const [creatingChat, setCreatingChat] = useState(false);
 
@@ -38,8 +51,14 @@ export default function ClientMessagesScreen() {
 
       const coachName = (rel as any).profiles?.full_name ?? t("messages.coachFallback");
 
+      const { data: coachConvs } = await supabase
+        .from("conversation_participants")
+        .select("conversation_id")
+        .eq("user_id", rel.coach_id);
+
+      const coachConvIds = new Set((coachConvs ?? []).map((p) => p.conversation_id));
       const existingDirect = conversations.find(
-        (c) => c.type === "direct" && c.created_by === rel.coach_id
+        (c) => c.type === "direct" && coachConvIds.has(c.id)
       );
       if (existingDirect) {
         router.push({
@@ -85,6 +104,8 @@ export default function ClientMessagesScreen() {
         <View style={styles.emptyState}>
           <ActivityIndicator size="large" color={theme.colors.primary} />
         </View>
+      ) : isError ? (
+        <ErrorState onRetry={refetch} />
       ) : conversations.length === 0 ? (
         <View style={styles.emptyState}>
           <View
@@ -121,6 +142,9 @@ export default function ClientMessagesScreen() {
           data={conversations}
           keyExtractor={(item) => item.id}
           contentContainerStyle={styles.list}
+          refreshControl={
+            <RefreshControl refreshing={isRefetching} onRefresh={refetch} />
+          }
           renderItem={({ item }) => (
             <Pressable
               style={[
@@ -144,17 +168,26 @@ export default function ClientMessagesScreen() {
                 color={theme.colors.primary}
               />
               <View style={styles.convoInfo}>
-                <Text
-                  variant="titleMedium"
-                  style={{ color: theme.colors.onSurface, fontWeight: "600" }}
-                >
-                  {item.name ?? t("messages.coachFallback")}
-                </Text>
+                <View style={{ flexDirection: "row", justifyContent: "space-between", alignItems: "center" }}>
+                  <Text
+                    variant="titleMedium"
+                    style={{ color: theme.colors.onSurface, fontWeight: "600", flex: 1 }}
+                    numberOfLines={1}
+                  >
+                    {item.name ?? t("messages.coachFallback")}
+                  </Text>
+                  {(item as ConversationWithLastMessage).last_message && (
+                    <Text variant="labelSmall" style={{ color: theme.colors.onSurfaceVariant, marginLeft: 8 }}>
+                      {new Date((item as ConversationWithLastMessage).last_message!.created_at).toLocaleDateString(undefined, { month: "short", day: "numeric" })}
+                    </Text>
+                  )}
+                </View>
                 <Text
                   variant="bodySmall"
                   style={{ color: theme.colors.onSurfaceVariant }}
+                  numberOfLines={1}
                 >
-                  {t("messages.tapToChat")}
+                  {(item as ConversationWithLastMessage).last_message?.body ?? t("messages.tapToChat")}
                 </Text>
               </View>
               <MaterialCommunityIcons

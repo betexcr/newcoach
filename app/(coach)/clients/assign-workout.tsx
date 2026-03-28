@@ -6,7 +6,6 @@ import {
   ScrollView,
   Pressable,
   Alert,
-  Platform,
 } from "react-native";
 import { Text, useTheme, TextInput } from "react-native-paper";
 import { SafeAreaView } from "react-native-safe-area-context";
@@ -43,7 +42,14 @@ export default function AssignWorkoutScreen() {
       Alert.alert(t("common.required"), t("clients.addExercisesFirst"));
       return;
     }
-    if (!userId || !clientId) return;
+    if (!/^\d{4}-\d{2}-\d{2}$/.test(dateStr)) {
+      Alert.alert(t("common.required"), t("clients.invalidDate"));
+      return;
+    }
+    if (!userId || !clientId) {
+      Alert.alert(t("common.error"), t("auth.sessionExpired"));
+      return;
+    }
 
     try {
       await assignWorkout.mutateAsync({
@@ -54,8 +60,11 @@ export default function AssignWorkoutScreen() {
         exercises,
       });
       reset();
-      Alert.alert(t("clients.assigned"), t("clients.workoutAssignedTo", { name: clientName ?? t("dashboard.fallbackClient") }));
-      router.dismissAll();
+      Alert.alert(
+        t("clients.assigned"),
+        t("clients.workoutAssignedTo", { name: clientName ?? t("dashboard.fallbackClient") }),
+        [{ text: t("common.ok"), onPress: () => router.dismissAll() }]
+      );
     } catch (err: any) {
       Alert.alert(t("common.error"), err.message ?? t("clients.failedAssign"));
     }

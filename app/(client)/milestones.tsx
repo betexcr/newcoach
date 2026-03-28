@@ -7,6 +7,7 @@ import { MaterialCommunityIcons } from "@expo/vector-icons";
 import { useAuthStore } from "@/stores/auth-store";
 import { useClientWorkouts } from "@/lib/queries/workouts";
 import { useClientResults } from "@/lib/queries/results";
+import { ErrorState } from "@/components/ErrorState";
 import { computeMilestones, type Milestone } from "@/lib/milestones";
 
 function MilestoneBadge({ milestone }: { milestone: Milestone }) {
@@ -87,10 +88,10 @@ export default function MilestonesScreen() {
   const { t } = useTranslation();
   const theme = useTheme();
   const userId = useAuthStore((s) => s.user?.id);
-  const { data: workouts = [], isLoading: workoutsLoading } = useClientWorkouts(
+  const { data: workouts = [], isLoading: workoutsLoading, isError: workoutsError, refetch: refetchWorkouts } = useClientWorkouts(
     userId ?? ""
   );
-  const { data: results = [], isLoading: resultsLoading } = useClientResults(
+  const { data: results = [], isLoading: resultsLoading, isError: resultsError, refetch: refetchResults } = useClientResults(
     userId ?? ""
   );
 
@@ -111,6 +112,17 @@ export default function MilestonesScreen() {
         <View style={{ flex: 1, justifyContent: "center", alignItems: "center" }}>
           <ActivityIndicator size="large" color={theme.colors.primary} />
         </View>
+      </SafeAreaView>
+    );
+  }
+
+  if (workoutsError || resultsError) {
+    return (
+      <SafeAreaView
+        style={[styles.container, { backgroundColor: theme.colors.background }]}
+        edges={["top"]}
+      >
+        <ErrorState onRetry={() => { refetchWorkouts(); refetchResults(); }} />
       </SafeAreaView>
     );
   }

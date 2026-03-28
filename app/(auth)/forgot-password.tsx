@@ -12,6 +12,7 @@ import { useTranslation } from "react-i18next";
 import { supabase } from "@/lib/supabase";
 import { AuthInput } from "@/components/AuthInput";
 import { AuthButton } from "@/components/AuthButton";
+import { isValidEmail } from "@/lib/validation";
 
 export default function ForgotPasswordScreen() {
   const theme = useTheme();
@@ -25,6 +26,11 @@ export default function ForgotPasswordScreen() {
   async function handleReset() {
     if (!email.trim()) {
       setError(t("auth.enterEmail"));
+      return;
+    }
+
+    if (!isValidEmail(email)) {
+      setError(t("auth.invalidEmail"));
       return;
     }
 

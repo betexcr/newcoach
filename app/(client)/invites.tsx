@@ -18,13 +18,14 @@ import {
   type InviteWithCoach,
 } from "@/lib/queries/clients";
 import { AuthButton } from "@/components/AuthButton";
+import { ErrorState } from "@/components/ErrorState";
 
 export default function InvitesScreen() {
   const { t } = useTranslation();
   const theme = useTheme();
   const router = useRouter();
   const userId = useAuthStore((s) => s.user?.id) ?? "";
-  const { data: invites = [], isLoading } = usePendingInvites(userId);
+  const { data: invites = [], isLoading, isError, refetch } = usePendingInvites(userId);
   const acceptInvite = useAcceptInvite();
   const declineInvite = useDeclineInvite();
 
@@ -38,7 +39,7 @@ export default function InvitesScreen() {
   }
 
   function handleDecline(invite: InviteWithCoach) {
-    const coachName = invite.coach?.full_name ?? "this coach";
+    const coachName = invite.coach?.full_name ?? t("invites.fallbackCoach");
     Alert.alert(
       t("invites.decline"),
       t("invites.declineConfirm", { name: coachName }),
@@ -60,7 +61,7 @@ export default function InvitesScreen() {
   }
 
   function renderInvite({ item }: { item: InviteWithCoach }) {
-    const coachName = item.coach?.full_name ?? "Coach";
+    const coachName = item.coach?.full_name ?? t("invites.unknownCoach");
     const initials = coachName
       .split(" ")
       .map((n: string) => n[0])
@@ -101,8 +102,13 @@ export default function InvitesScreen() {
         </Card.Content>
         <View style={styles.inviteActions}>
           <Pressable
-            style={[styles.declineButton, { borderColor: theme.colors.error }]}
+            style={[
+              styles.declineButton,
+              { borderColor: theme.colors.error },
+              (acceptInvite.isPending || declineInvite.isPending) && { opacity: 0.5 },
+            ]}
             onPress={() => handleDecline(item)}
+            disabled={acceptInvite.isPending || declineInvite.isPending}
           >
             <Text style={{ color: theme.colors.error, fontWeight: "600" }}>
               {t("invites.decline")}
@@ -111,6 +117,7 @@ export default function InvitesScreen() {
           <AuthButton
             onPress={() => handleAccept(item)}
             loading={acceptInvite.isPending}
+            disabled={acceptInvite.isPending || declineInvite.isPending}
             style={{ flex: 1 }}
           >
             {t("invites.accept")}
@@ -140,7 +147,9 @@ export default function InvitesScreen() {
         </Text>
       </View>
 
-      {isLoading ? (
+      {isError ? (
+        <ErrorState onRetry={refetch} />
+      ) : isLoading ? (
         <View style={styles.loadingContainer}>
           <ActivityIndicator size="large" color={theme.colors.primary} />
         </View>

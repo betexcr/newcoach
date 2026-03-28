@@ -58,9 +58,12 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
       .single();
     if (error) {
       console.warn("Failed to fetch profile:", error.message);
-      setProfile(null);
+      if (useAuthStore.getState().user?.id === userId) {
+        setProfile(null);
+      }
       return;
     }
+    if (useAuthStore.getState().user?.id !== userId) return;
     setProfile(data);
   }
 

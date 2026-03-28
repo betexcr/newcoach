@@ -66,7 +66,7 @@ function SetRow({
           value={set.reps?.toString() ?? ""}
           onChangeText={(v) =>
             updateSet(exerciseIndex, setIndex, {
-              reps: v ? parseInt(v, 10) || null : null,
+              reps: v === "" ? null : parseInt(v, 10),
             })
           }
           keyboardType="numeric"
@@ -91,7 +91,7 @@ function SetRow({
           value={set.weight?.toString() ?? ""}
           onChangeText={(v) =>
             updateSet(exerciseIndex, setIndex, {
-              weight: v ? parseFloat(v) || null : null,
+              weight: v === "" ? null : parseFloat(v),
             })
           }
           keyboardType="decimal-pad"
@@ -116,7 +116,7 @@ function SetRow({
           value={set.rest_seconds?.toString() ?? ""}
           onChangeText={(v) =>
             updateSet(exerciseIndex, setIndex, {
-              rest_seconds: v ? parseInt(v, 10) || null : null,
+              rest_seconds: v === "" ? null : parseInt(v, 10),
             })
           }
           keyboardType="numeric"
@@ -302,8 +302,9 @@ export default function WorkoutBuilderScreen() {
         exercises,
       });
       reset();
-      Alert.alert(t("library.assignedTitle"), t("library.assignedMessage", { name: clientName }));
-      router.back();
+      Alert.alert(t("library.assignedTitle"), t("library.assignedMessage", { name: clientName }), [
+        { text: t("common.ok"), onPress: () => router.back() },
+      ]);
     } catch (err: any) {
       Alert.alert(t("common.error"), err.message ?? t("library.failedAssignWorkout"));
     }

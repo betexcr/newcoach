@@ -17,6 +17,7 @@ const tabDefs: { name: string; titleKey: string; icon: TabIcon; focusedIcon: Tab
 const hiddenScreens = [
   "clients/add-client",
   "clients/assign-workout",
+  "clients/assign-program",
   "clients/workout-detail",
   "clients/client-profile",
   "clients/create-habit",

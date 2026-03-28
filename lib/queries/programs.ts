@@ -5,7 +5,6 @@ import type { Program, ProgramWorkout, WorkoutExercise } from "@/types/database"
 const PROGRAM_KEYS = {
   all: ["programs"] as const,
   list: (coachId: string) => [...PROGRAM_KEYS.all, coachId] as const,
-  detail: (id: string) => [...PROGRAM_KEYS.all, "detail", id] as const,
   workouts: (programId: string) => [...PROGRAM_KEYS.all, "workouts", programId] as const,
 };
 
@@ -17,7 +16,8 @@ export function usePrograms(coachId: string) {
         .from("programs")
         .select("*")
         .eq("coach_id", coachId)
-        .order("updated_at", { ascending: false });
+        .order("updated_at", { ascending: false })
+        .limit(50);
       if (error) throw error;
       return data as Program[];
     },
@@ -57,7 +57,8 @@ export function useProgramWorkouts(programId: string) {
         .select("*")
         .eq("program_id", programId)
         .order("week_number", { ascending: true })
-        .order("day_number", { ascending: true });
+        .order("day_number", { ascending: true })
+        .limit(200);
       if (error) throw error;
       return data as ProgramWorkout[];
     },

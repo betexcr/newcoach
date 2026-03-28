@@ -21,6 +21,7 @@ import { useRouter, useLocalSearchParams } from "expo-router";
 import { useProgramWorkouts, useCreateProgramWorkout } from "@/lib/queries/programs";
 import { useWorkoutBuilderStore } from "@/stores/workout-builder-store";
 import { AuthButton } from "@/components/AuthButton";
+import { ErrorState } from "@/components/ErrorState";
 import type { ProgramWorkout } from "@/types/database";
 
 export default function ProgramDetailScreen() {
@@ -32,7 +33,7 @@ export default function ProgramDetailScreen() {
     programName: string;
   }>();
 
-  const { data: workouts = [], isLoading } = useProgramWorkouts(programId ?? "");
+  const { data: workouts = [], isLoading, isError, refetch } = useProgramWorkouts(programId ?? "");
   const createWorkout = useCreateProgramWorkout();
 
   const [addingWorkout, setAddingWorkout] = useState(false);
@@ -62,6 +63,11 @@ export default function ProgramDetailScreen() {
     if (!programId) return;
 
     const builderExercises = useWorkoutBuilderStore.getState().exercises;
+
+    if (builderExercises.length === 0) {
+      Alert.alert(t("common.required"), t("clients.addExercisesFirst"));
+      return;
+    }
 
     try {
       await createWorkout.mutateAsync({
@@ -96,7 +102,9 @@ export default function ProgramDetailScreen() {
       </View>
 
       <ScrollView contentContainerStyle={styles.content}>
-        {isLoading ? (
+        {isError ? (
+          <ErrorState onRetry={refetch} />
+        ) : isLoading ? (
           <View style={styles.loadingContainer}>
             <ActivityIndicator size="large" color={theme.colors.primary} />
           </View>

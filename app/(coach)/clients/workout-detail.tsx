@@ -8,6 +8,7 @@ import { useRouter, useLocalSearchParams } from "expo-router";
 import { useWorkoutById } from "@/lib/queries/workouts";
 import { useWorkoutResult } from "@/lib/queries/results";
 import { useExercisesByIds } from "@/lib/queries/exercises";
+import { ErrorState } from "@/components/ErrorState";
 import type { WorkoutExercise, LoggedExercise } from "@/types/database";
 
 export default function CoachWorkoutDetailScreen() {
@@ -19,7 +20,7 @@ export default function CoachWorkoutDetailScreen() {
     clientName: string;
   }>();
 
-  const { data: workout, isLoading: loadingWorkout } = useWorkoutById(workoutId ?? "");
+  const { data: workout, isLoading: loadingWorkout, isError, refetch } = useWorkoutById(workoutId ?? "");
   const { data: result } = useWorkoutResult(workoutId ?? "");
 
   const exerciseIds = useMemo(
@@ -52,7 +53,7 @@ export default function CoachWorkoutDetailScreen() {
     return statusConfig[workout?.status ?? "pending"] ?? statusConfig.pending;
   }, [t, theme, workout?.status]);
 
-  if (loadingWorkout || !workout) {
+  if (loadingWorkout) {
     return (
       <SafeAreaView style={[styles.container, { backgroundColor: theme.colors.background }]}>
         <View style={styles.topBar}>
@@ -67,6 +68,23 @@ export default function CoachWorkoutDetailScreen() {
         <View style={styles.loadingState}>
           <ActivityIndicator size="large" color={theme.colors.primary} />
         </View>
+      </SafeAreaView>
+    );
+  }
+
+  if (isError || !workout) {
+    return (
+      <SafeAreaView style={[styles.container, { backgroundColor: theme.colors.background }]}>
+        <View style={styles.topBar}>
+          <Pressable onPress={() => router.back()}>
+            <MaterialCommunityIcons name="arrow-left" size={24} color={theme.colors.onSurface} />
+          </Pressable>
+          <Text variant="titleLarge" style={{ color: theme.colors.onSurface, fontWeight: "700" }}>
+            {t("clients.workoutDetail")}
+          </Text>
+          <View style={{ width: 24 }} />
+        </View>
+        <ErrorState onRetry={refetch} />
       </SafeAreaView>
     );
   }
@@ -93,8 +111,14 @@ export default function CoachWorkoutDetailScreen() {
             style={[styles.clientChip, { backgroundColor: theme.colors.primaryContainer }]}
             onPress={() =>
               router.push({
-                pathname: "/(coach)/clients/assign-workout",
-                params: { clientId: workout.client_id, clientName },
+                pathname: "/(coach)/clients/client-profile",
+                params: {
+                  clientId: workout.client_id,
+                  clientName,
+                  clientEmail: "",
+                  clientStatus: "active",
+                  relationshipId: "",
+                },
               } as any)
             }
           >

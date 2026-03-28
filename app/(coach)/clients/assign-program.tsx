@@ -21,6 +21,8 @@ import { useAuthStore } from "@/stores/auth-store";
 import { usePrograms } from "@/lib/queries/programs";
 import { useAssignProgram } from "@/lib/queries/workouts";
 import { AuthButton } from "@/components/AuthButton";
+import { ErrorState } from "@/components/ErrorState";
+import { formatDate } from "@/lib/date-utils";
 import type { Program } from "@/types/database";
 
 export default function AssignProgramScreen() {
@@ -33,16 +35,18 @@ export default function AssignProgramScreen() {
   }>();
 
   const coachId = useAuthStore((s) => s.user?.id) ?? "";
-  const { data: programs = [], isLoading } = usePrograms(coachId);
+  const { data: programs = [], isLoading, isError, refetch } = usePrograms(coachId);
   const assignProgram = useAssignProgram();
 
   const [selectedProgram, setSelectedProgram] = useState<Program | null>(null);
-  const [startDate, setStartDate] = useState(
-    new Date().toISOString().split("T")[0]
-  );
+  const [startDate, setStartDate] = useState(formatDate(new Date()));
 
   async function handleAssign() {
     if (!selectedProgram) return;
+    if (!clientId?.trim()) {
+      Alert.alert(t("common.error"), t("assignProgram.noClient"));
+      return;
+    }
     if (!startDate.trim()) {
       Alert.alert(t("common.error"), t("assignProgram.enterStartDate"));
       return;
@@ -105,7 +109,9 @@ export default function AssignProgramScreen() {
           {t("assignProgram.selectProgram")}
         </Text>
 
-        {isLoading ? (
+        {isError ? (
+          <ErrorState onRetry={refetch} />
+        ) : isLoading ? (
           <View style={styles.loadingContainer}>
             <ActivityIndicator size="large" color={theme.colors.primary} />
           </View>

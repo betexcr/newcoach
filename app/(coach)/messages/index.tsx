@@ -1,18 +1,18 @@
 import { useTranslation } from "react-i18next";
-import { View, StyleSheet, FlatList, Pressable } from "react-native";
+import { View, StyleSheet, FlatList, Pressable, RefreshControl } from "react-native";
 import { Text, useTheme, FAB, Avatar, ActivityIndicator } from "react-native-paper";
 import { SafeAreaView } from "react-native-safe-area-context";
 import { MaterialCommunityIcons } from "@expo/vector-icons";
 import { useRouter } from "expo-router";
-import { useConversations } from "@/lib/queries/messaging";
+import { useConversations, type ConversationWithLastMessage } from "@/lib/queries/messaging";
 import { useAuthStore } from "@/stores/auth-store";
-import type { Conversation } from "@/types/database";
+import { ErrorState } from "@/components/ErrorState";
 
 function ConversationItem({
   conversation,
   onPress,
 }: {
-  conversation: Conversation;
+  conversation: ConversationWithLastMessage;
   onPress: () => void;
 }) {
   const theme = useTheme();
@@ -23,12 +23,10 @@ function ConversationItem({
     broadcast: "bullhorn",
   };
 
-  const typeLabel =
-    conversation.type === "direct"
-      ? t("messages.typeDirect")
-      : conversation.type === "group"
-        ? t("messages.typeGroup")
-        : t("messages.typeBroadcast");
+  const preview = conversation.last_message?.body;
+  const timestamp = conversation.last_message
+    ? new Date(conversation.last_message.created_at).toLocaleDateString(undefined, { month: "short", day: "numeric" })
+    : undefined;
 
   return (
     <Pressable
@@ -42,18 +40,26 @@ function ConversationItem({
         color={theme.colors.primary}
       />
       <View style={styles.convoInfo}>
-        <Text
-          variant="titleMedium"
-          style={{ color: theme.colors.onSurface, fontWeight: "600" }}
-          numberOfLines={1}
-        >
-          {conversation.name ?? t("messages.directMessage")}
-        </Text>
+        <View style={{ flexDirection: "row", justifyContent: "space-between", alignItems: "center" }}>
+          <Text
+            variant="titleMedium"
+            style={{ color: theme.colors.onSurface, fontWeight: "600", flex: 1 }}
+            numberOfLines={1}
+          >
+            {conversation.name ?? t("messages.directMessage")}
+          </Text>
+          {timestamp && (
+            <Text variant="labelSmall" style={{ color: theme.colors.onSurfaceVariant, marginLeft: 8 }}>
+              {timestamp}
+            </Text>
+          )}
+        </View>
         <Text
           variant="bodySmall"
           style={{ color: theme.colors.onSurfaceVariant }}
+          numberOfLines={1}
         >
-          {typeLabel}
+          {preview ?? t("messages.tapToChat")}
         </Text>
       </View>
       <MaterialCommunityIcons
@@ -70,9 +76,13 @@ export default function CoachMessagesScreen() {
   const theme = useTheme();
   const router = useRouter();
   const userId = useAuthStore((s) => s.user?.id);
-  const { data: conversations = [], isLoading } = useConversations(
-    userId ?? ""
-  );
+  const {
+    data: conversations = [],
+    isLoading,
+    isError,
+    refetch,
+    isRefetching,
+  } = useConversations(userId ?? "");
 
   return (
     <SafeAreaView
@@ -92,6 +102,8 @@ export default function CoachMessagesScreen() {
         <View style={styles.emptyState}>
           <ActivityIndicator size="large" color={theme.colors.primary} />
         </View>
+      ) : isError ? (
+        <ErrorState onRetry={refetch} />
       ) : conversations.length === 0 ? (
         <View style={styles.emptyState}>
           <View
@@ -128,6 +140,9 @@ export default function CoachMessagesScreen() {
           data={conversations}
           keyExtractor={(item) => item.id}
           contentContainerStyle={styles.list}
+          refreshControl={
+            <RefreshControl refreshing={isRefetching} onRefresh={refetch} />
+          }
           renderItem={({ item }) => (
             <ConversationItem
               conversation={item}
@@ -166,7 +181,7 @@ export default function CoachMessagesScreen() {
 const styles = StyleSheet.create({
   container: { flex: 1 },
   header: { paddingHorizontal: 16, paddingTop: 8, paddingBottom: 12 },
-  list: { paddingHorizontal: 16, gap: 8 },
+  list: { paddingHorizontal: 16, gap: 8, paddingBottom: 100 },
   convoItem: {
     flexDirection: "row",
     alignItems: "center",

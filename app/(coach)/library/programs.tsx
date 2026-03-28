@@ -6,6 +6,7 @@ import { MaterialCommunityIcons } from "@expo/vector-icons";
 import { useRouter } from "expo-router";
 import { useAuthStore } from "@/stores/auth-store";
 import { usePrograms, useDeleteProgram } from "@/lib/queries/programs";
+import { ErrorState } from "@/components/ErrorState";
 import type { Program } from "@/types/database";
 
 export default function ProgramsScreen() {
@@ -13,7 +14,7 @@ export default function ProgramsScreen() {
   const theme = useTheme();
   const router = useRouter();
   const userId = useAuthStore((s) => s.user?.id) ?? "";
-  const { data: programs = [], isLoading } = usePrograms(userId);
+  const { data: programs = [], isLoading, isError, refetch } = usePrograms(userId);
   const deleteProgram = useDeleteProgram();
 
   function handleDelete(program: Program) {
@@ -45,7 +46,9 @@ export default function ProgramsScreen() {
         </Text>
       </View>
 
-      {isLoading ? (
+      {isError ? (
+        <ErrorState onRetry={refetch} />
+      ) : isLoading ? (
         <View style={styles.loadingContainer}>
           <ActivityIndicator size="large" color={theme.colors.primary} />
         </View>

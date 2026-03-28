@@ -17,7 +17,8 @@ export function useClientHabits(clientId: string) {
         .from("habits")
         .select("*")
         .eq("client_id", clientId)
-        .order("created_at", { ascending: false });
+        .order("created_at", { ascending: false })
+        .limit(100);
       if (error) throw error;
       return data as Habit[];
     },
@@ -58,7 +59,9 @@ export function useHabitLogs(habitId: string, startDate: string, endDate: string
         .select("*")
         .eq("habit_id", habitId)
         .gte("logged_date", startDate)
-        .lte("logged_date", endDate);
+        .lte("logged_date", endDate)
+        .order("logged_date", { ascending: true })
+        .limit(500);
       if (error) throw error;
       return data as HabitLog[];
     },

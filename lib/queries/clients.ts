@@ -26,7 +26,8 @@ export function useCoachClients(coachId: string) {
         .from("coach_clients")
         .select("*, profile:profiles!coach_clients_client_id_fkey(*)")
         .eq("coach_id", coachId)
-        .order("created_at", { ascending: false });
+        .order("created_at", { ascending: false })
+        .limit(200);
       if (error) throw error;
       return (data ?? []) as ClientWithProfile[];
     },
@@ -110,7 +111,8 @@ export function usePendingInvites(clientId: string) {
         .select("*, coach:profiles!coach_clients_coach_id_fkey(*)")
         .eq("client_id", clientId)
         .eq("status", "pending")
-        .order("created_at", { ascending: false });
+        .order("created_at", { ascending: false })
+        .limit(100);
       if (error) throw error;
       return (data ?? []) as InviteWithCoach[];
     },

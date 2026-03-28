@@ -6,7 +6,6 @@ import {
   ScrollView,
   Pressable,
   Alert,
-  FlatList,
 } from "react-native";
 import {
   Text,
@@ -14,7 +13,6 @@ import {
   Avatar,
   Card,
   Chip,
-  FAB,
   ActivityIndicator,
   SegmentedButtons,
 } from "react-native-paper";
@@ -28,6 +26,8 @@ import { useClientHabits } from "@/lib/queries/habits";
 import { useNutritionLogs } from "@/lib/queries/nutrition";
 import { useRemoveClient, type ClientWithProfile } from "@/lib/queries/clients";
 import { useWorkoutBuilderStore } from "@/stores/workout-builder-store";
+import { ErrorState } from "@/components/ErrorState";
+import { computeStreak } from "@/lib/streak";
 import { formatDate } from "@/lib/date-utils";
 import type { AssignedWorkout, WorkoutResult, Habit, NutritionLog } from "@/types/database";
 
@@ -55,7 +55,7 @@ export default function ClientProfileScreen() {
   const [tab, setTab] = useState<ProfileTab>("workouts");
 
   const today = formatDate(new Date());
-  const { data: workouts = [], isLoading: loadingWorkouts } = useClientWorkouts(clientId ?? "");
+  const { data: workouts = [], isLoading: loadingWorkouts, isError: workoutsError, refetch: refetchWorkouts } = useClientWorkouts(clientId ?? "");
   const { data: results = [], isLoading: loadingResults } = useClientResults(clientId ?? "");
   const { data: habits = [], isLoading: loadingHabits } = useClientHabits(clientId ?? "");
   const { data: nutritionEntries = [], isLoading: loadingNutrition } = useNutritionLogs(clientId ?? "", today);
@@ -71,22 +71,7 @@ export default function ClientProfileScreen() {
     return Math.round((completedCount / workouts.length) * 100);
   }, [workouts, completedCount]);
 
-  const streak = useMemo(() => {
-    const sorted = workouts
-      .filter((w) => w.status === "completed")
-      .sort((a, b) => b.scheduled_date.localeCompare(a.scheduled_date));
-    if (sorted.length === 0) return 0;
-
-    let count = 1;
-    for (let i = 1; i < sorted.length; i++) {
-      const prev = new Date(sorted[i - 1].scheduled_date);
-      const curr = new Date(sorted[i].scheduled_date);
-      const diff = (prev.getTime() - curr.getTime()) / (1000 * 60 * 60 * 24);
-      if (diff <= 1) count++;
-      else break;
-    }
-    return count;
-  }, [workouts]);
+  const streak = useMemo(() => computeStreak(workouts), [workouts]);
 
   const initials = clientName
     ? clientName
@@ -152,15 +137,20 @@ export default function ClientProfileScreen() {
         >
           {clientName ?? t("clients.unknown")}
         </Text>
-        <Pressable onPress={handleRemoveClient}>
-          <MaterialCommunityIcons
-            name="account-remove"
-            size={24}
-            color={theme.colors.error}
-          />
-        </Pressable>
+        {relationshipId ? (
+          <Pressable onPress={handleRemoveClient}>
+            <MaterialCommunityIcons
+              name="account-remove"
+              size={24}
+              color={theme.colors.error}
+            />
+          </Pressable>
+        ) : null}
       </View>
 
+      {workoutsError ? (
+        <ErrorState onRetry={refetchWorkouts} />
+      ) : (
       <ScrollView contentContainerStyle={styles.content}>
         <View style={styles.profileHeader}>
           <Avatar.Text
@@ -320,6 +310,7 @@ export default function ClientProfileScreen() {
           />
         )}
       </ScrollView>
+      )}
     </SafeAreaView>
   );
 }
@@ -547,8 +538,8 @@ function HabitsTab({
                   {h.description}
                 </Text>
               )}
-              <Text variant="labelSmall" style={{ color: theme.colors.primary, textTransform: "capitalize", marginTop: 2 }}>
-                {h.frequency}
+              <Text variant="labelSmall" style={{ color: theme.colors.primary, marginTop: 2 }}>
+                {t(`habits.${h.frequency}`)}
               </Text>
             </View>
           </View>

@@ -34,7 +34,29 @@ export function useConversations(userId: string) {
         .order("updated_at", { ascending: false });
 
       if (error) throw error;
-      return conversations as Conversation[];
+
+      const convos = conversations as Conversation[];
+
+      const { data: allRecentMessages, error: msgError } = await supabase
+        .from("messages")
+        .select("*")
+        .in("conversation_id", ids)
+        .order("created_at", { ascending: false })
+        .limit(1000);
+
+      if (msgError) throw msgError;
+
+      const msgMap: Record<string, Message> = {};
+      for (const msg of (allRecentMessages ?? []) as Message[]) {
+        if (!msgMap[msg.conversation_id]) {
+          msgMap[msg.conversation_id] = msg;
+        }
+      }
+
+      return convos.map((c) => ({
+        ...c,
+        last_message: msgMap[c.id],
+      })) as ConversationWithLastMessage[];
     },
     enabled: !!userId,
   });
@@ -50,10 +72,10 @@ export function useMessages(conversationId: string) {
         .from("messages")
         .select("*")
         .eq("conversation_id", conversationId)
-        .order("created_at", { ascending: true })
+        .order("created_at", { ascending: false })
         .limit(200);
       if (error) throw error;
-      return data as Message[];
+      return (data as Message[]).reverse();
     },
     enabled: !!conversationId,
   });
@@ -72,9 +94,13 @@ export function useMessages(conversationId: string) {
           filter: `conversation_id=eq.${conversationId}`,
         },
         (payload) => {
+          const newMsg = payload.new as Message;
           queryClient.setQueryData(
             MSG_KEYS.messages(conversationId),
-            (old: Message[] = []) => [...old, payload.new as Message]
+            (old: Message[] = []) => {
+              if (old.some((m) => m.id === newMsg.id)) return old;
+              return [...old, newMsg];
+            }
           );
         }
       )
@@ -106,10 +132,14 @@ export function useSendMessage() {
         .single();
       if (error) throw error;
 
-      await supabase
+      const { error: updateError } = await supabase
         .from("conversations")
         .update({ updated_at: new Date().toISOString() })
         .eq("id", message.conversation_id);
+
+      if (updateError) {
+        console.warn("Failed to update conversation timestamp:", updateError.message);
+      }
 
       return data as Message;
     },

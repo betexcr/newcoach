@@ -28,7 +28,10 @@ export default function CreateHabitScreen() {
       Alert.alert(t("common.required"), t("clientProfile.enterHabitName"));
       return;
     }
-    if (!coachId || !clientId) return;
+    if (!coachId || !clientId) {
+      Alert.alert(t("common.error"), t("auth.sessionExpired"));
+      return;
+    }
 
     try {
       await createHabit.mutateAsync({

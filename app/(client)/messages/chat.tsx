@@ -8,7 +8,6 @@ import {
   TextInput as RNTextInput,
   KeyboardAvoidingView,
   Platform,
-  Image,
   Alert,
 } from "react-native";
 import { Text, useTheme, IconButton, ActivityIndicator } from "react-native-paper";
@@ -17,79 +16,8 @@ import { MaterialCommunityIcons } from "@expo/vector-icons";
 import { useRouter, useLocalSearchParams } from "expo-router";
 import { useMessages, useSendMessage } from "@/lib/queries/messaging";
 import { useAuthStore } from "@/stores/auth-store";
-import type { Message } from "@/types/database";
-
-function MessageBubble({
-  message,
-  isOwn,
-}: {
-  message: Message;
-  isOwn: boolean;
-}) {
-  const { t } = useTranslation();
-  const theme = useTheme();
-
-  return (
-    <View
-      style={[
-        styles.bubble,
-        isOwn ? styles.ownBubble : styles.otherBubble,
-        {
-          backgroundColor: isOwn
-            ? theme.colors.primary
-            : theme.colors.surface,
-        },
-      ]}
-    >
-      {message.image_url ? (
-        <Image
-          source={{ uri: message.image_url }}
-          style={styles.messageImage}
-          resizeMode="cover"
-        />
-      ) : null}
-      {message.voice_url ? (
-        <View style={styles.voiceMessage}>
-          <MaterialCommunityIcons
-            name="microphone"
-            size={20}
-            color={isOwn ? "#FFFFFF" : theme.colors.primary}
-          />
-          <Text
-            variant="bodySmall"
-            style={{ color: isOwn ? "rgba(255,255,255,0.8)" : theme.colors.onSurfaceVariant, marginLeft: 6 }}
-          >
-            {t("messages.voiceMessage")}
-          </Text>
-        </View>
-      ) : null}
-      {message.body ? (
-        <Text
-          variant="bodyMedium"
-          style={{
-            color: isOwn ? "#FFFFFF" : theme.colors.onSurface,
-            lineHeight: 20,
-          }}
-        >
-          {message.body}
-        </Text>
-      ) : null}
-      <Text
-        variant="labelSmall"
-        style={{
-          color: isOwn ? "rgba(255,255,255,0.6)" : theme.colors.onSurfaceVariant,
-          marginTop: 4,
-          alignSelf: isOwn ? "flex-end" : "flex-start",
-        }}
-      >
-        {new Date(message.created_at).toLocaleTimeString([], {
-          hour: "2-digit",
-          minute: "2-digit",
-        })}
-      </Text>
-    </View>
-  );
-}
+import { MessageBubble } from "@/components/MessageBubble";
+import { ErrorState } from "@/components/ErrorState";
 
 export default function ClientChatScreen() {
   const { t } = useTranslation();
@@ -100,17 +28,19 @@ export default function ClientChatScreen() {
     name: string;
   }>();
   const userId = useAuthStore((s) => s.user?.id);
-  const { data: messages = [], isLoading: messagesLoading } = useMessages(
+  const { data: messages = [], isLoading: messagesLoading, isError: messagesError, refetch: refetchMessages } = useMessages(
     conversationId ?? ""
   );
   const sendMessage = useSendMessage();
 
   const [text, setText] = useState("");
   const flatListRef = useRef<FlatList>(null);
+  const isNearBottom = useRef(true);
 
   useEffect(() => {
-    if (messages.length > 0) {
-      setTimeout(() => flatListRef.current?.scrollToEnd({ animated: true }), 100);
+    if (messages.length > 0 && isNearBottom.current) {
+      const timerId = setTimeout(() => flatListRef.current?.scrollToEnd({ animated: true }), 100);
+      return () => clearTimeout(timerId);
     }
   }, [messages.length]);
 
@@ -134,18 +64,6 @@ export default function ClientChatScreen() {
     }
   }
 
-  if (messagesLoading) {
-    return (
-      <SafeAreaView
-        style={[styles.container, { backgroundColor: theme.colors.background }]}
-      >
-        <View style={{ flex: 1, justifyContent: "center", alignItems: "center" }}>
-          <ActivityIndicator size="large" color={theme.colors.primary} />
-        </View>
-      </SafeAreaView>
-    );
-  }
-
   return (
     <SafeAreaView
       style={[styles.container, { backgroundColor: theme.colors.background }]}
@@ -167,6 +85,13 @@ export default function ClientChatScreen() {
         </Text>
       </View>
 
+      {messagesLoading ? (
+        <View style={{ flex: 1, justifyContent: "center", alignItems: "center" }}>
+          <ActivityIndicator size="large" color={theme.colors.primary} />
+        </View>
+      ) : messagesError ? (
+        <ErrorState onRetry={refetchMessages} />
+      ) : (
       <KeyboardAvoidingView
         style={{ flex: 1 }}
         behavior={Platform.OS === "ios" ? "padding" : undefined}
@@ -175,6 +100,11 @@ export default function ClientChatScreen() {
           ref={flatListRef}
           data={messages}
           keyExtractor={(item) => item.id}
+          onScroll={(e) => {
+            const { contentOffset, layoutMeasurement, contentSize } = e.nativeEvent;
+            isNearBottom.current =
+              contentOffset.y + layoutMeasurement.height >= contentSize.height - 100;
+          }}
           contentContainerStyle={styles.messagesList}
           renderItem={({ item }) => (
             <MessageBubble message={item} isOwn={item.sender_id === userId} />
@@ -229,6 +159,7 @@ export default function ClientChatScreen() {
           />
         </View>
       </KeyboardAvoidingView>
+      )}
     </SafeAreaView>
   );
 }
@@ -243,15 +174,6 @@ const styles = StyleSheet.create({
     borderBottomWidth: 0.5,
   },
   messagesList: { padding: 16, paddingBottom: 8, flexGrow: 1 },
-  bubble: {
-    maxWidth: "78%",
-    paddingHorizontal: 14,
-    paddingVertical: 10,
-    borderRadius: 18,
-    marginBottom: 6,
-  },
-  ownBubble: { alignSelf: "flex-end", borderBottomRightRadius: 4 },
-  otherBubble: { alignSelf: "flex-start", borderBottomLeftRadius: 4 },
   emptyChat: {
     flex: 1,
     justifyContent: "center",
@@ -272,16 +194,5 @@ const styles = StyleSheet.create({
     paddingVertical: 10,
     fontSize: 15,
     maxHeight: 100,
-  },
-  messageImage: {
-    width: 200,
-    height: 150,
-    borderRadius: 12,
-    marginBottom: 6,
-  },
-  voiceMessage: {
-    flexDirection: "row",
-    alignItems: "center",
-    marginBottom: 4,
   },
 });

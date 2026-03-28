@@ -28,8 +28,8 @@ export default function ResetPasswordScreen() {
       setError(t("auth.enterNewPassword"));
       return;
     }
-    if (password.length < 6) {
-      setError(t("auth.passwordMin6"));
+    if (password.length < 8) {
+      setError(t("auth.passwordMinLength"));
       return;
     }
     if (password !== confirm) {

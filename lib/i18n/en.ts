@@ -10,6 +10,10 @@ const en = {
     dash: "—",
     appName: "New Coach",
     version: "New Coach v1.0.0",
+    errorGeneric: "Something went wrong. Please try again.",
+    retry: "Retry",
+    errorBoundaryTitle: "Something went wrong",
+    errorBoundaryMessage: "An unexpected error occurred. Please try again.",
   },
   status: {
     active: "Active",
@@ -94,6 +98,7 @@ const en = {
     passwordUpdated: "Password Updated",
     passwordUpdatedMessage: "Your password has been successfully updated. You can now sign in with your new password.",
     goToSignIn: "Go to Sign In",
+    invalidEmail: "Please enter a valid email address",
     enterNewPassword: "Please enter a new password",
     passwordMin6: "Password must be at least 6 characters",
     passwordsDoNotMatch: "Passwords do not match",
@@ -288,6 +293,8 @@ const en = {
     failedAccept: "Failed to accept invite.",
     failedDecline: "Failed to decline invite.",
     declineConfirm: "Decline this invite from {{name}}?",
+    fallbackCoach: "this coach",
+    unknownCoach: "Coach",
   },
   today: {
     greeting: "Hey, {{name}}!",
@@ -525,6 +532,9 @@ const en = {
     previous: "Previous",
     finish: "Finish",
     next: "Next",
+    abandonTitle: "Abandon Workout?",
+    abandonMessage: "You have unsaved progress. Are you sure you want to leave?",
+    abandonConfirm: "Abandon",
   },
 } as const;
 

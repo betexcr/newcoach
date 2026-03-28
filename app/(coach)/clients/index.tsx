@@ -1,6 +1,6 @@
 import { useState, useMemo } from "react";
 import { useTranslation } from "react-i18next";
-import { View, StyleSheet, FlatList, Pressable } from "react-native";
+import { View, StyleSheet, FlatList, Pressable, RefreshControl } from "react-native";
 import {
   Text,
   useTheme,
@@ -15,6 +15,7 @@ import { MaterialCommunityIcons } from "@expo/vector-icons";
 import { useRouter } from "expo-router";
 import { useAuthStore } from "@/stores/auth-store";
 import { useCoachClients, type ClientWithProfile } from "@/lib/queries/clients";
+import { ErrorState } from "@/components/ErrorState";
 
 const STATUS_FILTERS = ["All", "Active", "Pending", "Inactive"] as const;
 type StatusFilter = (typeof STATUS_FILTERS)[number];
@@ -24,7 +25,13 @@ export default function ClientsScreen() {
   const theme = useTheme();
   const router = useRouter();
   const userId = useAuthStore((s) => s.user?.id);
-  const { data: clients = [], isLoading } = useCoachClients(userId ?? "");
+  const {
+    data: clients = [],
+    isLoading,
+    isError,
+    refetch,
+    isRefetching,
+  } = useCoachClients(userId ?? "");
   const [searchQuery, setSearchQuery] = useState("");
   const [statusFilter, setStatusFilter] = useState<StatusFilter>("All");
 
@@ -107,6 +114,8 @@ export default function ClientsScreen() {
         <View style={styles.emptyState}>
           <ActivityIndicator size="large" color={theme.colors.primary} />
         </View>
+      ) : isError ? (
+        <ErrorState onRetry={refetch} />
       ) : filtered.length === 0 ? (
         <View style={styles.emptyState}>
           <View
@@ -146,6 +155,9 @@ export default function ClientsScreen() {
           data={filtered}
           keyExtractor={(item) => item.id}
           contentContainerStyle={styles.list}
+          refreshControl={
+            <RefreshControl refreshing={isRefetching} onRefresh={refetch} />
+          }
           renderItem={({ item }) => (
             <ClientRow
               client={item}

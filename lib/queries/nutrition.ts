@@ -17,7 +17,8 @@ export function useNutritionLogs(clientId: string, date: string) {
         .select("*")
         .eq("client_id", clientId)
         .eq("logged_date", date)
-        .order("created_at", { ascending: true });
+        .order("created_at", { ascending: true })
+        .limit(200);
       if (error) throw error;
       return data as NutritionLog[];
     },

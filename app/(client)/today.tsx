@@ -1,6 +1,6 @@
 import { useMemo } from "react";
 import { useTranslation } from "react-i18next";
-import { View, StyleSheet, ScrollView, Pressable } from "react-native";
+import { View, StyleSheet, ScrollView, Pressable, RefreshControl } from "react-native";
 import { Text, useTheme, Card, Button, ActivityIndicator } from "react-native-paper";
 import { SafeAreaView } from "react-native-safe-area-context";
 import { MaterialCommunityIcons } from "@expo/vector-icons";
@@ -8,13 +8,17 @@ import { useRouter } from "expo-router";
 import { useAuthStore } from "@/stores/auth-store";
 import { useClientWorkouts } from "@/lib/queries/workouts";
 import { usePendingInvites } from "@/lib/queries/clients";
+import { ErrorState } from "@/components/ErrorState";
+import { computeStreak } from "@/lib/streak";
 import { formatDate } from "@/lib/date-utils";
 import type { AssignedWorkout } from "@/types/database";
 
 function getWeekRange() {
   const now = new Date();
   const start = new Date(now);
-  start.setDate(now.getDate() - now.getDay() + 1);
+  const day = start.getDay();
+  const diff = day === 0 ? -6 : 1 - day;
+  start.setDate(now.getDate() + diff);
   const end = new Date(start);
   end.setDate(start.getDate() + 6);
   return {
@@ -42,11 +46,21 @@ export default function TodayScreen() {
   const todayStr = formatDate(new Date());
   const week = useMemo(() => getWeekRange(), []);
 
-  const { data: weekWorkouts = [], isLoading: weekWorkoutsLoading } =
-    useClientWorkouts(userId ?? "", week.start, week.end);
+  const {
+    data: weekWorkouts = [],
+    isLoading: weekWorkoutsLoading,
+    isError: weekError,
+    refetch: refetchWeek,
+    isRefetching: isRefetchingWeek,
+  } = useClientWorkouts(userId ?? "", week.start, week.end);
 
-  const { data: allWorkouts = [], isLoading: allWorkoutsLoading } =
-    useClientWorkouts(userId ?? "");
+  const {
+    data: allWorkouts = [],
+    isLoading: allWorkoutsLoading,
+    isError: allError,
+    refetch: refetchAll,
+    isRefetching: isRefetchingAll,
+  } = useClientWorkouts(userId ?? "");
   const { data: pendingInvites = [] } = usePendingInvites(userId ?? "");
 
   const todayWorkouts = useMemo(
@@ -59,22 +73,7 @@ export default function TodayScreen() {
     [weekWorkouts]
   );
 
-  const streak = useMemo(() => {
-    const sorted = [...allWorkouts]
-      .filter((w) => w.status === "completed")
-      .sort((a, b) => b.scheduled_date.localeCompare(a.scheduled_date));
-    let count = 0;
-    const today = new Date();
-    for (let i = 0; i < sorted.length; i++) {
-      const wd = new Date(sorted[i].scheduled_date + "T12:00:00");
-      const expected = new Date(today);
-      expected.setDate(expected.getDate() - i);
-      if (wd.toDateString() === expected.toDateString()) {
-        count++;
-      } else break;
-    }
-    return count;
-  }, [allWorkouts]);
+  const streak = useMemo(() => computeStreak(allWorkouts), [allWorkouts]);
 
   const last30 = useMemo(() => {
     const cutoff = new Date();
@@ -97,7 +96,8 @@ export default function TodayScreen() {
 
   const weekDays = useMemo(() => {
     const start = new Date();
-    start.setDate(start.getDate() - start.getDay() + 1);
+    const d = start.getDay();
+    start.setDate(start.getDate() + (d === 0 ? -6 : 1 - d));
     const dayKeys = ["today.mon", "today.tue", "today.wed", "today.thu", "today.fri", "today.sat", "today.sun"];
     return dayKeys.map((key, i) => {
       const label = t(key);
@@ -122,12 +122,34 @@ export default function TodayScreen() {
     );
   }
 
+  if (weekError || allError) {
+    return (
+      <SafeAreaView
+        style={[styles.container, { backgroundColor: theme.colors.background }]}
+        edges={["top"]}
+      >
+        <ErrorState onRetry={() => { refetchWeek(); refetchAll(); }} />
+      </SafeAreaView>
+    );
+  }
+
   return (
     <SafeAreaView
       style={[styles.container, { backgroundColor: theme.colors.background }]}
       edges={["top"]}
     >
-      <ScrollView contentContainerStyle={styles.content}>
+      <ScrollView
+        contentContainerStyle={styles.content}
+        refreshControl={
+          <RefreshControl
+            refreshing={isRefetchingWeek || isRefetchingAll}
+            onRefresh={() => {
+              refetchWeek();
+              refetchAll();
+            }}
+          />
+        }
+      >
         <View style={styles.greeting}>
           <Text
             variant="titleMedium"

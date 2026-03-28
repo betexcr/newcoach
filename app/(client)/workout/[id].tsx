@@ -1,4 +1,4 @@
-import { useState, useMemo, useRef, useCallback } from "react";
+import { useState, useMemo } from "react";
 import { useTranslation } from "react-i18next";
 import {
   View,
@@ -8,17 +8,17 @@ import {
   Alert,
   TextInput as RNTextInput,
   Image,
-  Dimensions,
-  Animated,
+  useWindowDimensions,
 } from "react-native";
 import { Text, useTheme, Card, Button, ProgressBar, Chip, ActivityIndicator } from "react-native-paper";
 import { SafeAreaView } from "react-native-safe-area-context";
 import { MaterialCommunityIcons } from "@expo/vector-icons";
 import { useRouter, useLocalSearchParams } from "expo-router";
 import { useAuthStore } from "@/stores/auth-store";
-import { useClientWorkouts, useUpdateWorkoutStatus } from "@/lib/queries/workouts";
+import { useWorkoutById, useUpdateWorkoutStatus } from "@/lib/queries/workouts";
 import { useSaveResult, useWorkoutResult } from "@/lib/queries/results";
 import { useExercisesByIds } from "@/lib/queries/exercises";
+import { ErrorState } from "@/components/ErrorState";
 import { AuthButton } from "@/components/AuthButton";
 import type {
   LoggedExercise,
@@ -27,8 +27,6 @@ import type {
   WorkoutExercise,
   Exercise,
 } from "@/types/database";
-
-const { width: SCREEN_WIDTH } = Dimensions.get("window");
 
 type ScreenMode = "detail" | "execution" | "results";
 
@@ -39,8 +37,7 @@ export default function WorkoutScreen() {
   const { id } = useLocalSearchParams<{ id: string }>();
   const userId = useAuthStore((s) => s.user?.id);
 
-  const { data: allWorkouts = [], isLoading: workoutsLoading } = useClientWorkouts(userId ?? "");
-  const workout = allWorkouts.find((w) => w.id === id);
+  const { data: workout, isLoading: workoutsLoading, isError, refetch } = useWorkoutById(id ?? "");
 
   const exerciseIds = useMemo(
     () => (workout?.exercises ?? []).map((ex) => ex.exercise_id),
@@ -61,11 +58,12 @@ export default function WorkoutScreen() {
   const saveResult = useSaveResult();
   const updateStatus = useUpdateWorkoutStatus();
 
+  const { width: screenWidth } = useWindowDimensions();
   const [loggedData, setLoggedData] = useState<Record<string, LoggedSet[]>>({});
   const [notes, setNotes] = useState("");
 
   function initializeSets(exercise: WorkoutExercise): LoggedSet[] {
-    return exercise.sets.map((s) => ({
+    return (exercise.sets ?? []).map((s) => ({
       set_number: s.set_number,
       reps: s.reps,
       weight: s.weight,
@@ -100,7 +98,7 @@ export default function WorkoutScreen() {
     const logged: LoggedExercise[] = workout.exercises.map((ex) => ({
       exercise_id: ex.exercise_id,
       exercise_name: ex.exercise_name,
-      sets: getExerciseSets(ex).map((s) => ({ ...s, completed: true })),
+      sets: getExerciseSets(ex),
     }));
 
     try {
@@ -129,24 +127,15 @@ export default function WorkoutScreen() {
     );
   }
 
-  if (!workout) {
+  if (isError || !workout) {
     return (
       <SafeAreaView
         style={[styles.container, { backgroundColor: theme.colors.background }]}
       >
-        <View style={styles.centered}>
-          <MaterialCommunityIcons
-            name="dumbbell"
-            size={48}
-            color={theme.colors.onSurfaceVariant}
-          />
-          <Text
-            variant="bodyLarge"
-            style={{ color: theme.colors.onSurfaceVariant, marginTop: 12 }}
-          >
-            {t("workout.notFound")}
-          </Text>
-        </View>
+        <ErrorState
+          message={isError ? undefined : t("workout.notFound")}
+          onRetry={refetch}
+        />
       </SafeAreaView>
     );
   }
@@ -183,6 +172,7 @@ export default function WorkoutScreen() {
         onFinish={handleFinish}
         onBack={() => setMode("detail")}
         saving={saveResult.isPending}
+        screenWidth={screenWidth}
         theme={theme}
         t={t}
       />
@@ -339,6 +329,7 @@ function DetailView({
             contentStyle={{ paddingVertical: 8 }}
             labelStyle={{ fontSize: 16, fontWeight: "700" }}
             icon="play"
+            disabled={exerciseCount === 0}
           >
             {t("workout.startWorkout")}
           </Button>
@@ -427,14 +418,14 @@ function ExerciseDetailCard({
             variant="bodySmall"
             style={{ color: theme.colors.onSurfaceVariant, marginTop: 2 }}
           >
-            {exercise.sets.length} {t("workout.sets")} ·{" "}
-            {exercise.sets[0]?.reps
-              ? `${exercise.sets[0].reps} ${t("workout.repsUnit")}`
-              : exercise.sets[0]?.duration_seconds
-                ? `${exercise.sets[0].duration_seconds}s`
+            {(exercise.sets ?? []).length} {t("workout.sets")} ·{" "}
+            {(exercise.sets ?? [])[0]?.reps
+              ? `${(exercise.sets ?? [])[0].reps} ${t("workout.repsUnit")}`
+              : (exercise.sets ?? [])[0]?.duration_seconds
+                ? `${(exercise.sets ?? [])[0].duration_seconds}s`
                 : t("common.dash")}
-            {exercise.sets[0]?.weight
-              ? ` @ ${exercise.sets[0].weight} ${t("workout.lbs")}`
+            {(exercise.sets ?? [])[0]?.weight
+              ? ` @ ${(exercise.sets ?? [])[0].weight} ${t("workout.lbs")}`
               : ""}
           </Text>
         </View>
@@ -485,11 +476,11 @@ function ExerciseDetailCard({
               <Text style={[styles.setCol, { color: theme.colors.onSurfaceVariant }]}>{t("workout.set")}</Text>
               <Text style={[styles.setColWide, { color: theme.colors.onSurfaceVariant }]}>{t("workout.reps")}</Text>
               <Text style={[styles.setColWide, { color: theme.colors.onSurfaceVariant }]}>{t("workout.weight")}</Text>
-              {exercise.sets[0]?.rest_seconds != null && (
+              {(exercise.sets ?? [])[0]?.rest_seconds != null && (
                 <Text style={[styles.setColWide, { color: theme.colors.onSurfaceVariant }]}>{t("workout.rest")}</Text>
               )}
             </View>
-            {exercise.sets.map((set, sIdx) => (
+            {(exercise.sets ?? []).map((set, sIdx) => (
               <View
                 key={sIdx}
                 style={[
@@ -538,6 +529,7 @@ function ExecutionView({
   onFinish,
   onBack,
   saving,
+  screenWidth,
   theme,
   t,
 }: {
@@ -558,6 +550,7 @@ function ExecutionView({
   onFinish: () => void;
   onBack: () => void;
   saving: boolean;
+  screenWidth: number;
   theme: any;
   t: (key: string, opts?: Record<string, unknown>) => string;
 }) {
@@ -569,14 +562,36 @@ function ExecutionView({
   const sets = exercise ? getExerciseSets(exercise) : [];
   const completedSets = sets.filter((s) => s.completed).length;
 
-  const progress = (currentStep + (exercise ? completedSets / sets.length : 0)) / (total + 1);
+  const denom = Math.max(sets.length, 1);
+  const progress = (currentStep + (exercise ? completedSets / denom : 0)) / (total + 1);
 
   return (
     <SafeAreaView
       style={[styles.container, { backgroundColor: theme.colors.background }]}
     >
       <View style={styles.execTopBar}>
-        <Pressable onPress={onBack} style={styles.backBtn}>
+        <Pressable
+          onPress={() => {
+            const hasLoggedSets = Object.keys(loggedData).length > 0;
+            if (hasLoggedSets) {
+              Alert.alert(
+                t("workout.abandonTitle"),
+                t("workout.abandonMessage"),
+                [
+                  { text: t("common.cancel"), style: "cancel" },
+                  {
+                    text: t("workout.abandonConfirm"),
+                    style: "destructive",
+                    onPress: onBack,
+                  },
+                ]
+              );
+            } else {
+              onBack();
+            }
+          }}
+          style={styles.backBtn}
+        >
           <MaterialCommunityIcons name="close" size={24} color={theme.colors.onSurface} />
         </Pressable>
         <View style={{ flex: 1, marginHorizontal: 12 }}>
@@ -635,7 +650,7 @@ function ExecutionView({
           {detail?.thumbnail_url ? (
             <Image
               source={{ uri: detail.thumbnail_url }}
-              style={styles.exerciseHeroImage}
+              style={[styles.exerciseHeroImage, { width: screenWidth }]}
               resizeMode="cover"
             />
           ) : (
@@ -643,7 +658,7 @@ function ExecutionView({
               style={[
                 styles.exerciseHeroImage,
                 styles.heroPlaceholder,
-                { backgroundColor: theme.colors.surfaceVariant },
+                { width: screenWidth, backgroundColor: theme.colors.surfaceVariant },
               ]}
             >
               <MaterialCommunityIcons
@@ -987,7 +1002,7 @@ function ResultsView({
                     <Text style={[styles.setColWide, { color: theme.colors.onSurfaceVariant }]}>{t("workout.weight")}</Text>
                     <Text style={[{ width: 32, textAlign: "center", fontSize: 11 }, { color: theme.colors.onSurfaceVariant }]}>✓</Text>
                   </View>
-                  {ex.sets.map((set, sIdx) => (
+                  {(ex.sets ?? []).map((set, sIdx) => (
                     <View
                       key={sIdx}
                       style={[
@@ -1190,7 +1205,6 @@ const styles = StyleSheet.create({
   },
   stepContent: { paddingBottom: 100 },
   exerciseHeroImage: {
-    width: SCREEN_WIDTH,
     height: 220,
   },
   heroPlaceholder: {

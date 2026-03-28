@@ -1,6 +1,13 @@
 import { useState } from "react";
 import { useTranslation } from "react-i18next";
-import { View, StyleSheet, ScrollView, Pressable, Alert } from "react-native";
+import {
+  View,
+  StyleSheet,
+  ScrollView,
+  Pressable,
+  Alert,
+  RefreshControl,
+} from "react-native";
 import {
   Text,
   useTheme,
@@ -14,6 +21,7 @@ import {
 import { SafeAreaView } from "react-native-safe-area-context";
 import { MaterialCommunityIcons } from "@expo/vector-icons";
 import { AuthButton } from "@/components/AuthButton";
+import { ErrorState } from "@/components/ErrorState";
 import { useAuthStore } from "@/stores/auth-store";
 import {
   useNutritionLogs,
@@ -22,7 +30,7 @@ import {
   useUpdateNutritionGoals,
 } from "@/lib/queries/nutrition";
 import { formatDate } from "@/lib/date-utils";
-import type { MacroGoals, NutritionLog } from "@/types/database";
+import type { MacroGoals } from "@/types/database";
 
 const DEFAULT_GOALS: MacroGoals = {
   calories: 2200,
@@ -44,8 +52,13 @@ export default function NutritionScreen() {
   const goals: MacroGoals = profile?.nutrition_goals ?? DEFAULT_GOALS;
 
   const today = formatDate(new Date());
-  const { data: entries = [], isLoading: nutritionLogsLoading } =
-    useNutritionLogs(userId ?? "", today);
+  const {
+    data: entries = [],
+    isLoading: nutritionLogsLoading,
+    isError,
+    refetch,
+    isRefetching,
+  } = useNutritionLogs(userId ?? "", today);
   const addEntry = useAddNutritionLog();
   const deleteEntry = useDeleteNutritionLog();
   const updateGoals = useUpdateNutritionGoals();
@@ -73,6 +86,17 @@ export default function NutritionScreen() {
         <View style={{ flex: 1, justifyContent: "center", alignItems: "center" }}>
           <ActivityIndicator size="large" color={theme.colors.primary} />
         </View>
+      </SafeAreaView>
+    );
+  }
+
+  if (isError) {
+    return (
+      <SafeAreaView
+        style={[styles.container, { backgroundColor: theme.colors.background }]}
+        edges={["top"]}
+      >
+        <ErrorState onRetry={refetch} />
       </SafeAreaView>
     );
   }
@@ -160,43 +184,17 @@ export default function NutritionScreen() {
     return map[m];
   };
 
-  function MacroBar({
-    label,
-    current,
-    goal,
-    color,
-  }: {
-    label: string;
-    current: number;
-    goal: number;
-    color: string;
-  }) {
-    const progress = Math.min(current / goal, 1);
-    return (
-      <View style={styles.macroBar}>
-        <View style={styles.macroBarHeader}>
-          <Text variant="labelLarge" style={{ color: theme.colors.onSurface, fontWeight: "600" }}>
-            {label}
-          </Text>
-          <Text variant="bodySmall" style={{ color: theme.colors.onSurfaceVariant }}>
-            {Math.round(current)} / {goal}g
-          </Text>
-        </View>
-        <ProgressBar
-          progress={progress}
-          color={color}
-          style={[styles.progressBar, { backgroundColor: theme.colors.surfaceVariant }]}
-        />
-      </View>
-    );
-  }
-
   return (
     <SafeAreaView
       style={[styles.container, { backgroundColor: theme.colors.background }]}
       edges={["top"]}
     >
-      <ScrollView contentContainerStyle={styles.content}>
+      <ScrollView
+        contentContainerStyle={styles.content}
+        refreshControl={
+          <RefreshControl refreshing={isRefetching} onRefresh={refetch} />
+        }
+      >
         <View style={styles.titleRow}>
           <Text
             variant="headlineMedium"
@@ -528,6 +526,7 @@ export default function NutritionScreen() {
                   size={20}
                   iconColor={theme.colors.error}
                   onPress={() => handleDelete(entry.id)}
+                  disabled={deleteEntry.isPending}
                 />
               </Card.Content>
             </Card>
@@ -535,6 +534,38 @@ export default function NutritionScreen() {
         )}
       </ScrollView>
     </SafeAreaView>
+  );
+}
+
+function MacroBar({
+  label,
+  current,
+  goal,
+  color,
+}: {
+  label: string;
+  current: number;
+  goal: number;
+  color: string;
+}) {
+  const theme = useTheme();
+  const progress = goal > 0 ? Math.min(current / goal, 1) : 0;
+  return (
+    <View style={styles.macroBar}>
+      <View style={styles.macroBarHeader}>
+        <Text variant="labelLarge" style={{ color: theme.colors.onSurface, fontWeight: "600" }}>
+          {label}
+        </Text>
+        <Text variant="bodySmall" style={{ color: theme.colors.onSurfaceVariant }}>
+          {Math.round(current)} / {goal}g
+        </Text>
+      </View>
+      <ProgressBar
+        progress={progress}
+        color={color}
+        style={[styles.progressBar, { backgroundColor: theme.colors.surfaceVariant }]}
+      />
+    </View>
   );
 }
 
