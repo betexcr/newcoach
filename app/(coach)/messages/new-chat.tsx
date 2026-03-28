@@ -22,7 +22,7 @@ export default function NewChatScreen() {
   }>();
 
   const { data: clients = [], isLoading, isError: clientsError, refetch: refetchClients } = useCoachClients(userId);
-  const { data: conversations = [] } = useConversations(userId);
+  const { data: conversations = [], isLoading: conversationsLoading } = useConversations(userId);
   const createConversation = useCreateConversation();
   const [search, setSearch] = useState("");
 
@@ -77,15 +77,16 @@ export default function NewChatScreen() {
 
   const autoSelectDone = useRef(false);
   useEffect(() => {
-    if (autoSelectDone.current || !preselectedClientId || isLoading) return;
+    if (autoSelectDone.current || !preselectedClientId || isLoading || conversationsLoading) return;
     const match = clients.find((c) => c.client_id === preselectedClientId);
     if (match) {
       autoSelectDone.current = true;
       handleSelect(match);
     } else {
       autoSelectDone.current = true;
+      Alert.alert(t("common.error"), t("messages.clientNotFound"));
     }
-  }, [preselectedClientId, clients, isLoading]);
+  }, [preselectedClientId, clients, isLoading, conversationsLoading]);
 
   if (preselectedClientId && !autoSelectDone.current) {
     return (

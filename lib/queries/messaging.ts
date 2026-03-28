@@ -102,6 +102,7 @@ export function useMessages(conversationId: string) {
               return [...old, newMsg];
             }
           );
+          queryClient.invalidateQueries({ queryKey: ["conversations"] });
         }
       )
       .subscribe();
@@ -184,7 +185,10 @@ export function useCreateConversation() {
           }))
         );
 
-      if (partError) throw partError;
+      if (partError) {
+        await supabase.from("conversations").delete().eq("id", conversation.id);
+        throw partError;
+      }
       return conversation as Conversation;
     },
     onSuccess: () => {

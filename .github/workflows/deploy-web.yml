@@ -30,6 +30,20 @@ jobs:
       - name: Typecheck
         run: npm run typecheck
 
+      - name: Validate required secrets
+        run: |
+          if [ -z "$EXPO_PUBLIC_SUPABASE_URL" ]; then
+            echo "::error::EXPO_PUBLIC_SUPABASE_URL secret is not set"
+            exit 1
+          fi
+          if [ -z "$EXPO_PUBLIC_SUPABASE_ANON_KEY" ]; then
+            echo "::error::EXPO_PUBLIC_SUPABASE_ANON_KEY secret is not set"
+            exit 1
+          fi
+        env:
+          EXPO_PUBLIC_SUPABASE_URL: ${{ secrets.EXPO_PUBLIC_SUPABASE_URL }}
+          EXPO_PUBLIC_SUPABASE_ANON_KEY: ${{ secrets.EXPO_PUBLIC_SUPABASE_ANON_KEY }}
+
       - name: Build Expo web
         run: npx expo export --platform web
         env:

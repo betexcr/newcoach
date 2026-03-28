@@ -189,7 +189,7 @@ export default function ProgressScreen() {
 
   const streak = useMemo(() => computeStreak(workouts), [workouts]);
 
-  if (workoutsLoading || resultsLoading) {
+  if (workoutsLoading || resultsLoading || !userId) {
     return (
       <SafeAreaView
         style={[styles.container, { backgroundColor: theme.colors.background }]}

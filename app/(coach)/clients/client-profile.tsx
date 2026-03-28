@@ -24,7 +24,7 @@ import { useClientWorkouts } from "@/lib/queries/workouts";
 import { useClientResults } from "@/lib/queries/results";
 import { useClientHabits } from "@/lib/queries/habits";
 import { useNutritionLogs } from "@/lib/queries/nutrition";
-import { useRemoveClient, type ClientWithProfile } from "@/lib/queries/clients";
+import { useRemoveClient } from "@/lib/queries/clients";
 import { useWorkoutBuilderStore } from "@/stores/workout-builder-store";
 import { ErrorState } from "@/components/ErrorState";
 import { computeStreak } from "@/lib/streak";

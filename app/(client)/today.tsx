@@ -109,7 +109,7 @@ export default function TodayScreen() {
     });
   }, [weekWorkouts, todayStr, t]);
 
-  if (weekWorkoutsLoading || allWorkoutsLoading) {
+  if (weekWorkoutsLoading || allWorkoutsLoading || !userId) {
     return (
       <SafeAreaView
         style={[styles.container, { backgroundColor: theme.colors.background }]}

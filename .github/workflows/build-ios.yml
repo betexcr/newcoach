@@ -39,6 +39,10 @@ jobs:
       - name: Decode App Store Connect API Key
         run: |
           echo "${{ secrets.APPLE_ASC_API_KEY_BASE64 }}" | base64 --decode > ./ascApiKey.p8
+          if [ ! -s ./ascApiKey.p8 ]; then
+            echo "::error::Decoded ascApiKey.p8 is empty — check APPLE_ASC_API_KEY_BASE64 secret"
+            exit 1
+          fi
 
       - name: Build iOS on EAS
         run: eas build --platform ios --profile production --non-interactive

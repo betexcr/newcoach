@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import {
   View,
   StyleSheet,
@@ -6,7 +6,7 @@ import {
   Platform,
   ScrollView,
 } from "react-native";
-import { Text, useTheme } from "react-native-paper";
+import { Text, useTheme, ActivityIndicator } from "react-native-paper";
 import { useRouter } from "expo-router";
 import { useTranslation } from "react-i18next";
 import { supabase } from "@/lib/supabase";
@@ -22,6 +22,13 @@ export default function ResetPasswordScreen() {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
   const [success, setSuccess] = useState(false);
+  const [hasSession, setHasSession] = useState<boolean | null>(null);
+
+  useEffect(() => {
+    supabase.auth.getSession().then(({ data: { session } }) => {
+      setHasSession(!!session);
+    });
+  }, []);
 
   async function handleUpdatePassword() {
     if (!password.trim()) {
@@ -52,6 +59,40 @@ export default function ResetPasswordScreen() {
 
     setLoading(false);
     setSuccess(true);
+  }
+
+  if (hasSession === null) {
+    return (
+      <View style={[styles.container, { backgroundColor: theme.colors.background }]}>
+        <View style={styles.successContent}>
+          <ActivityIndicator size="large" color={theme.colors.primary} />
+        </View>
+      </View>
+    );
+  }
+
+  if (hasSession === false) {
+    return (
+      <View style={[styles.container, { backgroundColor: theme.colors.background }]}>
+        <View style={styles.successContent}>
+          <Text
+            variant="headlineMedium"
+            style={[styles.title, { color: theme.colors.error }]}
+          >
+            {t("auth.invalidResetLink")}
+          </Text>
+          <Text
+            variant="bodyLarge"
+            style={[styles.successMessage, { color: theme.colors.onSurfaceVariant }]}
+          >
+            {t("auth.invalidResetLinkMessage")}
+          </Text>
+          <AuthButton onPress={() => router.replace("/(auth)/forgot-password")}>
+            {t("auth.requestNewLink")}
+          </AuthButton>
+        </View>
+      </View>
+    );
   }
 
   if (success) {

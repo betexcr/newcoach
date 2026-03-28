@@ -23,7 +23,13 @@ export default function ClientSettingsScreen() {
   const setLanguagePref = useSettingsStore((s) => s.setLanguage);
 
   async function doLogout() {
-    await supabase.auth.signOut();
+    try {
+      await supabase.auth.signOut();
+    } catch (err) {
+      console.warn("Sign out failed:", err);
+      Alert.alert(t("common.error"), t("common.errorGeneric"));
+      return;
+    }
     queryClient.clear();
     reset();
     router.replace("/(auth)/login");

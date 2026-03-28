@@ -62,25 +62,3 @@ export async function registerForPushNotifications(
   return token;
 }
 
-export async function sendLocalNotification(
-  title: string,
-  body: string,
-  data?: Record<string, unknown>
-) {
-  await Notifications.scheduleNotificationAsync({
-    content: { title, body, data },
-    trigger: null,
-  });
-}
-
-export function addNotificationResponseListener(
-  callback: (response: Notifications.NotificationResponse) => void
-) {
-  return Notifications.addNotificationResponseReceivedListener(callback);
-}
-
-export function addNotificationReceivedListener(
-  callback: (notification: Notifications.Notification) => void
-) {
-  return Notifications.addNotificationReceivedListener(callback);
-}

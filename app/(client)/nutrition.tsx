@@ -77,7 +77,7 @@ export default function NutritionScreen() {
   const [goalCarbs, setGoalCarbs] = useState(String(goals.carbs));
   const [goalFat, setGoalFat] = useState(String(goals.fat));
 
-  if (nutritionLogsLoading) {
+  if (nutritionLogsLoading || !userId) {
     return (
       <SafeAreaView
         style={[styles.container, { backgroundColor: theme.colors.background }]}

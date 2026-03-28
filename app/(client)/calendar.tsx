@@ -76,7 +76,7 @@ export default function CalendarScreen() {
     day: "numeric",
   })}`;
 
-  if (workoutsLoading) {
+  if (workoutsLoading || !userId) {
     return (
       <SafeAreaView
         style={[styles.container, { backgroundColor: theme.colors.background }]}

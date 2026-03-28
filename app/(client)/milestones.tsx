@@ -103,7 +103,7 @@ export default function MilestonesScreen() {
   const earned = milestones.filter((m) => m.earned);
   const remaining = milestones.filter((m) => !m.earned);
 
-  if (workoutsLoading || resultsLoading) {
+  if (workoutsLoading || resultsLoading || !userId) {
     return (
       <SafeAreaView
         style={[styles.container, { backgroundColor: theme.colors.background }]}
