@@ -12,6 +12,8 @@ const MOCK_COACH_PROFILE: Profile = {
   full_name: "Demo Coach",
   avatar_url: null,
   role: "coach",
+  push_token: null,
+  nutrition_goals: null,
   created_at: new Date().toISOString(),
   updated_at: new Date().toISOString(),
 };
@@ -22,6 +24,8 @@ const MOCK_CLIENT_PROFILE: Profile = {
   full_name: "Demo Client",
   avatar_url: null,
   role: "client",
+  push_token: null,
+  nutrition_goals: null,
   created_at: new Date().toISOString(),
   updated_at: new Date().toISOString(),
 };

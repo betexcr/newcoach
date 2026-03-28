@@ -34,7 +34,6 @@ test("calendar page → click workout card → verify navigation", async ({
   // 5. Look for a workout card (WorkoutCard shows workout.name, e.g. "Active Recovery & Cardio")
   const workoutCard = page.locator('a[href*="/workout/"]').first();
   const cardCount = await workoutCard.count();
-  const cardCount = await workoutCard.count();
 
   if (cardCount === 0) {
     // No workout cards - take screenshot and report

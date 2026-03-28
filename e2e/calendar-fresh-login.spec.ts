@@ -52,7 +52,7 @@ test("calendar fresh login - clear storage and verify", async ({ page }) => {
   const cardVisible = (await workoutCard.count()) > 0;
   let cardText = "";
   if (cardVisible) {
-    cardText = await workoutCard.textContent().catch(() => "");
+    cardText = (await workoutCard.textContent().catch(() => "")) ?? "";
   }
 
   const hasError = await page.getByText(/error|not found/i).first().isVisible({ timeout: 1000 }).catch(() => false);

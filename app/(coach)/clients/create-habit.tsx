@@ -21,7 +21,7 @@ export default function CreateHabitScreen() {
   const createHabit = useCreateHabit();
   const [name, setName] = useState("");
   const [description, setDescription] = useState("");
-  const [frequency, setFrequency] = useState("daily");
+  const [frequency, setFrequency] = useState<"daily" | "weekly" | "monthly">("daily");
 
   async function handleCreate() {
     if (!name.trim()) {
