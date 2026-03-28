@@ -271,7 +271,7 @@ function WorkoutCard({
     <Pressable
       onPress={() => {
         if (workoutId) {
-          router.push(`/(client)/workout/${workoutId}` as any);
+          router.push(`/workout/${workoutId}` as any);
         }
       }}
       accessibilityRole="link"

@@ -66,10 +66,6 @@ export default function ClientLayout() {
           }}
         />
       ))}
-      <Tabs.Screen
-        name="workout/[id]"
-        options={{ href: null, headerShown: false, tabBarStyle: { display: "none" } }}
-      />
       <Tabs.Screen name="progress" options={{ href: null, title: t("tabs.progress") }} />
       <Tabs.Screen name="milestones" options={{ href: null, title: t("tabs.milestones") }} />
       <Tabs.Screen name="nutrition" options={{ href: null, title: t("tabs.nutrition") }} />

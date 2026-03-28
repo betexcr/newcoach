@@ -74,7 +74,7 @@ export default function RootLayout() {
             params: { workoutId: data.workoutId as string },
           } as any);
         } else {
-          router.push(`/(client)/workout/${data.workoutId}` as any);
+          router.push(`/workout/${data.workoutId}` as any);
         }
       }
     });
@@ -113,6 +113,7 @@ export default function RootLayout() {
               <Stack.Screen name="(auth)" />
               <Stack.Screen name="(coach)" />
               <Stack.Screen name="(client)" />
+              <Stack.Screen name="workout/[id]" />
             </Stack>
           </AuthProvider>
         </ErrorBoundary>

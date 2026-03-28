@@ -247,7 +247,7 @@ export default function TodayScreen() {
               theme={theme}
               t={t}
               onPress={() =>
-                router.push(`/(client)/workout/${workout.id}` as any)
+                router.push(`/workout/${workout.id}` as any)
               }
             />
           ))

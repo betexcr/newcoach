@@ -1,4 +1,4 @@
-import { useState, useMemo, useRef } from "react";
+import { useState, useMemo, useEffect } from "react";
 import { useTranslation } from "react-i18next";
 import {
   View,
@@ -8,14 +8,13 @@ import {
   Alert,
   TextInput as RNTextInput,
   Image,
-  Platform,
   useWindowDimensions,
 } from "react-native";
 import { Text, useTheme, Card, Button, ProgressBar, Chip, ActivityIndicator } from "react-native-paper";
 import { SafeAreaView } from "react-native-safe-area-context";
 import { MaterialCommunityIcons } from "@expo/vector-icons";
 import { useRouter, useLocalSearchParams } from "expo-router";
-import { useAuthStore } from "@/stores/auth-store";
+import { useAuthStore, selectIsAuthenticated } from "@/stores/auth-store";
 import { supabase } from "@/lib/supabase";
 import { useWorkoutById, useUpdateWorkoutStatus } from "@/lib/queries/workouts";
 import { useSaveResult, useWorkoutResult } from "@/lib/queries/results";
@@ -37,14 +36,16 @@ export default function WorkoutScreen() {
   const { t } = useTranslation();
   const theme = useTheme<AppTheme>();
   const router = useRouter();
-  const { id: paramId } = useLocalSearchParams<{ id: string }>();
+  const { id } = useLocalSearchParams<{ id: string }>();
   const userId = useAuthStore((s) => s.user?.id);
+  const isInitialized = useAuthStore((s) => s.isInitialized);
+  const isAuthenticated = useAuthStore(selectIsAuthenticated);
 
-  const stableId = useRef(paramId);
-  if (paramId) stableId.current = paramId;
-  const id = stableId.current ?? (
-    Platform.OS === "web" ? window.location.pathname.split("/").pop() : undefined
-  );
+  useEffect(() => {
+    if (isInitialized && !isAuthenticated) {
+      router.replace("/(auth)/login");
+    }
+  }, [isInitialized, isAuthenticated, router]);
 
   const { data: workout, isLoading: workoutsLoading, isError, refetch } = useWorkoutById(id ?? "", !!userId);
 
@@ -131,7 +132,7 @@ export default function WorkoutScreen() {
     }
   }
 
-  if (workoutsLoading) {
+  if (!isInitialized || workoutsLoading) {
     return (
       <SafeAreaView style={[styles.container, { backgroundColor: theme.colors.background }]}>
         <View style={styles.centered}>
