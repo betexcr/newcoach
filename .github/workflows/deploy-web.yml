@@ -33,6 +33,24 @@ jobs:
           EXPO_PUBLIC_SUPABASE_URL: ${{ secrets.EXPO_PUBLIC_SUPABASE_URL }}
           EXPO_PUBLIC_SUPABASE_ANON_KEY: ${{ secrets.EXPO_PUBLIC_SUPABASE_ANON_KEY }}
 
+      - name: Prepare Vercel config
+        run: |
+          cat > dist/vercel.json << 'VJSON'
+          {
+            "rewrites": [{ "source": "/(.*)", "destination": "/index.html" }],
+            "headers": [
+              {
+                "source": "/(.*)",
+                "headers": [
+                  { "key": "X-Content-Type-Options", "value": "nosniff" },
+                  { "key": "X-Frame-Options", "value": "DENY" },
+                  { "key": "X-XSS-Protection", "value": "1; mode=block" }
+                ]
+              }
+            ]
+          }
+          VJSON
+
       - name: Deploy to Vercel
         uses: amondnet/vercel-action@v25
         with:
