@@ -512,6 +512,7 @@ const en = {
     completeMessage: "Great job! Your results have been saved.",
     failedSave: "Failed to save results",
     notFound: "Workout not found",
+    noExercisesInWorkout: "This workout has no exercises.",
     done: "Done",
     exercisesCount: "{{count}} exercises",
     setsCount: "{{count}} sets",

@@ -63,6 +63,25 @@ export default function SignUpScreen() {
         return;
       }
 
+      const userId =
+        data.user?.id ??
+        (await supabase.auth.getUser().then((r) => r.data.user?.id));
+
+      if (!userId) {
+        setError(t("auth.somethingWrong"));
+        return;
+      }
+
+      const { error: profileError } = await supabase.from("profiles").upsert({
+        id: userId,
+        email: email.trim().toLowerCase(),
+        full_name: fullName.trim(),
+      });
+      if (profileError) {
+        setError(profileError.message);
+        return;
+      }
+
       if (!data.session) {
         const { error: signInError } = await supabase.auth.signInWithPassword({
           email: email.trim().toLowerCase(),
@@ -73,27 +92,8 @@ export default function SignUpScreen() {
           return;
         }
       }
-
-      const userId =
-        data.user?.id ??
-        (await supabase.auth.getUser().then((r) => r.data.user?.id));
-
-      if (!userId) {
-        setError(t("auth.somethingWrong"));
-        return;
-      }
-
-      if (userId) {
-        const { error: profileError } = await supabase.from("profiles").upsert({
-          id: userId,
-          email: email.trim().toLowerCase(),
-          full_name: fullName.trim(),
-        });
-        if (profileError) {
-          setError(profileError.message);
-          return;
-        }
-      }
+    } catch (e: unknown) {
+      setError(e instanceof Error ? e.message : t("common.errorGeneric"));
     } finally {
       setLoading(false);
     }

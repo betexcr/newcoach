@@ -48,6 +48,8 @@ export default function LoginScreen() {
         setError(authError.message);
         return;
       }
+    } catch (e: unknown) {
+      setError(e instanceof Error ? e.message : t("common.errorGeneric"));
     } finally {
       setLoading(false);
     }

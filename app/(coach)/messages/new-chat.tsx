@@ -23,7 +23,7 @@ export default function NewChatScreen() {
   }>();
 
   const { data: clients = [], isLoading, isError: clientsError, refetch: refetchClients } = useCoachClients(userId);
-  const { data: conversations = [], isLoading: conversationsLoading } = useConversations(userId);
+  const { data: conversations = [], isLoading: conversationsLoading, isError: conversationsError, refetch: refetchConversations } = useConversations(userId);
   const createConversation = useCreateConversation();
   const [search, setSearch] = useState("");
   const selectingRef = useRef(false);
@@ -61,6 +61,7 @@ export default function NewChatScreen() {
     );
 
     if (existingDirect) {
+      selectingRef.current = false;
       useChatNavStore.getState().set(existingDirect.id, clientName);
       router.replace({
         pathname: "/(coach)/messages/chat",
@@ -76,14 +77,16 @@ export default function NewChatScreen() {
         createdBy: userId,
         participantIds: [client.client_id],
       });
+      selectingRef.current = false;
       useChatNavStore.getState().set(conv.id, clientName);
       router.replace({
         pathname: "/(coach)/messages/chat",
         params: { conversationId: conv.id, name: clientName },
       });
-    } catch (err: any) {
+    } catch (err: unknown) {
       selectingRef.current = false;
-      Alert.alert(t("common.error"), err.message);
+      const message = err instanceof Error ? err.message : t("common.errorGeneric");
+      Alert.alert(t("common.error"), message);
     }
   }, [userId, conversations, t, createConversation, router]);
 
@@ -133,9 +136,9 @@ export default function NewChatScreen() {
         style={[styles.searchBar, { backgroundColor: theme.colors.surface }]}
       />
 
-      {clientsError ? (
-        <ErrorState onRetry={refetchClients} />
-      ) : isLoading ? (
+      {clientsError || conversationsError ? (
+        <ErrorState onRetry={() => { refetchClients(); refetchConversations(); }} />
+      ) : isLoading || conversationsLoading ? (
         <View style={styles.loadingContainer}>
           <ActivityIndicator size="large" color={theme.colors.primary} />
         </View>

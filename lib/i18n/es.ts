@@ -514,6 +514,7 @@ const es: TranslationKeys = {
     completeMessage: "¡Buen trabajo! Tus resultados han sido guardados.",
     failedSave: "Error al guardar resultados",
     notFound: "Entrenamiento no encontrado",
+    noExercisesInWorkout: "Este entrenamiento no tiene ejercicios.",
     done: "Listo",
     exercisesCount: "{{count}} ejercicios",
     setsCount: "{{count}} series",

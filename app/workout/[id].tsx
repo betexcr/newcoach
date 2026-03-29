@@ -61,7 +61,7 @@ export default function WorkoutScreen() {
     return map;
   }, [exerciseDetails]);
 
-  const { data: savedResult } = useWorkoutResult(id ?? "", !!userId);
+  const { data: savedResult, isLoading: resultLoading, isError: resultError, refetch: refetchResult } = useWorkoutResult(id ?? "", !!userId);
   const [mode, setMode] = useState<ScreenMode>("detail");
   const [currentStep, setCurrentStep] = useState(0);
 
@@ -71,6 +71,13 @@ export default function WorkoutScreen() {
   const { width: screenWidth } = useWindowDimensions();
   const [loggedData, setLoggedData] = useState<Record<string, LoggedSet[]>>({});
   const [notes, setNotes] = useState("");
+
+  useEffect(() => {
+    setMode("detail");
+    setCurrentStep(0);
+    setLoggedData({});
+    setNotes("");
+  }, [id]);
 
   function initializeSets(exercise: WorkoutExercise): LoggedSet[] {
     return (exercise.sets ?? []).map((s) => ({
@@ -155,7 +162,23 @@ export default function WorkoutScreen() {
     );
   }
 
-  if (mode === "results" && savedResult) {
+  if (mode === "results") {
+    if (resultLoading) {
+      return (
+        <SafeAreaView style={[styles.container, { backgroundColor: theme.colors.background }]}>
+          <View style={styles.centered}>
+            <ActivityIndicator size="large" color={theme.colors.primary} />
+          </View>
+        </SafeAreaView>
+      );
+    }
+    if (resultError || !savedResult) {
+      return (
+        <SafeAreaView style={[styles.container, { backgroundColor: theme.colors.background }]}>
+          <ErrorState onRetry={() => { refetchResult(); }} />
+        </SafeAreaView>
+      );
+    }
     return (
       <ResultsView
         workout={workout}
@@ -578,7 +601,27 @@ function ExecutionView({
   const completedSets = sets.filter((s) => s.completed).length;
 
   const denom = Math.max(sets.length, 1);
-  const progress = (currentStep + (exercise ? completedSets / denom : 0)) / (total + 1);
+  const progress = total > 0
+    ? Math.min(1, Math.max(0, (currentStep + (exercise ? completedSets / denom : 0)) / (total + 1)))
+    : 0;
+
+  if (total === 0) {
+    return (
+      <SafeAreaView style={[styles.container, { backgroundColor: theme.colors.background }]}>
+        <View style={styles.execTopBar}>
+          <Pressable onPress={onBack} style={styles.backBtn}>
+            <MaterialCommunityIcons name="close" size={24} color={theme.colors.onSurface} />
+          </Pressable>
+        </View>
+        <View style={styles.centered}>
+          <MaterialCommunityIcons name="dumbbell" size={48} color={theme.colors.onSurfaceVariant} />
+          <Text variant="bodyLarge" style={{ color: theme.colors.onSurfaceVariant, textAlign: "center", marginTop: 12 }}>
+            {t("workout.noExercisesInWorkout")}
+          </Text>
+        </View>
+      </SafeAreaView>
+    );
+  }
 
   return (
     <SafeAreaView

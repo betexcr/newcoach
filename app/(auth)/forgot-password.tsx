@@ -54,6 +54,8 @@ export default function ForgotPasswordScreen() {
       }
 
       setSent(true);
+    } catch (e: unknown) {
+      setError(e instanceof Error ? e.message : t("common.errorGeneric"));
     } finally {
       setLoading(false);
     }
