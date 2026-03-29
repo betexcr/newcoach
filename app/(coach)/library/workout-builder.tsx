@@ -255,7 +255,7 @@ export default function WorkoutBuilderScreen() {
   const userId = useAuthStore((s) => s.user?.id);
   const createTemplate = useCreateTemplate();
   const assignWorkout = useAssignWorkout();
-  const { data: clients = [], isLoading: clientsLoading } = useCoachClients(userId ?? "");
+  const { data: clients = [], isLoading: clientsLoading, isError: clientsError, refetch: refetchClients } = useCoachClients(userId ?? "");
   const { name, description, exercises, setName, setDescription, reset } =
     useWorkoutBuilderStore();
   const [showClientPicker, setShowClientPicker] = useState(false);
@@ -425,6 +425,11 @@ export default function WorkoutBuilderScreen() {
               }
               if (exercises.length === 0) {
                 Alert.alert(t("common.required"), t("library.addAtLeastOneExercise"));
+                return;
+              }
+              if (clientsError) {
+                refetchClients();
+                Alert.alert(t("common.error"), t("common.errorGeneric"));
                 return;
               }
               if (!clientsLoading && clients.length === 0) {

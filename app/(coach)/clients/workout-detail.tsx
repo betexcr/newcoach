@@ -1,6 +1,6 @@
 import { useMemo } from "react";
 import { useTranslation } from "react-i18next";
-import { View, StyleSheet, ScrollView, Pressable } from "react-native";
+import { View, StyleSheet, ScrollView, Pressable, RefreshControl } from "react-native";
 import { Text, useTheme, Card, Chip, Avatar, ActivityIndicator } from "react-native-paper";
 import { SafeAreaView } from "react-native-safe-area-context";
 import { MaterialCommunityIcons } from "@expo/vector-icons";
@@ -21,14 +21,17 @@ export default function CoachWorkoutDetailScreen() {
     clientName: string;
   }>();
 
-  const { data: workout, isLoading: loadingWorkout, isError, refetch } = useWorkoutById(workoutId ?? "");
-  const { data: result } = useWorkoutResult(workoutId ?? "");
+  const { data: workout, isLoading: loadingWorkout, isError: workoutError, refetch: refetchWorkout, isRefetching } = useWorkoutById(workoutId ?? "");
+  const { data: result, isError: resultError, refetch: refetchResult } = useWorkoutResult(workoutId ?? "");
 
   const exerciseIds = useMemo(
     () => (workout?.exercises ?? []).map((e) => e.exercise_id),
     [workout]
   );
-  const { data: exerciseDetails = [] } = useExercisesByIds(exerciseIds);
+  const { data: exerciseDetails = [], isError: exercisesError, refetch: refetchExercises } = useExercisesByIds(exerciseIds);
+
+  const isError = workoutError || resultError || exercisesError;
+  const refetch = () => { refetchWorkout(); refetchResult(); refetchExercises(); };
   const exerciseMap = useMemo(() => {
     const map: Record<string, (typeof exerciseDetails)[0]> = {};
     for (const e of exerciseDetails) map[e.id] = e;
@@ -106,7 +109,10 @@ export default function CoachWorkoutDetailScreen() {
         <View style={{ width: 24 }} />
       </View>
 
-      <ScrollView contentContainerStyle={styles.content}>
+      <ScrollView
+        contentContainerStyle={styles.content}
+        refreshControl={<RefreshControl refreshing={isRefetching} onRefresh={refetch} />}
+      >
         {clientName && (
           <Pressable
             style={[styles.clientChip, { backgroundColor: theme.colors.primaryContainer }]}

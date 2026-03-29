@@ -25,6 +25,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
         console.warn("Auth init failed:", err);
         setSession(null);
         setProfile(null);
+        setProfileError(false);
       } finally {
         setLoading(false);
         setInitialized(true);
@@ -44,6 +45,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
         }
       } else {
         setProfile(null);
+        setProfileError(false);
       }
     });
 

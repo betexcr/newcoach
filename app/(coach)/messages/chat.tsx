@@ -88,7 +88,14 @@ export default function ChatScreen() {
         </Text>
       </View>
 
-      {messagesLoading ? (
+      {!conversationId ? (
+        <View style={{ flex: 1, justifyContent: "center", alignItems: "center", paddingHorizontal: 32 }}>
+          <MaterialCommunityIcons name="message-off-outline" size={48} color={theme.colors.onSurfaceVariant} />
+          <Text variant="bodyLarge" style={{ color: theme.colors.onSurfaceVariant, textAlign: "center", marginTop: 12 }}>
+            {t("messages.conversationNotFound")}
+          </Text>
+        </View>
+      ) : messagesLoading ? (
         <View style={{ flex: 1, justifyContent: "center", alignItems: "center" }}>
           <ActivityIndicator size="large" color={theme.colors.primary} />
         </View>

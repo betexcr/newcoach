@@ -1,6 +1,6 @@
 import { useState, useMemo, useEffect } from "react";
 import { useTranslation } from "react-i18next";
-import { View, StyleSheet, Pressable, ScrollView } from "react-native";
+import { View, StyleSheet, Pressable, ScrollView, RefreshControl } from "react-native";
 import { Text, useTheme, ActivityIndicator } from "react-native-paper";
 import { SafeAreaView } from "react-native-safe-area-context";
 import { MaterialCommunityIcons } from "@expo/vector-icons";
@@ -42,7 +42,7 @@ export default function CalendarScreen() {
   const startDate = formatDate(weekDates[0]);
   const endDate = formatDate(weekDates[6]);
 
-  const { data: workouts = [], isLoading: workoutsLoading, isError, refetch } = useClientWorkouts(
+  const { data: workouts = [], isLoading: workoutsLoading, isError, refetch, isRefetching } = useClientWorkouts(
     userId ?? "",
     startDate,
     endDate
@@ -197,7 +197,11 @@ export default function CalendarScreen() {
         })}
       </View>
 
-      <ScrollView style={styles.dayContent} contentContainerStyle={{ paddingBottom: 24 }}>
+      <ScrollView
+        style={styles.dayContent}
+        contentContainerStyle={{ paddingBottom: 24 }}
+        refreshControl={<RefreshControl refreshing={isRefetching} onRefresh={refetch} />}
+      >
         <Text
           variant="titleLarge"
           style={{

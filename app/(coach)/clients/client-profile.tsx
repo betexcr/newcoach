@@ -6,6 +6,7 @@ import {
   ScrollView,
   Pressable,
   Alert,
+  RefreshControl,
 } from "react-native";
 import {
   Text,
@@ -56,7 +57,7 @@ export default function ClientProfileScreen() {
   const [tab, setTab] = useState<ProfileTab>("workouts");
 
   const today = formatDate(new Date());
-  const { data: workouts = [], isLoading: loadingWorkouts, isError: workoutsError, refetch: refetchWorkouts } = useClientWorkouts(clientId ?? "");
+  const { data: workouts = [], isLoading: loadingWorkouts, isError: workoutsError, refetch: refetchWorkouts, isRefetching } = useClientWorkouts(clientId ?? "");
   const { data: results = [], isLoading: loadingResults, isError: resultsError, refetch: refetchResults } = useClientResults(clientId ?? "");
   const { data: habits = [], isLoading: loadingHabits, isError: habitsError, refetch: refetchHabits } = useClientHabits(clientId ?? "");
   const { data: nutritionEntries = [], isLoading: loadingNutrition, isError: nutritionError, refetch: refetchNutrition } = useNutritionLogs(clientId ?? "", today);
@@ -156,7 +157,15 @@ export default function ClientProfileScreen() {
       {workoutsError || resultsError || habitsError || nutritionError ? (
         <ErrorState onRetry={() => { refetchWorkouts(); refetchResults(); refetchHabits(); refetchNutrition(); }} />
       ) : (
-      <ScrollView contentContainerStyle={styles.content}>
+      <ScrollView
+        contentContainerStyle={styles.content}
+        refreshControl={
+          <RefreshControl
+            refreshing={isRefetching}
+            onRefresh={() => { refetchWorkouts(); refetchResults(); refetchHabits(); refetchNutrition(); }}
+          />
+        }
+      >
         <View style={styles.profileHeader}>
           <Avatar.Text
             size={72}

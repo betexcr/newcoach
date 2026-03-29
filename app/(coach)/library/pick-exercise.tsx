@@ -1,6 +1,6 @@
 import { useState, useMemo } from "react";
 import { useTranslation } from "react-i18next";
-import { View, StyleSheet, FlatList, Pressable } from "react-native";
+import { View, StyleSheet, FlatList, Pressable, RefreshControl } from "react-native";
 import { Text, useTheme, Searchbar, Chip } from "react-native-paper";
 import { SafeAreaView } from "react-native-safe-area-context";
 import { MaterialCommunityIcons } from "@expo/vector-icons";
@@ -26,7 +26,7 @@ export default function PickExerciseScreen() {
     [search, selectedMuscle]
   );
 
-  const { data: exercises = [], isLoading, isError, refetch } = useExercises(filters);
+  const { data: exercises = [], isLoading, isError, refetch, isRefetching } = useExercises(filters);
 
   function handleSelect(exercise: Exercise) {
     addExercise(exercise);
@@ -94,6 +94,7 @@ export default function PickExerciseScreen() {
         data={exercises}
         keyExtractor={(item) => item.id}
         contentContainerStyle={styles.list}
+        refreshControl={<RefreshControl refreshing={isRefetching} onRefresh={refetch} />}
         renderItem={({ item }) => (
           <Pressable
             style={[

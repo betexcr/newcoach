@@ -14,8 +14,8 @@ function HabitItem({ habit }: { habit: Habit }) {
   const theme = useTheme();
   const toggleLog = useToggleHabitLog();
   const today = formatDate(new Date());
-  const { data: logs = [] } = useHabitLogs(habit.id, today, today);
-  const isCompleted = logs.some((l) => l.completed);
+  const { data: logs = [], isError: logsError } = useHabitLogs(habit.id, today, today);
+  const isCompleted = !logsError && logs.some((l) => l.completed);
 
   const frequencyLabels: Record<string, string> = {
     daily: t("habits.daily"),
@@ -30,12 +30,16 @@ function HabitItem({ habit }: { habit: Habit }) {
           style={[
             styles.checkCircle,
             {
-              borderColor: theme.colors.primary,
-              backgroundColor: isCompleted ? theme.colors.primary : "transparent",
+              borderColor: logsError ? theme.colors.error : theme.colors.primary,
+              backgroundColor: logsError
+                ? "transparent"
+                : isCompleted
+                  ? theme.colors.primary
+                  : "transparent",
               opacity: toggleLog.isPending ? 0.5 : 1,
             },
           ]}
-          disabled={toggleLog.isPending}
+          disabled={toggleLog.isPending || logsError}
           onPress={() =>
             toggleLog.mutate(
               { habitId: habit.id, date: today, completed: !isCompleted },
@@ -43,13 +47,19 @@ function HabitItem({ habit }: { habit: Habit }) {
             )
           }
         >
-          {isCompleted && (
+          {logsError ? (
+            <MaterialCommunityIcons
+              name="alert-circle-outline"
+              size={20}
+              color={theme.colors.error}
+            />
+          ) : isCompleted ? (
             <MaterialCommunityIcons
               name="check"
-              size={18}
+              size={20}
               color={theme.colors.onPrimary}
             />
-          )}
+          ) : null}
         </Pressable>
         <View style={styles.habitInfo}>
           <Text
@@ -199,9 +209,9 @@ const styles = StyleSheet.create({
   habitCard: { borderRadius: 14, elevation: 0, marginBottom: 10 },
   habitContent: { flexDirection: "row", alignItems: "center" },
   checkCircle: {
-    width: 36,
-    height: 36,
-    borderRadius: 18,
+    width: 44,
+    height: 44,
+    borderRadius: 22,
     borderWidth: 2,
     justifyContent: "center",
     alignItems: "center",

@@ -267,6 +267,7 @@ const es: TranslationKeys = {
     emptyChat: "No hay mensajes aún. ¡Saluda!",
     inputPlaceholder: "Escribe un mensaje...",
     sendFailed: "No se pudo enviar el mensaje.",
+    conversationNotFound: "No se pudo encontrar esta conversación.",
     broadcastTitle: "Difusión",
     broadcastNameLabel: "Nombre de la Difusión (opcional)",
     messageLabel: "Mensaje *",

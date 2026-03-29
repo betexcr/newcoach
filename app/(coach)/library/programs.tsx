@@ -1,5 +1,5 @@
 import { useTranslation } from "react-i18next";
-import { View, StyleSheet, FlatList, Pressable, Alert } from "react-native";
+import { View, StyleSheet, FlatList, Pressable, Alert, RefreshControl } from "react-native";
 import { Text, useTheme, FAB, Card, ActivityIndicator } from "react-native-paper";
 import { SafeAreaView } from "react-native-safe-area-context";
 import { MaterialCommunityIcons } from "@expo/vector-icons";
@@ -14,7 +14,7 @@ export default function ProgramsScreen() {
   const theme = useTheme();
   const router = useRouter();
   const userId = useAuthStore((s) => s.user?.id) ?? "";
-  const { data: programs = [], isLoading, isError, refetch } = usePrograms(userId);
+  const { data: programs = [], isLoading, isError, refetch, isRefetching } = usePrograms(userId);
   const deleteProgram = useDeleteProgram();
 
   function handleDelete(program: Program) {
@@ -68,6 +68,7 @@ export default function ProgramsScreen() {
           data={programs}
           keyExtractor={(item) => item.id}
           contentContainerStyle={styles.list}
+          refreshControl={<RefreshControl refreshing={isRefetching} onRefresh={refetch} />}
           renderItem={({ item }) => (
             <Card
               style={[styles.programCard, { backgroundColor: theme.colors.surface }]}

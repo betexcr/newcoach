@@ -265,6 +265,7 @@ const en = {
     emptyChat: "No messages yet. Say hello!",
     inputPlaceholder: "Type a message...",
     sendFailed: "Could not send the message.",
+    conversationNotFound: "This conversation could not be found.",
     broadcastTitle: "Broadcast",
     broadcastNameLabel: "Broadcast Name (optional)",
     messageLabel: "Message *",

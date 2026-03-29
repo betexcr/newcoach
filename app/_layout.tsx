@@ -15,7 +15,7 @@ import { useSettingsStore } from "@/stores/settings-store";
 import { useAuthStore } from "@/stores/auth-store";
 import { useChatNavStore } from "@/stores/chat-nav-store";
 import { ErrorBoundary } from "@/components/ErrorBoundary";
-import "@/lib/i18n";
+import i18n from "@/lib/i18n";
 
 SplashScreen.preventAutoHideAsync();
 
@@ -26,8 +26,9 @@ const queryClient = new QueryClient({
       retry: 2,
     },
     mutations: {
-      onError: (error: Error) => {
-        Alert.alert("Error", error.message ?? "Something went wrong");
+      onError: (error: unknown) => {
+        const message = error instanceof Error ? error.message : i18n.t("common.errorGeneric");
+        Alert.alert(i18n.t("common.error"), message);
       },
     },
   },
