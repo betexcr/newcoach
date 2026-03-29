@@ -37,24 +37,26 @@ export default function ForgotPasswordScreen() {
     setLoading(true);
     setError("");
 
-    const { error: resetError } = await supabase.auth.resetPasswordForEmail(
-      email.trim().toLowerCase(),
-      {
-        redirectTo:
-          Platform.OS === "web"
-            ? `${window.location.origin}/reset-password`
-            : "newcoach://reset-password",
+    try {
+      const { error: resetError } = await supabase.auth.resetPasswordForEmail(
+        email.trim().toLowerCase(),
+        {
+          redirectTo:
+            Platform.OS === "web"
+              ? `${window.location.origin}/reset-password`
+              : "newcoach://reset-password",
+        }
+      );
+
+      if (resetError) {
+        setError(resetError.message);
+        return;
       }
-    );
 
-    if (resetError) {
-      setError(resetError.message);
+      setSent(true);
+    } finally {
       setLoading(false);
-      return;
     }
-
-    setLoading(false);
-    setSent(true);
   }
 
   if (sent) {

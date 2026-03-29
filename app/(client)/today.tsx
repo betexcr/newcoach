@@ -62,7 +62,7 @@ export default function TodayScreen() {
     refetch: refetchAll,
     isRefetching: isRefetchingAll,
   } = useClientWorkouts(userId ?? "");
-  const { data: pendingInvites = [] } = usePendingInvites(userId ?? "");
+  const { data: pendingInvites = [], isError: invitesError, refetch: refetchInvites } = usePendingInvites(userId ?? "");
 
   const todayWorkouts = useMemo(
     () => weekWorkouts.filter((w) => w.scheduled_date === todayStr),
@@ -167,6 +167,33 @@ export default function TodayScreen() {
               : t("today.greetingFallback")}
           </Text>
         </View>
+
+        {invitesError && (
+          <Pressable
+            onPress={() => refetchInvites()}
+            style={[styles.inviteBanner, { backgroundColor: theme.colors.errorContainer }]}
+          >
+            <MaterialCommunityIcons
+              name="alert-circle-outline"
+              size={24}
+              color={theme.colors.error}
+            />
+            <View style={{ flex: 1, marginLeft: 12 }}>
+              <Text
+                variant="titleSmall"
+                style={{ color: theme.colors.error, fontWeight: "700" }}
+              >
+                {t("invites.loadFailed")}
+              </Text>
+              <Text
+                variant="bodySmall"
+                style={{ color: theme.colors.onSurfaceVariant }}
+              >
+                {t("common.tapToRetry")}
+              </Text>
+            </View>
+          </Pressable>
+        )}
 
         {pendingInvites.length > 0 && (
           <Pressable

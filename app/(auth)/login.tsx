@@ -38,19 +38,19 @@ export default function LoginScreen() {
     setLoading(true);
     setError("");
 
-    const { error: authError } = await supabase.auth.signInWithPassword({
-      email: email.trim().toLowerCase(),
-      password,
-    });
+    try {
+      const { error: authError } = await supabase.auth.signInWithPassword({
+        email: email.trim().toLowerCase(),
+        password,
+      });
 
-    if (authError) {
-      setError(authError.message);
+      if (authError) {
+        setError(authError.message);
+        return;
+      }
+    } finally {
       setLoading(false);
-      return;
     }
-
-    setLoading(false);
-    router.replace("/");
   }
 
   return (

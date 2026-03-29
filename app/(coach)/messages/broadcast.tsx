@@ -139,12 +139,24 @@ export default function BroadcastScreen() {
   }
 
   function selectAll() {
-    if (selectedIds.size === activeClients.length) {
-      setSelectedIds(new Set());
+    const visibleIds = filteredClients.map((c) => c.client_id);
+    const allVisible = visibleIds.every((id) => selectedIds.has(id));
+    if (allVisible && visibleIds.length > 0) {
+      setSelectedIds((prev) => {
+        const next = new Set(prev);
+        for (const id of visibleIds) next.delete(id);
+        return next;
+      });
     } else {
-      setSelectedIds(new Set(activeClients.map((c) => c.client_id)));
+      setSelectedIds((prev) => {
+        const next = new Set(prev);
+        for (const id of visibleIds) next.add(id);
+        return next;
+      });
     }
   }
+
+  const allVisibleSelected = filteredClients.length > 0 && filteredClients.every((c) => selectedIds.has(c.client_id));
 
   async function handleSend() {
     if (!message.trim()) {
@@ -243,13 +255,13 @@ export default function BroadcastScreen() {
           >
             {t("messages.recipientsLabel")} ({selectedIds.size})
           </Text>
-          {activeClients.length > 0 && (
+          {filteredClients.length > 0 && (
             <Pressable onPress={selectAll}>
               <Text
                 variant="labelLarge"
                 style={{ color: theme.colors.primary, fontWeight: "600" }}
               >
-                {selectedIds.size === activeClients.length
+                {allVisibleSelected
                   ? t("messages.deselectAll")
                   : t("messages.selectAll")}
               </Text>

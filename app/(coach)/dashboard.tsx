@@ -173,7 +173,7 @@ export default function CoachDashboard() {
       label: t("dashboard.todaysWorkouts"),
       value: String(todayWorkouts.length),
       icon: "dumbbell",
-      onPress: () => router.push("/(coach)/library/index" as any),
+      onPress: () => router.push("/(coach)/clients/index" as any),
     },
     {
       label: t("dashboard.messages"),

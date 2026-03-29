@@ -825,7 +825,7 @@ function ExecutionView({
                       updateSetLog(
                         exercise.exercise_id,
                         sIdx,
-                        { reps: v ? parseInt(v, 10) : null },
+                        { reps: v ? (Number.isNaN(parseInt(v, 10)) ? null : parseInt(v, 10)) : null },
                         exercise
                       )
                     }
@@ -849,7 +849,7 @@ function ExecutionView({
                       updateSetLog(
                         exercise.exercise_id,
                         sIdx,
-                        { weight: v ? parseFloat(v) : null },
+                        { weight: v ? (Number.isNaN(parseFloat(v)) ? null : parseFloat(v)) : null },
                         exercise
                       )
                     }

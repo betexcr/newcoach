@@ -7,7 +7,7 @@ import {
   ScrollView,
 } from "react-native";
 import { Text, useTheme } from "react-native-paper";
-import { Link, useRouter } from "expo-router";
+import { Link } from "expo-router";
 import { useTranslation } from "react-i18next";
 import { supabase } from "@/lib/supabase";
 import { AuthInput } from "@/components/AuthInput";
@@ -16,7 +16,6 @@ import { isValidEmail } from "@/lib/validation";
 
 export default function SignUpScreen() {
   const theme = useTheme();
-  const router = useRouter();
   const { t } = useTranslation();
   const [fullName, setFullName] = useState("");
   const [email, setEmail] = useState("");
@@ -50,57 +49,54 @@ export default function SignUpScreen() {
     setLoading(true);
     setError("");
 
-    const { data, error: signUpError } = await supabase.auth.signUp({
-      email: email.trim().toLowerCase(),
-      password,
-      options: {
-        data: { full_name: fullName.trim() },
-      },
-    });
-
-    if (signUpError) {
-      setError(signUpError.message);
-      setLoading(false);
-      return;
-    }
-
-    if (!data.session) {
-      const { error: signInError } = await supabase.auth.signInWithPassword({
+    try {
+      const { data, error: signUpError } = await supabase.auth.signUp({
         email: email.trim().toLowerCase(),
         password,
+        options: {
+          data: { full_name: fullName.trim() },
+        },
       });
-      if (signInError) {
-        setError(signInError.message);
-        setLoading(false);
+
+      if (signUpError) {
+        setError(signUpError.message);
         return;
       }
-    }
 
-    const userId =
-      data.user?.id ??
-      (await supabase.auth.getUser().then((r) => r.data.user?.id));
+      if (!data.session) {
+        const { error: signInError } = await supabase.auth.signInWithPassword({
+          email: email.trim().toLowerCase(),
+          password,
+        });
+        if (signInError) {
+          setError(signInError.message);
+          return;
+        }
+      }
 
-    if (!userId) {
-      setError(t("auth.somethingWrong"));
+      const userId =
+        data.user?.id ??
+        (await supabase.auth.getUser().then((r) => r.data.user?.id));
+
+      if (!userId) {
+        setError(t("auth.somethingWrong"));
+        return;
+      }
+
+      if (userId) {
+        const { error: profileError } = await supabase.from("profiles").upsert({
+          id: userId,
+          email: email.trim().toLowerCase(),
+          full_name: fullName.trim(),
+        });
+        if (profileError) {
+          setError(profileError.message);
+          return;
+        }
+      }
+    } finally {
       setLoading(false);
-      return;
     }
-
-    if (userId) {
-      const { error: profileError } = await supabase.from("profiles").upsert({
-        id: userId,
-        email: email.trim().toLowerCase(),
-        full_name: fullName.trim(),
-      });
-      if (profileError) {
-        setError(profileError.message);
-        setLoading(false);
-        return;
-      }
-    }
-
-    setLoading(false);
-    router.replace("/(auth)/select-role");
   }
 
   return (
