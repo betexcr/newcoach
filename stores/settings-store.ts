@@ -41,8 +41,12 @@ export const useSettingsStore = create<SettingsState>((set, get) => ({
         AsyncStorage.getItem(LANGUAGE_KEY),
       ]);
 
-      const theme = (savedTheme as ThemePreference) || "auto";
-      const language = (savedLang as LanguagePreference) || "auto";
+      const validThemes: ThemePreference[] = ["auto", "light", "dark"];
+      const validLangs: LanguagePreference[] = ["auto", "en", "es"];
+      const theme = validThemes.includes(savedTheme as ThemePreference)
+        ? (savedTheme as ThemePreference) : "auto";
+      const language = validLangs.includes(savedLang as LanguagePreference)
+        ? (savedLang as LanguagePreference) : "auto";
       const resolved = resolveLanguage(language);
       await i18n.changeLanguage(resolved);
 

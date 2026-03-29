@@ -48,8 +48,8 @@ export default function CreateProgramScreen() {
         pathname: "/(coach)/library/program-detail",
         params: { programId: program.id, programName: name.trim() },
       } as any);
-    } catch (err: any) {
-      Alert.alert(t("common.error"), err.message ?? t("library.failedCreateProgram"));
+    } catch (err: unknown) {
+      Alert.alert(t("common.error"), err instanceof Error ? err.message : t("library.failedCreateProgram"));
     }
   }
 

@@ -136,8 +136,8 @@ export default function NutritionScreen() {
       setFat("");
       setMeal("snack");
       setShowForm(false);
-    } catch (err: any) {
-      Alert.alert(t("common.error"), err.message ?? t("nutrition.failedAddEntry"));
+    } catch (err: unknown) {
+      Alert.alert(t("common.error"), err instanceof Error ? err.message : t("nutrition.failedAddEntry"));
     }
   }
 
@@ -154,8 +154,8 @@ export default function NutritionScreen() {
       if (profile) setProfile({ ...profile, nutrition_goals: newGoals });
       setShowGoalsForm(false);
       Alert.alert(t("common.ok"), t("nutrition.goalsUpdated"));
-    } catch (err: any) {
-      Alert.alert(t("common.error"), err.message ?? t("nutrition.failedUpdateGoals"));
+    } catch (err: unknown) {
+      Alert.alert(t("common.error"), err instanceof Error ? err.message : t("nutrition.failedUpdateGoals"));
     }
   }
 

@@ -147,6 +147,8 @@ const en = {
     tryDifferentSearch: "Try a different search or filter.",
     addClient: "Add Client",
     inviteSent: "Invite sent! The client will see your invite on their dashboard.",
+    notFoundError: "No user found with that email. They need to sign up first.",
+    alreadyLinkedError: "This client is already linked to your account.",
     unknown: "Unknown",
     pendingLabel: "Pending invite",
     addClientInstructions: 'Enter your client\'s email address. They must have a New Coach account with the "Client" role selected.',

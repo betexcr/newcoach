@@ -25,27 +25,23 @@ export default function ResetPasswordScreen() {
   const [hasSession, setHasSession] = useState<boolean | null>(null);
 
   const settled = useRef(false);
+  const mounted = useRef(true);
   useEffect(() => {
-    const { data: { subscription } } = supabase.auth.onAuthStateChange((event, session) => {
-      if (settled.current) return;
-      if (event === "PASSWORD_RECOVERY" || session) {
-        settled.current = true;
-        setHasSession(true);
-      }
-    });
-    supabase.auth.getSession().then(({ data: { session } }) => {
-      if (!settled.current && session) {
+    mounted.current = true;
+    const { data: { subscription } } = supabase.auth.onAuthStateChange((event) => {
+      if (settled.current || !mounted.current) return;
+      if (event === "PASSWORD_RECOVERY") {
         settled.current = true;
         setHasSession(true);
       }
     });
     const timeout = setTimeout(() => {
-      if (!settled.current) {
+      if (!settled.current && mounted.current) {
         settled.current = true;
         setHasSession(false);
       }
     }, 5000);
-    return () => { subscription.unsubscribe(); clearTimeout(timeout); };
+    return () => { mounted.current = false; subscription.unsubscribe(); clearTimeout(timeout); };
   }, []);
 
   async function handleUpdatePassword() {
@@ -65,18 +61,22 @@ export default function ResetPasswordScreen() {
     setLoading(true);
     setError("");
 
-    const { error: updateError } = await supabase.auth.updateUser({
-      password,
-    });
+    try {
+      const { error: updateError } = await supabase.auth.updateUser({
+        password,
+      });
 
-    if (updateError) {
-      setError(updateError.message);
+      if (updateError) {
+        setError(updateError.message);
+        return;
+      }
+
+      setSuccess(true);
+    } catch (e: unknown) {
+      setError(e instanceof Error ? e.message : t("common.errorGeneric"));
+    } finally {
       setLoading(false);
-      return;
     }
-
-    setLoading(false);
-    setSuccess(true);
   }
 
   if (hasSession === null) {

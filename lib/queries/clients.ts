@@ -52,7 +52,7 @@ export function useAddClient() {
         .single();
 
       if (profileError || !clientProfile) {
-        throw new Error("No user found with that email. They need to sign up first.");
+        throw new Error("CLIENT_NOT_FOUND");
       }
 
       const { data, error } = await supabase
@@ -67,7 +67,7 @@ export function useAddClient() {
 
       if (error) {
         if (error.code === "23505") {
-          throw new Error("This client is already linked to your account.");
+          throw new Error("CLIENT_ALREADY_LINKED");
         }
         throw error;
       }

@@ -28,7 +28,7 @@ export default function SettingsScreen() {
         await supabase.from("profiles").update({ push_token: null }).eq("id", profile.id);
       }
       await supabase.auth.signOut();
-    } catch (err) {
+    } catch (err: unknown) {
       console.warn("Sign out failed:", err);
       Alert.alert(t("common.error"), t("common.errorGeneric"));
       return;

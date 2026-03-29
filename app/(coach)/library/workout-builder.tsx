@@ -283,8 +283,8 @@ export default function WorkoutBuilderScreen() {
       });
       reset();
       router.back();
-    } catch (err: any) {
-      Alert.alert(t("common.error"), err.message ?? t("library.failedSaveTemplate"));
+    } catch (err: unknown) {
+      Alert.alert(t("common.error"), err instanceof Error ? err.message : t("library.failedSaveTemplate"));
     }
   }
 
@@ -315,9 +315,9 @@ export default function WorkoutBuilderScreen() {
       Alert.alert(t("library.assignedTitle"), t("library.assignedMessage", { name: clientName }), [
         { text: t("common.ok"), onPress: () => router.back() },
       ]);
-    } catch (err: any) {
+    } catch (err: unknown) {
       setShowClientPicker(false);
-      Alert.alert(t("common.error"), err.message ?? t("library.failedAssignWorkout"));
+      Alert.alert(t("common.error"), err instanceof Error ? err.message : t("library.failedAssignWorkout"));
     }
   }
 

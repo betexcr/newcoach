@@ -72,8 +72,8 @@ export default function SelectRoleScreen() {
       } else {
         router.replace("/(client)/today");
       }
-    } catch (err: any) {
-      setError(err.message ?? t("auth.somethingWrong"));
+    } catch (err: unknown) {
+      setError(err instanceof Error ? err.message : t("auth.somethingWrong"));
       setLoading(false);
     }
   }

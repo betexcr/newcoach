@@ -53,8 +53,8 @@ export default function CreateExerciseScreen() {
         is_custom: true,
       });
       router.back();
-    } catch (err: any) {
-      Alert.alert(t("common.error"), err.message ?? t("library.failedCreateExercise"));
+    } catch (err: unknown) {
+      Alert.alert(t("common.error"), err instanceof Error ? err.message : t("library.failedCreateExercise"));
     }
   }
 

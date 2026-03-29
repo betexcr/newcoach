@@ -70,8 +70,8 @@ export default function AssignProgramScreen() {
         }),
         [{ text: t("common.ok"), onPress: () => router.back() }]
       );
-    } catch (err: any) {
-      Alert.alert(t("common.error"), err.message ?? t("assignProgram.failedAssign"));
+    } catch (err: unknown) {
+      Alert.alert(t("common.error"), err instanceof Error ? err.message : t("assignProgram.failedAssign"));
     }
   }
 

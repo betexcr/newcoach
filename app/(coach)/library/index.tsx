@@ -1,6 +1,6 @@
 import { useState, useMemo } from "react";
 import { useTranslation } from "react-i18next";
-import { View, StyleSheet, FlatList, Pressable, Modal, ScrollView, Image, Alert } from "react-native";
+import { View, StyleSheet, FlatList, Pressable, Modal, ScrollView, Image, Alert, RefreshControl } from "react-native";
 import {
   Text,
   useTheme,
@@ -202,7 +202,7 @@ export default function LibraryScreen() {
   const [search, setSearch] = useState("");
   const [selectedMuscle, setSelectedMuscle] = useState("all");
 
-  const { data: templates = [], isLoading: templatesLoading, isError: templatesError, refetch: refetchTemplates } =
+  const { data: templates = [], isLoading: templatesLoading, isError: templatesError, refetch: refetchTemplates, isRefetching: templatesRefetching } =
     useWorkoutTemplates(userId);
   const deleteTemplate = useDeleteTemplate();
 
@@ -214,7 +214,7 @@ export default function LibraryScreen() {
     [search, selectedMuscle]
   );
 
-  const { data: exercises = [], isLoading, isError, refetch: refetchExercises } = useExercises(filters);
+  const { data: exercises = [], isLoading, isError, refetch: refetchExercises, isRefetching: exercisesRefetching } = useExercises(filters);
   const [selectedExercise, setSelectedExercise] = useState<Exercise | null>(null);
 
   return (
@@ -286,6 +286,8 @@ export default function LibraryScreen() {
             theme={theme}
             t={t}
             router={router}
+            isRefetching={templatesRefetching}
+            onRefresh={refetchTemplates}
             onDelete={(id) => {
               if (deleteTemplate.isPending) return;
               Alert.alert(t("common.delete"), t("library.deleteTemplateConfirm"), [
@@ -336,6 +338,9 @@ export default function LibraryScreen() {
         data={exercises}
         keyExtractor={(item) => item.id}
         contentContainerStyle={styles.list}
+        refreshControl={
+          <RefreshControl refreshing={exercisesRefetching} onRefresh={refetchExercises} />
+        }
         renderItem={({ item }) => <ExerciseCard exercise={item} onPress={() => setSelectedExercise(item)} />}
         ListEmptyComponent={
           isError ? (
@@ -385,12 +390,16 @@ function TemplatesListView({
   theme,
   t,
   router,
+  isRefetching,
+  onRefresh,
   onDelete,
 }: {
   templates: WorkoutTemplate[];
   theme: any;
   t: any;
   router: any;
+  isRefetching: boolean;
+  onRefresh: () => void;
   onDelete: (id: string) => void;
 }) {
   if (templates.length === 0) {
@@ -412,6 +421,9 @@ function TemplatesListView({
       data={templates}
       keyExtractor={(item) => item.id}
       contentContainerStyle={styles.list}
+      refreshControl={
+        <RefreshControl refreshing={isRefetching} onRefresh={onRefresh} />
+      }
       renderItem={({ item }) => (
         <Pressable
           style={[styles.templateCard, { backgroundColor: theme.colors.surface }]}

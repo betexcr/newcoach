@@ -149,6 +149,8 @@ const es: TranslationKeys = {
     tryDifferentSearch: "Intenta con otra búsqueda o filtro.",
     addClient: "Agregar Cliente",
     inviteSent: "¡Invitación enviada! El cliente verá tu invitación en su panel.",
+    notFoundError: "No se encontró ningún usuario con ese correo. Deben registrarse primero.",
+    alreadyLinkedError: "Este cliente ya está vinculado a tu cuenta.",
     unknown: "Desconocido",
     pendingLabel: "Invitación pendiente",
     addClientInstructions: 'Ingresa el correo de tu cliente. Debe tener una cuenta de New Coach con el rol de "Cliente" seleccionado.',

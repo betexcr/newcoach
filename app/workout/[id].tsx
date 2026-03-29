@@ -134,8 +134,8 @@ export default function WorkoutScreen() {
       Alert.alert(t("workout.completeTitle"), t("workout.completeMessage"), [
         { text: t("common.ok"), onPress: () => router.back() },
       ]);
-    } catch (err: any) {
-      Alert.alert(t("common.error"), err.message ?? t("workout.failedSave"));
+    } catch (err: unknown) {
+      Alert.alert(t("common.error"), err instanceof Error ? err.message : t("workout.failedSave"));
     }
   }
 

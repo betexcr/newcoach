@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useEffect, useRef } from "react";
 import {
   View,
   StyleSheet,
@@ -31,26 +31,39 @@ export default function EditProfileScreen() {
   );
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
+  const profileSynced = useRef(!!profile);
+
+  useEffect(() => {
+    if (profile && !profileSynced.current) {
+      profileSynced.current = true;
+      setFullName(profile.full_name ?? "");
+      setAvatarUri(profile.avatar_url ?? null);
+    }
+  }, [profile]);
 
   async function pickImage() {
-    const { status } = await ImagePicker.requestMediaLibraryPermissionsAsync();
-    if (status !== "granted") {
-      Alert.alert(
-        t("auth.permissionNeeded"),
-        t("auth.permissionCameraRoll")
-      );
-      return;
-    }
+    try {
+      const { status } = await ImagePicker.requestMediaLibraryPermissionsAsync();
+      if (status !== "granted") {
+        Alert.alert(
+          t("auth.permissionNeeded"),
+          t("auth.permissionCameraRoll")
+        );
+        return;
+      }
 
-    const result = await ImagePicker.launchImageLibraryAsync({
-      mediaTypes: ["images"],
-      allowsEditing: true,
-      aspect: [1, 1],
-      quality: 0.7,
-    });
+      const result = await ImagePicker.launchImageLibraryAsync({
+        mediaTypes: ["images"],
+        allowsEditing: true,
+        aspect: [1, 1],
+        quality: 0.7,
+      });
 
-    if (!result.canceled && result.assets[0]) {
-      setAvatarUri(result.assets[0].uri);
+      if (!result.canceled && result.assets[0]) {
+        setAvatarUri(result.assets[0].uri);
+      }
+    } catch {
+      Alert.alert(t("common.error"), t("common.errorGeneric"));
     }
   }
 
@@ -109,8 +122,8 @@ export default function EditProfileScreen() {
 
       setProfile(data);
       router.back();
-    } catch (err: any) {
-      setError(err.message ?? t("auth.failedUpdateProfile"));
+    } catch (err: unknown) {
+      setError(err instanceof Error ? err.message : t("auth.failedUpdateProfile"));
     } finally {
       setLoading(false);
     }

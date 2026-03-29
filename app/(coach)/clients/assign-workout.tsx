@@ -65,8 +65,8 @@ export default function AssignWorkoutScreen() {
         t("clients.workoutAssignedTo", { name: clientName ?? t("dashboard.fallbackClient") }),
         [{ text: t("common.ok"), onPress: () => router.dismissAll() }]
       );
-    } catch (err: any) {
-      Alert.alert(t("common.error"), err.message ?? t("clients.failedAssign"));
+    } catch (err: unknown) {
+      Alert.alert(t("common.error"), err instanceof Error ? err.message : t("clients.failedAssign"));
     }
   }
 

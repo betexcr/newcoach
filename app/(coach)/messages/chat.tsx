@@ -61,9 +61,9 @@ export default function ChatScreen() {
         sender_id: userId,
         body,
       });
-    } catch (err: any) {
+    } catch (err: unknown) {
       setText(body);
-      Alert.alert(t("common.error"), err.message ?? t("common.errorGeneric"));
+      Alert.alert(t("common.error"), err instanceof Error ? err.message : t("common.errorGeneric"));
     }
   }
 

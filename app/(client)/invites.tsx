@@ -1,5 +1,5 @@
 import { useTranslation } from "react-i18next";
-import { View, StyleSheet, FlatList, Pressable, Alert } from "react-native";
+import { View, StyleSheet, FlatList, Pressable, Alert, RefreshControl } from "react-native";
 import {
   Text,
   useTheme,
@@ -25,7 +25,7 @@ export default function InvitesScreen() {
   const theme = useTheme();
   const router = useRouter();
   const userId = useAuthStore((s) => s.user?.id) ?? "";
-  const { data: invites = [], isLoading, isError, refetch } = usePendingInvites(userId);
+  const { data: invites = [], isLoading, isError, refetch, isRefetching } = usePendingInvites(userId);
   const acceptInvite = useAcceptInvite();
   const declineInvite = useDeclineInvite();
 
@@ -33,8 +33,8 @@ export default function InvitesScreen() {
     try {
       await acceptInvite.mutateAsync(invite.id);
       Alert.alert(t("common.ok"), t("invites.accepted"));
-    } catch (err: any) {
-      Alert.alert(t("common.error"), err.message ?? t("invites.failedAccept"));
+    } catch (err: unknown) {
+      Alert.alert(t("common.error"), err instanceof Error ? err.message : t("invites.failedAccept"));
     }
   }
 
@@ -51,8 +51,8 @@ export default function InvitesScreen() {
           onPress: async () => {
             try {
               await declineInvite.mutateAsync(invite.id);
-            } catch (err: any) {
-              Alert.alert(t("common.error"), err.message ?? t("invites.failedDecline"));
+            } catch (err: unknown) {
+              Alert.alert(t("common.error"), err instanceof Error ? err.message : t("invites.failedDecline"));
             }
           },
         },
@@ -179,6 +179,9 @@ export default function InvitesScreen() {
           keyExtractor={(item) => item.id}
           renderItem={renderInvite}
           contentContainerStyle={styles.list}
+          refreshControl={
+            <RefreshControl refreshing={isRefetching} onRefresh={refetch} />
+          }
         />
       )}
     </SafeAreaView>

@@ -43,8 +43,13 @@ export default function AddClientScreen() {
       Alert.alert(t("clients.addClient"), t("clients.inviteSent"), [
         { text: t("common.ok"), onPress: () => router.back() },
       ]);
-    } catch (err: any) {
-      Alert.alert(t("common.error"), err.message);
+    } catch (err: unknown) {
+      const code = err instanceof Error ? err.message : "";
+      const ERROR_MAP: Record<string, string> = {
+        CLIENT_NOT_FOUND: t("clients.notFoundError"),
+        CLIENT_ALREADY_LINKED: t("clients.alreadyLinkedError"),
+      };
+      Alert.alert(t("common.error"), ERROR_MAP[code] ?? t("common.errorGeneric"));
     }
   }
 
