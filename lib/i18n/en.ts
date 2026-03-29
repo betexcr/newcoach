@@ -487,6 +487,8 @@ const en = {
     successTitle: "Program Assigned!",
     successMessage: "{{count}} workouts have been scheduled for {{name}}.",
     failedAssign: "Failed to assign program.",
+    invalidStartDate: "The start date is invalid. Please use a valid YYYY-MM-DD date.",
+    programNoWorkouts: "This program has no workouts to assign. Add workouts to the program first.",
   },
   programs: {
     title: "Programs",

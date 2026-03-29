@@ -101,7 +101,7 @@ export default function NewChatScreen() {
       autoSelectDone.current = true;
       Alert.alert(t("common.error"), t("messages.clientNotFound"));
     }
-  }, [preselectedClientId, clients, isLoading, conversationsLoading]);
+  }, [preselectedClientId, clients, isLoading, conversationsLoading, handleSelect, t]);
 
   if (preselectedClientId && !autoSelectDone.current) {
     return (
@@ -118,7 +118,7 @@ export default function NewChatScreen() {
       style={[styles.container, { backgroundColor: theme.colors.background }]}
     >
       <View style={styles.topBar}>
-        <Pressable onPress={() => router.back()}>
+        <Pressable onPress={() => router.back()} hitSlop={{ top: 10, bottom: 10, left: 10, right: 10 }}>
           <MaterialCommunityIcons name="arrow-left" size={24} color={theme.colors.onSurface} />
         </Pressable>
         <Text

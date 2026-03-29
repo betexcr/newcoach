@@ -60,7 +60,10 @@ export default function ProgramDetailScreen() {
       Alert.alert(t("common.required"), t("programs.enterWorkoutName"));
       return;
     }
-    if (!programId) return;
+    if (!programId) {
+      Alert.alert(t("common.error"), t("common.errorGeneric"));
+      return;
+    }
 
     const builderExercises = useWorkoutBuilderStore.getState().exercises;
 
@@ -88,7 +91,7 @@ export default function ProgramDetailScreen() {
   return (
     <SafeAreaView style={[styles.container, { backgroundColor: theme.colors.background }]}>
       <View style={styles.topBar}>
-        <Pressable onPress={() => router.back()}>
+        <Pressable onPress={() => router.back()} hitSlop={{ top: 10, bottom: 10, left: 10, right: 10 }}>
           <MaterialCommunityIcons name="arrow-left" size={24} color={theme.colors.onSurface} />
         </Pressable>
         <View style={{ flex: 1, marginLeft: 12 }}>

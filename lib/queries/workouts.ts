@@ -213,7 +213,12 @@ export function useAssignProgram() {
       if (fetchError) throw fetchError;
 
       const base = new Date(startDate + "T12:00:00");
-      const assignments = (programWorkouts ?? []).map((pw) => {
+      if (isNaN(base.getTime())) throw new Error("INVALID_START_DATE");
+
+      const rows = programWorkouts ?? [];
+      if (rows.length === 0) throw new Error("PROGRAM_NO_WORKOUTS");
+
+      const assignments = rows.map((pw) => {
         const offsetDays = (pw.week_number - 1) * 7 + (pw.day_number - 1);
         const scheduled = new Date(base);
         scheduled.setDate(base.getDate() + offsetDays);

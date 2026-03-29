@@ -100,7 +100,7 @@ export function useExerciseHistory(clientId: string, exerciseName: string) {
         const match = logged.find(
           (ex) => ex.exercise_name === exerciseName
         );
-        if (match) {
+        if (match && Array.isArray(match.sets)) {
           history.push({
             date: result.completed_at,
             sets: match.sets.map((s) => ({

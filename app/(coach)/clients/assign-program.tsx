@@ -71,7 +71,12 @@ export default function AssignProgramScreen() {
         [{ text: t("common.ok"), onPress: () => router.back() }]
       );
     } catch (err: unknown) {
-      Alert.alert(t("common.error"), err instanceof Error ? err.message : t("assignProgram.failedAssign"));
+      const code = err instanceof Error ? err.message : "";
+      const ERROR_MAP: Record<string, string> = {
+        INVALID_START_DATE: t("assignProgram.invalidStartDate"),
+        PROGRAM_NO_WORKOUTS: t("assignProgram.programNoWorkouts"),
+      };
+      Alert.alert(t("common.error"), ERROR_MAP[code] ?? t("assignProgram.failedAssign"));
     }
   }
 
@@ -80,7 +85,7 @@ export default function AssignProgramScreen() {
       style={[styles.container, { backgroundColor: theme.colors.background }]}
     >
       <View style={styles.topBar}>
-        <Pressable onPress={() => router.back()}>
+        <Pressable onPress={() => router.back()} hitSlop={{ top: 10, bottom: 10, left: 10, right: 10 }}>
           <MaterialCommunityIcons
             name="arrow-left"
             size={24}

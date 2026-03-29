@@ -9,6 +9,7 @@ import {
   KeyboardAvoidingView,
   Platform,
   Alert,
+  RefreshControl,
 } from "react-native";
 import { Text, useTheme, IconButton, ActivityIndicator } from "react-native-paper";
 import { SafeAreaView } from "react-native-safe-area-context";
@@ -33,7 +34,7 @@ export default function ChatScreen() {
   useEffect(() => {
     return () => { useChatNavStore.getState().clear(); };
   }, []);
-  const { data: messages = [], isLoading: messagesLoading, isError: messagesError, refetch: refetchMessages } = useMessages(
+  const { data: messages = [], isLoading: messagesLoading, isError: messagesError, refetch: refetchMessages, isRefetching: messagesRefetching } = useMessages(
     conversationId ?? ""
   );
   const sendMessage = useSendMessage();
@@ -72,7 +73,7 @@ export default function ChatScreen() {
       style={[styles.container, { backgroundColor: theme.colors.background }]}
     >
       <View style={[styles.topBar, { borderBottomColor: theme.colors.outline }]}>
-        <Pressable onPress={() => router.back()}>
+        <Pressable onPress={() => router.back()} hitSlop={{ top: 10, bottom: 10, left: 10, right: 10 }}>
           <MaterialCommunityIcons
             name="arrow-left"
             size={24}
@@ -111,6 +112,9 @@ export default function ChatScreen() {
           ref={flatListRef}
           data={messages}
           keyExtractor={(item) => item.id}
+          refreshControl={
+            <RefreshControl refreshing={messagesRefetching} onRefresh={refetchMessages} />
+          }
           onScroll={(e) => {
             const { contentOffset, layoutMeasurement, contentSize } = e.nativeEvent;
             isNearBottom.current =

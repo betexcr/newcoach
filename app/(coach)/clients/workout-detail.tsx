@@ -61,7 +61,7 @@ export default function CoachWorkoutDetailScreen() {
     return (
       <SafeAreaView style={[styles.container, { backgroundColor: theme.colors.background }]}>
         <View style={styles.topBar}>
-          <Pressable onPress={() => router.back()}>
+          <Pressable onPress={() => router.back()} hitSlop={{ top: 10, bottom: 10, left: 10, right: 10 }}>
             <MaterialCommunityIcons name="arrow-left" size={24} color={theme.colors.onSurface} />
           </Pressable>
           <Text variant="titleLarge" style={{ color: theme.colors.onSurface, fontWeight: "700" }}>
@@ -80,7 +80,7 @@ export default function CoachWorkoutDetailScreen() {
     return (
       <SafeAreaView style={[styles.container, { backgroundColor: theme.colors.background }]}>
         <View style={styles.topBar}>
-          <Pressable onPress={() => router.back()}>
+          <Pressable onPress={() => router.back()} hitSlop={{ top: 10, bottom: 10, left: 10, right: 10 }}>
             <MaterialCommunityIcons name="arrow-left" size={24} color={theme.colors.onSurface} />
           </Pressable>
           <Text variant="titleLarge" style={{ color: theme.colors.onSurface, fontWeight: "700" }}>
@@ -96,7 +96,7 @@ export default function CoachWorkoutDetailScreen() {
   return (
     <SafeAreaView style={[styles.container, { backgroundColor: theme.colors.background }]}>
       <View style={styles.topBar}>
-        <Pressable onPress={() => router.back()}>
+        <Pressable onPress={() => router.back()} hitSlop={{ top: 10, bottom: 10, left: 10, right: 10 }}>
           <MaterialCommunityIcons name="arrow-left" size={24} color={theme.colors.onSurface} />
         </Pressable>
         <Text

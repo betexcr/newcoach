@@ -39,7 +39,7 @@ function ClientRow({
 }) {
   const theme = useTheme();
   const { t } = useTranslation();
-  const initials = client.profile.full_name
+  const initials = client.profile?.full_name
     ? client.profile.full_name
         .split(" ")
         .map((n) => n[0])
@@ -80,14 +80,14 @@ function ClientRow({
           style={{ color: theme.colors.onSurface, fontWeight: "600" }}
           numberOfLines={1}
         >
-          {client.profile.full_name ?? t("clients.unknown")}
+          {client.profile?.full_name ?? t("clients.unknown")}
         </Text>
         <Text
           variant="bodySmall"
           style={{ color: theme.colors.onSurfaceVariant }}
           numberOfLines={1}
         >
-          {client.profile.email}
+          {client.profile?.email ?? ""}
         </Text>
       </View>
       <Checkbox
@@ -124,8 +124,8 @@ export default function BroadcastScreen() {
     const q = search.toLowerCase();
     return activeClients.filter(
       (c) =>
-        c.profile.full_name?.toLowerCase().includes(q) ||
-        c.profile.email.toLowerCase().includes(q)
+        c.profile?.full_name?.toLowerCase().includes(q) ||
+        (c.profile?.email ?? "").toLowerCase().includes(q)
     );
   }, [activeClients, search]);
 
@@ -204,7 +204,7 @@ export default function BroadcastScreen() {
       style={[styles.container, { backgroundColor: theme.colors.background }]}
     >
       <View style={styles.topBar}>
-        <Pressable onPress={() => router.back()}>
+        <Pressable onPress={() => router.back()} hitSlop={{ top: 10, bottom: 10, left: 10, right: 10 }}>
           <MaterialCommunityIcons
             name="arrow-left"
             size={24}

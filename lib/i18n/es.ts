@@ -489,6 +489,8 @@ const es: TranslationKeys = {
     successTitle: "¡Programa Asignado!",
     successMessage: "Se han programado {{count}} entrenamientos para {{name}}.",
     failedAssign: "Error al asignar programa.",
+    invalidStartDate: "La fecha de inicio no es válida. Usa un formato AAAA-MM-DD válido.",
+    programNoWorkouts: "Este programa no tiene entrenamientos para asignar. Agrega entrenamientos al programa primero.",
   },
   programs: {
     title: "Programas",
