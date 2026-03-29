@@ -37,12 +37,18 @@ export default function ClientMessagesScreen() {
     if (!userId) return;
     setCreatingChat(true);
     try {
-      const { data: rel } = await supabase
+      const { data: rel, error: relError } = await supabase
         .from("coach_clients")
         .select("coach_id, profiles!coach_clients_coach_id_fkey(full_name)")
         .eq("client_id", userId)
         .limit(1)
         .single();
+
+      if (relError && relError.code !== "PGRST116") {
+        Alert.alert(t("common.error"), t("common.errorGeneric"));
+        setCreatingChat(false);
+        return;
+      }
 
       if (!rel) {
         Alert.alert(t("common.error"), t("messages.noCoachLinked"));

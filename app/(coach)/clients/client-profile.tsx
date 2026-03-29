@@ -448,6 +448,7 @@ function ProgressTab({
           stats[ex.exercise_name] = { count: 0, maxWeight: 0 };
         }
         stats[ex.exercise_name].count++;
+        if (!Array.isArray(ex.sets)) continue;
         for (const s of ex.sets) {
           if (s.weight && s.weight > stats[ex.exercise_name].maxWeight) {
             stats[ex.exercise_name].maxWeight = s.weight;

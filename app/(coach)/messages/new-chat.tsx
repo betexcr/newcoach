@@ -1,6 +1,6 @@
 import { useState, useMemo, useEffect, useRef, useCallback } from "react";
 import { useTranslation } from "react-i18next";
-import { View, StyleSheet, FlatList, Pressable, Alert } from "react-native";
+import { View, StyleSheet, FlatList, Pressable, Alert, RefreshControl } from "react-native";
 import { Text, useTheme, Searchbar, Avatar, ActivityIndicator } from "react-native-paper";
 import { SafeAreaView } from "react-native-safe-area-context";
 import { MaterialCommunityIcons } from "@expo/vector-icons";
@@ -22,7 +22,7 @@ export default function NewChatScreen() {
     preselectedClientName?: string;
   }>();
 
-  const { data: clients = [], isLoading, isError: clientsError, refetch: refetchClients } = useCoachClients(userId);
+  const { data: clients = [], isLoading, isError: clientsError, refetch: refetchClients, isRefetching: clientsRefetching } = useCoachClients(userId);
   const { data: conversations = [], isLoading: conversationsLoading, isError: conversationsError, refetch: refetchConversations } = useConversations(userId);
   const createConversation = useCreateConversation();
   const [search, setSearch] = useState("");
@@ -153,6 +153,9 @@ export default function NewChatScreen() {
           data={filtered}
           keyExtractor={(item) => item.id}
           contentContainerStyle={styles.list}
+          refreshControl={
+            <RefreshControl refreshing={clientsRefetching} onRefresh={() => { refetchClients(); refetchConversations(); }} />
+          }
           renderItem={({ item }) => {
             const name = item.profile?.full_name ?? t("clients.unknown");
             const initials = name

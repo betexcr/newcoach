@@ -263,7 +263,7 @@ function DetailView({
       style={[styles.container, { backgroundColor: theme.colors.background }]}
     >
       <View style={styles.topBar}>
-        <Pressable onPress={onBack} style={styles.backBtn}>
+        <Pressable onPress={onBack} style={styles.backBtn} hitSlop={{ top: 10, bottom: 10, left: 10, right: 10 }}>
           <MaterialCommunityIcons
             name="arrow-left"
             size={24}
@@ -609,7 +609,7 @@ function ExecutionView({
     return (
       <SafeAreaView style={[styles.container, { backgroundColor: theme.colors.background }]}>
         <View style={styles.execTopBar}>
-          <Pressable onPress={onBack} style={styles.backBtn}>
+          <Pressable onPress={onBack} style={styles.backBtn} hitSlop={{ top: 10, bottom: 10, left: 10, right: 10 }}>
             <MaterialCommunityIcons name="close" size={24} color={theme.colors.onSurface} />
           </Pressable>
         </View>
@@ -629,6 +629,7 @@ function ExecutionView({
     >
       <View style={styles.execTopBar}>
         <Pressable
+          hitSlop={{ top: 10, bottom: 10, left: 10, right: 10 }}
           onPress={() => {
             const hasLoggedSets = Object.keys(loggedData).length > 0;
             if (hasLoggedSets) {
@@ -1008,7 +1009,7 @@ function ResultsView({
       style={[styles.container, { backgroundColor: theme.colors.background }]}
     >
       <View style={styles.topBar}>
-        <Pressable onPress={onBack} style={styles.backBtn}>
+        <Pressable onPress={onBack} style={styles.backBtn} hitSlop={{ top: 10, bottom: 10, left: 10, right: 10 }}>
           <MaterialCommunityIcons name="arrow-left" size={24} color={theme.colors.onSurface} />
         </Pressable>
         <View style={{ flex: 1 }}>
@@ -1026,11 +1027,13 @@ function ResultsView({
               {workout.name}
             </Text>
             <Text variant="bodySmall" style={{ color: theme.colors.onSurfaceVariant }}>
-              {t("workout.completedOn", {
-                date: new Date(result.completed_at).toLocaleDateString(undefined, {
+              {(() => {
+                const d = new Date(result.completed_at);
+                const dateStr = isNaN(d.getTime()) ? "—" : d.toLocaleDateString(undefined, {
                   month: "short", day: "numeric", year: "numeric", hour: "numeric", minute: "2-digit",
-                }),
-              })}
+                });
+                return t("workout.completedOn", { date: dateStr });
+              })()}
             </Text>
           </View>
         </View>

@@ -120,7 +120,7 @@ export function useUpdateHabit() {
       id: string;
       name?: string;
       description?: string | null;
-      frequency?: string;
+      frequency?: Habit["frequency"];
     }) => {
       const { data, error } = await supabase
         .from("habits")

@@ -129,7 +129,7 @@ export default function TodayScreen() {
         style={[styles.container, { backgroundColor: theme.colors.background }]}
         edges={["top"]}
       >
-        <ErrorState onRetry={() => { refetchWeek(); refetchAll(); }} />
+        <ErrorState onRetry={() => { refetchWeek(); refetchAll(); refetchInvites(); }} />
       </SafeAreaView>
     );
   }
@@ -147,6 +147,7 @@ export default function TodayScreen() {
             onRefresh={() => {
               refetchWeek();
               refetchAll();
+              refetchInvites();
             }}
           />
         }
