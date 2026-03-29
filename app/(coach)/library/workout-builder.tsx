@@ -255,7 +255,7 @@ export default function WorkoutBuilderScreen() {
   const userId = useAuthStore((s) => s.user?.id);
   const createTemplate = useCreateTemplate();
   const assignWorkout = useAssignWorkout();
-  const { data: clients = [] } = useCoachClients(userId ?? "");
+  const { data: clients = [], isLoading: clientsLoading } = useCoachClients(userId ?? "");
   const { name, description, exercises, setName, setDescription, reset } =
     useWorkoutBuilderStore();
   const [showClientPicker, setShowClientPicker] = useState(false);
@@ -427,14 +427,14 @@ export default function WorkoutBuilderScreen() {
                 Alert.alert(t("common.required"), t("library.addAtLeastOneExercise"));
                 return;
               }
-              if (clients.length === 0) {
+              if (!clientsLoading && clients.length === 0) {
                 Alert.alert(t("library.noClientsTitle"), t("library.noClientsMessage"));
                 return;
               }
               setShowClientPicker(true);
             }}
-            loading={assignWorkout.isPending}
-            disabled={assignWorkout.isPending}
+            loading={assignWorkout.isPending || clientsLoading}
+            disabled={assignWorkout.isPending || clientsLoading}
           >
             {t("library.assignToClient")}
           </AuthButton>

@@ -57,9 +57,9 @@ export default function ClientProfileScreen() {
 
   const today = formatDate(new Date());
   const { data: workouts = [], isLoading: loadingWorkouts, isError: workoutsError, refetch: refetchWorkouts } = useClientWorkouts(clientId ?? "");
-  const { data: results = [], isLoading: loadingResults } = useClientResults(clientId ?? "");
-  const { data: habits = [], isLoading: loadingHabits } = useClientHabits(clientId ?? "");
-  const { data: nutritionEntries = [], isLoading: loadingNutrition } = useNutritionLogs(clientId ?? "", today);
+  const { data: results = [], isLoading: loadingResults, isError: resultsError, refetch: refetchResults } = useClientResults(clientId ?? "");
+  const { data: habits = [], isLoading: loadingHabits, isError: habitsError, refetch: refetchHabits } = useClientHabits(clientId ?? "");
+  const { data: nutritionEntries = [], isLoading: loadingNutrition, isError: nutritionError, refetch: refetchNutrition } = useNutritionLogs(clientId ?? "", today);
   const removeClient = useRemoveClient();
 
   const completedCount = useMemo(
@@ -153,8 +153,8 @@ export default function ClientProfileScreen() {
         ) : null}
       </View>
 
-      {workoutsError ? (
-        <ErrorState onRetry={refetchWorkouts} />
+      {workoutsError || resultsError || habitsError || nutritionError ? (
+        <ErrorState onRetry={() => { refetchWorkouts(); refetchResults(); refetchHabits(); refetchNutrition(); }} />
       ) : (
       <ScrollView contentContainerStyle={styles.content}>
         <View style={styles.profileHeader}>

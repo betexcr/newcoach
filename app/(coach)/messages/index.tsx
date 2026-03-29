@@ -6,6 +6,7 @@ import { MaterialCommunityIcons } from "@expo/vector-icons";
 import { useRouter } from "expo-router";
 import { useConversations, type ConversationWithLastMessage } from "@/lib/queries/messaging";
 import { useAuthStore } from "@/stores/auth-store";
+import { useChatNavStore } from "@/stores/chat-nav-store";
 import { ErrorState } from "@/components/ErrorState";
 
 function ConversationItem({
@@ -146,12 +147,13 @@ export default function CoachMessagesScreen() {
           renderItem={({ item }) => (
             <ConversationItem
               conversation={item}
-              onPress={() =>
+              onPress={() => {
+                useChatNavStore.getState().set(item.id, item.name ?? t("messages.chatTitle"));
                 router.push({
                   pathname: "/(coach)/messages/chat",
                   params: { conversationId: item.id, name: item.name ?? t("messages.chatTitle") },
-                })
-              }
+                });
+              }}
             />
           )}
         />

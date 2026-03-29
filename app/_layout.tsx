@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import { useColorScheme, Platform, AppState } from "react-native";
+import { useColorScheme, Platform, AppState, Alert } from "react-native";
 import type { AppStateStatus } from "react-native";
 import { Stack, useRouter } from "expo-router";
 import { PaperProvider } from "react-native-paper";
@@ -13,6 +13,7 @@ import { AuthProvider } from "@/lib/auth-provider";
 import { lightTheme, darkTheme } from "@/lib/theme";
 import { useSettingsStore } from "@/stores/settings-store";
 import { useAuthStore } from "@/stores/auth-store";
+import { useChatNavStore } from "@/stores/chat-nav-store";
 import { ErrorBoundary } from "@/components/ErrorBoundary";
 import "@/lib/i18n";
 
@@ -23,6 +24,11 @@ const queryClient = new QueryClient({
     queries: {
       staleTime: 1000 * 60 * 5,
       retry: 2,
+    },
+    mutations: {
+      onError: (error: Error) => {
+        Alert.alert("Error", error.message ?? "Something went wrong");
+      },
     },
   },
 });
@@ -63,6 +69,7 @@ export default function RootLayout() {
       const prefix = role === "coach" ? "/(coach)" : "/(client)";
 
       if (data?.screen === "chat" && data?.conversationId) {
+        useChatNavStore.getState().set(data.conversationId as string, (data.name as string) ?? "");
         router.push({
           pathname: `${prefix}/messages/chat`,
           params: { conversationId: data.conversationId as string, name: (data.name as string) ?? "" },

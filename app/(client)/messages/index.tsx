@@ -14,6 +14,7 @@ import { MaterialCommunityIcons } from "@expo/vector-icons";
 import { useRouter } from "expo-router";
 import { useConversations, useCreateConversation, type ConversationWithLastMessage } from "@/lib/queries/messaging";
 import { useAuthStore } from "@/stores/auth-store";
+import { useChatNavStore } from "@/stores/chat-nav-store";
 import { ErrorState } from "@/components/ErrorState";
 import { supabase } from "@/lib/supabase";
 
@@ -61,6 +62,7 @@ export default function ClientMessagesScreen() {
         (c) => c.type === "direct" && coachConvIds.has(c.id)
       );
       if (existingDirect) {
+        useChatNavStore.getState().set(existingDirect.id, coachName);
         router.push({
           pathname: "/(client)/messages/chat",
           params: { conversationId: existingDirect.id, name: coachName },
@@ -75,6 +77,7 @@ export default function ClientMessagesScreen() {
         createdBy: userId,
         participantIds: [rel.coach_id],
       });
+      useChatNavStore.getState().set(conv.id, coachName);
       router.push({
         pathname: "/(client)/messages/chat",
         params: { conversationId: conv.id, name: coachName },
@@ -151,15 +154,16 @@ export default function ClientMessagesScreen() {
                 styles.convoItem,
                 { backgroundColor: theme.colors.surface },
               ]}
-              onPress={() =>
+              onPress={() => {
+                useChatNavStore.getState().set(item.id, item.name ?? t("messages.coachFallback"));
                 router.push({
                   pathname: "/(client)/messages/chat",
                   params: {
                     conversationId: item.id,
                     name: item.name ?? t("messages.coachFallback"),
                   },
-                })
-              }
+                });
+              }}
             >
               <Avatar.Icon
                 size={48}

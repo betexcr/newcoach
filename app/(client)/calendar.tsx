@@ -1,6 +1,6 @@
 import { useState, useMemo, useEffect } from "react";
 import { useTranslation } from "react-i18next";
-import { View, StyleSheet, Pressable } from "react-native";
+import { View, StyleSheet, Pressable, ScrollView } from "react-native";
 import { Text, useTheme, ActivityIndicator } from "react-native-paper";
 import { SafeAreaView } from "react-native-safe-area-context";
 import { MaterialCommunityIcons } from "@expo/vector-icons";
@@ -197,7 +197,7 @@ export default function CalendarScreen() {
         })}
       </View>
 
-      <View style={styles.dayContent}>
+      <ScrollView style={styles.dayContent} contentContainerStyle={{ paddingBottom: 24 }}>
         <Text
           variant="titleLarge"
           style={{
@@ -237,7 +237,7 @@ export default function CalendarScreen() {
             ))}
           </View>
         )}
-      </View>
+      </ScrollView>
     </SafeAreaView>
   );
 }

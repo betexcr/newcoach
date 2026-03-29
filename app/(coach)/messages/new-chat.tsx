@@ -9,6 +9,7 @@ import { useAuthStore } from "@/stores/auth-store";
 import { supabase } from "@/lib/supabase";
 import { useCoachClients, type ClientWithProfile } from "@/lib/queries/clients";
 import { useCreateConversation, useConversations } from "@/lib/queries/messaging";
+import { useChatNavStore } from "@/stores/chat-nav-store";
 import { ErrorState } from "@/components/ErrorState";
 
 export default function NewChatScreen() {
@@ -60,6 +61,7 @@ export default function NewChatScreen() {
     );
 
     if (existingDirect) {
+      useChatNavStore.getState().set(existingDirect.id, clientName);
       router.replace({
         pathname: "/(coach)/messages/chat",
         params: { conversationId: existingDirect.id, name: clientName },
@@ -74,6 +76,7 @@ export default function NewChatScreen() {
         createdBy: userId,
         participantIds: [client.client_id],
       });
+      useChatNavStore.getState().set(conv.id, clientName);
       router.replace({
         pathname: "/(coach)/messages/chat",
         params: { conversationId: conv.id, name: clientName },

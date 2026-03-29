@@ -16,6 +16,7 @@ import { MaterialCommunityIcons } from "@expo/vector-icons";
 import { useRouter, useLocalSearchParams } from "expo-router";
 import { useMessages, useSendMessage } from "@/lib/queries/messaging";
 import { useAuthStore } from "@/stores/auth-store";
+import { useChatNavStore } from "@/stores/chat-nav-store";
 import { MessageBubble } from "@/components/MessageBubble";
 import { ErrorState } from "@/components/ErrorState";
 
@@ -23,11 +24,15 @@ export default function ClientChatScreen() {
   const { t } = useTranslation();
   const theme = useTheme();
   const router = useRouter();
-  const { conversationId, name } = useLocalSearchParams<{
-    conversationId: string;
-    name: string;
-  }>();
+  const params = useLocalSearchParams<{ conversationId: string; name: string }>();
+  const storeNav = useChatNavStore();
+  const conversationId = params.conversationId || storeNav.conversationId || undefined;
+  const name = params.name || storeNav.name || undefined;
   const userId = useAuthStore((s) => s.user?.id);
+
+  useEffect(() => {
+    return () => { useChatNavStore.getState().clear(); };
+  }, []);
   const { data: messages = [], isLoading: messagesLoading, isError: messagesError, refetch: refetchMessages } = useMessages(
     conversationId ?? ""
   );
