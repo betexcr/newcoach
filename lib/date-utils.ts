@@ -9,3 +9,33 @@ export function formatDate(d: Date): string {
   const day = String(d.getDate()).padStart(2, "0");
   return `${year}-${month}-${day}`;
 }
+
+/**
+ * Safely format a date string from the database for display.
+ * Returns a fallback ("—") for null, undefined, or unparseable values
+ * instead of showing "Invalid Date".
+ */
+export function safeDateString(
+  value: string | null | undefined,
+  options?: Intl.DateTimeFormatOptions,
+  fallback = "—"
+): string {
+  if (!value) return fallback;
+  const d = new Date(value);
+  if (isNaN(d.getTime())) return fallback;
+  return d.toLocaleDateString(undefined, options);
+}
+
+/**
+ * Like safeDateString but includes time components via toLocaleString.
+ */
+export function safeDateTimeString(
+  value: string | null | undefined,
+  options?: Intl.DateTimeFormatOptions,
+  fallback = "—"
+): string {
+  if (!value) return fallback;
+  const d = new Date(value);
+  if (isNaN(d.getTime())) return fallback;
+  return d.toLocaleString(undefined, options);
+}

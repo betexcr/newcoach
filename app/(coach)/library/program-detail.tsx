@@ -91,7 +91,7 @@ export default function ProgramDetailScreen() {
   return (
     <SafeAreaView style={[styles.container, { backgroundColor: theme.colors.background }]}>
       <View style={styles.topBar}>
-        <Pressable onPress={() => router.back()} hitSlop={{ top: 10, bottom: 10, left: 10, right: 10 }}>
+        <Pressable onPress={() => router.back()} hitSlop={{ top: 10, bottom: 10, left: 10, right: 10 }} accessibilityLabel={t("common.back")} accessibilityRole="button">
           <MaterialCommunityIcons name="arrow-left" size={24} color={theme.colors.onSurface} />
         </Pressable>
         <View style={{ flex: 1, marginLeft: 12 }}>

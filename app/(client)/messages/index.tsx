@@ -8,6 +8,7 @@ import {
   Alert,
   RefreshControl,
 } from "react-native";
+import { safeDateString } from "@/lib/date-utils";
 import { Text, useTheme, Avatar, FAB, ActivityIndicator } from "react-native-paper";
 import { SafeAreaView } from "react-native-safe-area-context";
 import { MaterialCommunityIcons } from "@expo/vector-icons";
@@ -188,7 +189,7 @@ export default function ClientMessagesScreen() {
                   </Text>
                   {(item as ConversationWithLastMessage).last_message && (
                     <Text variant="labelSmall" style={{ color: theme.colors.onSurfaceVariant, marginLeft: 8 }}>
-                      {new Date((item as ConversationWithLastMessage).last_message!.created_at).toLocaleDateString(undefined, { month: "short", day: "numeric" })}
+                      {safeDateString((item as ConversationWithLastMessage).last_message!.created_at, { month: "short", day: "numeric" })}
                     </Text>
                   )}
                 </View>

@@ -7,6 +7,7 @@ import { useRouter } from "expo-router";
 import { useAuthStore } from "@/stores/auth-store";
 import { usePrograms, useDeleteProgram } from "@/lib/queries/programs";
 import { ErrorState } from "@/components/ErrorState";
+import { safeDateString } from "@/lib/date-utils";
 import type { Program } from "@/types/database";
 
 export default function ProgramsScreen() {
@@ -36,7 +37,7 @@ export default function ProgramsScreen() {
   return (
     <SafeAreaView style={[styles.container, { backgroundColor: theme.colors.background }]}>
       <View style={styles.topBar}>
-        <Pressable onPress={() => router.back()} hitSlop={{ top: 10, bottom: 10, left: 10, right: 10 }}>
+        <Pressable onPress={() => router.back()} hitSlop={{ top: 10, bottom: 10, left: 10, right: 10 }} accessibilityLabel={t("common.back")} accessibilityRole="button">
           <MaterialCommunityIcons name="arrow-left" size={24} color={theme.colors.onSurface} />
         </Pressable>
         <Text
@@ -89,7 +90,7 @@ export default function ProgramsScreen() {
                   </Text>
                   <Text variant="bodySmall" style={{ color: theme.colors.onSurfaceVariant }}>
                     {item.duration_weeks} {t("programs.weeks")} · {t("programs.created")}{" "}
-                    {new Date(item.created_at).toLocaleDateString()}
+                    {safeDateString(item.created_at)}
                   </Text>
                   {item.description && (
                     <Text

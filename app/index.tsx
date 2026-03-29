@@ -22,15 +22,19 @@ export default function Index() {
     const userId = useAuthStore.getState().user?.id;
     if (!userId) return;
     useAuthStore.getState().setProfileError(false);
-    const { data, error } = await supabase
-      .from("profiles")
-      .select("*")
-      .eq("id", userId)
-      .single();
-    if (error) {
+    try {
+      const { data, error } = await supabase
+        .from("profiles")
+        .select("*")
+        .eq("id", userId)
+        .single();
+      if (error) {
+        useAuthStore.getState().setProfileError(true);
+      } else {
+        useAuthStore.getState().setProfile(data);
+      }
+    } catch {
       useAuthStore.getState().setProfileError(true);
-    } else {
-      useAuthStore.getState().setProfile(data);
     }
   }, []);
 

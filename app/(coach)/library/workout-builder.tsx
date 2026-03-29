@@ -344,6 +344,9 @@ export default function WorkoutBuilderScreen() {
               router.back();
             }
           }}
+          hitSlop={{ top: 10, bottom: 10, left: 10, right: 10 }}
+          accessibilityLabel={t("common.back")}
+          accessibilityRole="button"
         >
           <MaterialCommunityIcons
             name="arrow-left"

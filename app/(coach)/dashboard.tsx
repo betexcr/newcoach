@@ -13,6 +13,7 @@ import {
 } from "@/lib/queries/workouts";
 import { useConversations } from "@/lib/queries/messaging";
 import { ErrorState } from "@/components/ErrorState";
+import { safeDateTimeString } from "@/lib/date-utils";
 import type { AppTheme } from "@/lib/theme";
 import type { AssignedWorkout } from "@/types/database";
 import type { ClientWithProfile } from "@/lib/queries/clients";
@@ -56,7 +57,7 @@ function buildActivityFeed(
         w.status === "completed"
           ? t("dashboard.activityCompleted", { name: w.name })
           : t("dashboard.activityAssigned", { name: w.name }),
-      subtitle: new Date(w.created_at).toLocaleDateString(undefined, {
+      subtitle: safeDateTimeString(w.created_at, {
         month: "short",
         day: "numeric",
         hour: "numeric",
@@ -79,7 +80,7 @@ function buildActivityFeed(
       id: `c-${c.id}`,
       type: "client_added",
       title: t("dashboard.clientJoined", { name: c.profile?.full_name ?? t("dashboard.fallbackClient") }),
-      subtitle: new Date(c.created_at).toLocaleDateString(undefined, {
+      subtitle: safeDateTimeString(c.created_at, {
         month: "short",
         day: "numeric",
         hour: "numeric",

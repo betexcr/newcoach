@@ -15,6 +15,7 @@ const es: TranslationKeys = {
     errorGeneric: "Algo salió mal. Por favor, inténtalo de nuevo.",
     tapToRetry: "Toca para reintentar",
     retry: "Reintentar",
+    back: "Atrás",
     errorBoundaryTitle: "Algo salió mal",
     errorBoundaryMessage: "Ocurrió un error inesperado. Por favor, inténtalo de nuevo.",
   },

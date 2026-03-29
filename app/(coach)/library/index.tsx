@@ -13,6 +13,7 @@ import {
 } from "react-native-paper";
 import { SafeAreaView } from "react-native-safe-area-context";
 import { useRouter } from "expo-router";
+import { safeDateString } from "@/lib/date-utils";
 import { MaterialCommunityIcons } from "@expo/vector-icons";
 import {
   useExercises,
@@ -445,7 +446,7 @@ function TemplatesListView({
             </Text>
             <Text variant="bodySmall" style={{ color: theme.colors.onSurfaceVariant }}>
               {item.exercises?.length ?? 0} {t("library.exerciseCount")} ·{" "}
-              {new Date(item.updated_at).toLocaleDateString()}
+              {safeDateString(item.updated_at)}
             </Text>
             {item.description && (
               <Text variant="bodySmall" style={{ color: theme.colors.onSurfaceVariant, marginTop: 2 }} numberOfLines={1}>

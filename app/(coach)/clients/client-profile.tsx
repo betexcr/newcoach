@@ -8,6 +8,7 @@ import {
   Alert,
   RefreshControl,
 } from "react-native";
+import { safeDateString } from "@/lib/date-utils";
 import {
   Text,
   useTheme,
@@ -125,7 +126,7 @@ export default function ClientProfileScreen() {
       style={[styles.container, { backgroundColor: theme.colors.background }]}
     >
       <View style={styles.topBar}>
-        <Pressable onPress={() => router.back()} hitSlop={{ top: 10, bottom: 10, left: 10, right: 10 }}>
+        <Pressable onPress={() => router.back()} hitSlop={{ top: 10, bottom: 10, left: 10, right: 10 }} accessibilityLabel={t("common.back")} accessibilityRole="button">
           <MaterialCommunityIcons
             name="arrow-left"
             size={24}
@@ -402,7 +403,7 @@ function WorkoutsTab({
                 {w.name}
               </Text>
               <Text variant="bodySmall" style={{ color: theme.colors.onSurfaceVariant }}>
-                {new Date(w.scheduled_date + "T12:00:00").toLocaleDateString()} · {w.exercises?.length ?? 0} {t("clients.exercises").toLowerCase()}
+                {safeDateString(w.scheduled_date + "T12:00:00")} · {w.exercises?.length ?? 0} {t("clients.exercises").toLowerCase()}
               </Text>
             </View>
             <View style={{ alignItems: "flex-end" }}>

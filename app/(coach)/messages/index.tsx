@@ -8,6 +8,7 @@ import { useConversations, type ConversationWithLastMessage } from "@/lib/querie
 import { useAuthStore } from "@/stores/auth-store";
 import { useChatNavStore } from "@/stores/chat-nav-store";
 import { ErrorState } from "@/components/ErrorState";
+import { safeDateString } from "@/lib/date-utils";
 
 function ConversationItem({
   conversation,
@@ -26,7 +27,7 @@ function ConversationItem({
 
   const preview = conversation.last_message?.body;
   const timestamp = conversation.last_message
-    ? new Date(conversation.last_message.created_at).toLocaleDateString(undefined, { month: "short", day: "numeric" })
+    ? safeDateString(conversation.last_message.created_at, { month: "short", day: "numeric" })
     : undefined;
 
   return (

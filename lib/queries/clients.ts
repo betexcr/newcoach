@@ -29,7 +29,9 @@ export function useCoachClients(coachId: string) {
         .order("created_at", { ascending: false })
         .limit(200);
       if (error) throw error;
-      return (data ?? []) as ClientWithProfile[];
+      return ((data ?? []) as Array<ClientWithProfile | { profile: null }>).filter(
+        (row): row is ClientWithProfile => row.profile != null
+      );
     },
     enabled: !!coachId,
   });

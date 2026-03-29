@@ -13,6 +13,7 @@ const en = {
     errorGeneric: "Something went wrong. Please try again.",
     tapToRetry: "Tap to retry",
     retry: "Retry",
+    back: "Back",
     errorBoundaryTitle: "Something went wrong",
     errorBoundaryMessage: "An unexpected error occurred. Please try again.",
   },

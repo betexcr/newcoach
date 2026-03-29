@@ -263,7 +263,7 @@ function DetailView({
       style={[styles.container, { backgroundColor: theme.colors.background }]}
     >
       <View style={styles.topBar}>
-        <Pressable onPress={onBack} style={styles.backBtn} hitSlop={{ top: 10, bottom: 10, left: 10, right: 10 }}>
+        <Pressable onPress={onBack} style={styles.backBtn} hitSlop={{ top: 10, bottom: 10, left: 10, right: 10 }} accessibilityLabel={t("common.back")} accessibilityRole="button">
           <MaterialCommunityIcons
             name="arrow-left"
             size={24}
@@ -609,7 +609,7 @@ function ExecutionView({
     return (
       <SafeAreaView style={[styles.container, { backgroundColor: theme.colors.background }]}>
         <View style={styles.execTopBar}>
-          <Pressable onPress={onBack} style={styles.backBtn} hitSlop={{ top: 10, bottom: 10, left: 10, right: 10 }}>
+          <Pressable onPress={onBack} style={styles.backBtn} hitSlop={{ top: 10, bottom: 10, left: 10, right: 10 }} accessibilityLabel={t("common.back")} accessibilityRole="button">
             <MaterialCommunityIcons name="close" size={24} color={theme.colors.onSurface} />
           </Pressable>
         </View>
@@ -630,6 +630,8 @@ function ExecutionView({
       <View style={styles.execTopBar}>
         <Pressable
           hitSlop={{ top: 10, bottom: 10, left: 10, right: 10 }}
+          accessibilityLabel={t("common.back")}
+          accessibilityRole="button"
           onPress={() => {
             const hasLoggedSets = Object.keys(loggedData).length > 0;
             if (hasLoggedSets) {
@@ -1009,7 +1011,7 @@ function ResultsView({
       style={[styles.container, { backgroundColor: theme.colors.background }]}
     >
       <View style={styles.topBar}>
-        <Pressable onPress={onBack} style={styles.backBtn} hitSlop={{ top: 10, bottom: 10, left: 10, right: 10 }}>
+        <Pressable onPress={onBack} style={styles.backBtn} hitSlop={{ top: 10, bottom: 10, left: 10, right: 10 }} accessibilityLabel={t("common.back")} accessibilityRole="button">
           <MaterialCommunityIcons name="arrow-left" size={24} color={theme.colors.onSurface} />
         </Pressable>
         <View style={{ flex: 1 }}>

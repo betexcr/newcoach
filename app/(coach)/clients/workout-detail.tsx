@@ -9,6 +9,7 @@ import { useWorkoutById } from "@/lib/queries/workouts";
 import { useWorkoutResult } from "@/lib/queries/results";
 import { useExercisesByIds } from "@/lib/queries/exercises";
 import { ErrorState } from "@/components/ErrorState";
+import { safeDateTimeString } from "@/lib/date-utils";
 import type { AppTheme } from "@/lib/theme";
 import type { WorkoutExercise, LoggedExercise } from "@/types/database";
 
@@ -61,7 +62,7 @@ export default function CoachWorkoutDetailScreen() {
     return (
       <SafeAreaView style={[styles.container, { backgroundColor: theme.colors.background }]}>
         <View style={styles.topBar}>
-          <Pressable onPress={() => router.back()} hitSlop={{ top: 10, bottom: 10, left: 10, right: 10 }}>
+          <Pressable onPress={() => router.back()} hitSlop={{ top: 10, bottom: 10, left: 10, right: 10 }} accessibilityLabel={t("common.back")} accessibilityRole="button">
             <MaterialCommunityIcons name="arrow-left" size={24} color={theme.colors.onSurface} />
           </Pressable>
           <Text variant="titleLarge" style={{ color: theme.colors.onSurface, fontWeight: "700" }}>
@@ -80,7 +81,7 @@ export default function CoachWorkoutDetailScreen() {
     return (
       <SafeAreaView style={[styles.container, { backgroundColor: theme.colors.background }]}>
         <View style={styles.topBar}>
-          <Pressable onPress={() => router.back()} hitSlop={{ top: 10, bottom: 10, left: 10, right: 10 }}>
+          <Pressable onPress={() => router.back()} hitSlop={{ top: 10, bottom: 10, left: 10, right: 10 }} accessibilityLabel={t("common.back")} accessibilityRole="button">
             <MaterialCommunityIcons name="arrow-left" size={24} color={theme.colors.onSurface} />
           </Pressable>
           <Text variant="titleLarge" style={{ color: theme.colors.onSurface, fontWeight: "700" }}>
@@ -96,7 +97,7 @@ export default function CoachWorkoutDetailScreen() {
   return (
     <SafeAreaView style={[styles.container, { backgroundColor: theme.colors.background }]}>
       <View style={styles.topBar}>
-        <Pressable onPress={() => router.back()} hitSlop={{ top: 10, bottom: 10, left: 10, right: 10 }}>
+        <Pressable onPress={() => router.back()} hitSlop={{ top: 10, bottom: 10, left: 10, right: 10 }} accessibilityLabel={t("common.back")} accessibilityRole="button">
           <MaterialCommunityIcons name="arrow-left" size={24} color={theme.colors.onSurface} />
         </Pressable>
         <Text
@@ -179,7 +180,7 @@ export default function CoachWorkoutDetailScreen() {
                 </Text>
               )}
               <Text variant="bodySmall" style={{ color: theme.colors.onSurfaceVariant, marginTop: 8 }}>
-                {t("clients.completedAt")} {new Date(result.completed_at).toLocaleString(undefined, {
+                {t("clients.completedAt")} {safeDateTimeString(result.completed_at, {
                   month: "short",
                   day: "numeric",
                   hour: "numeric",
