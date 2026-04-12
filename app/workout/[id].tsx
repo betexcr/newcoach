@@ -871,10 +871,10 @@ function ExecutionView({
                 <Text style={[styles.setHeaderFlex, { color: theme.colors.onSurfaceVariant }]}>
                   {t("workout.weight")}
                 </Text>
-                <Text style={[styles.setHeaderFixed, { color: theme.colors.onSurfaceVariant, width: 48 }]}>
+                <Text style={[styles.setHeaderFixed, { color: theme.colors.onSurfaceVariant, width: 44 }]}>
                   {t("workout.rpe")}
                 </Text>
-                <Text style={[styles.setHeaderFixed, { color: theme.colors.onSurfaceVariant, width: 32 }]}>
+                <Text style={[styles.setHeaderFixed, { color: theme.colors.onSurfaceVariant, width: 30 }]}>
                   ✓
                 </Text>
               </View>
@@ -1375,50 +1375,51 @@ const styles = StyleSheet.create({
     alignItems: "center",
     paddingBottom: 6,
     paddingHorizontal: 4,
-    gap: 6,
+    gap: 4,
   },
-  setHeaderNum: { width: 32, fontSize: 11, fontWeight: "600", textAlign: "center" },
-  setHeaderFlex: { flex: 1, fontSize: 11, fontWeight: "600", textAlign: "center" },
+  setHeaderNum: { width: 30, fontSize: 11, fontWeight: "600", textAlign: "center" },
+  setHeaderFlex: { flex: 1, minWidth: 0, fontSize: 11, fontWeight: "600", textAlign: "center" },
   setHeaderFixed: { fontSize: 11, fontWeight: "600", textAlign: "center" },
   setRow: {
     flexDirection: "row",
     alignItems: "center",
-    gap: 6,
+    gap: 4,
     marginBottom: 6,
     paddingVertical: 4,
     paddingHorizontal: 4,
     borderRadius: 10,
   },
   setNum: {
-    width: 32,
-    height: 32,
-    borderRadius: 16,
+    width: 30,
+    height: 30,
+    borderRadius: 15,
     justifyContent: "center",
     alignItems: "center",
   },
   logInput: {
     flex: 1,
+    minWidth: 0,
     borderWidth: 1.5,
     borderRadius: 10,
-    paddingHorizontal: 6,
-    paddingVertical: 10,
+    paddingHorizontal: 4,
+    paddingVertical: 8,
     fontSize: 15,
     textAlign: "center",
     fontWeight: "600",
   },
   rpeInput: {
-    width: 48,
+    width: 44,
     borderWidth: 1.5,
     borderRadius: 10,
-    paddingHorizontal: 4,
-    paddingVertical: 10,
+    paddingHorizontal: 2,
+    paddingVertical: 8,
     fontSize: 14,
     textAlign: "center",
     fontWeight: "600",
   },
   checkBox: {
-    width: 32,
-    height: 32,
+    width: 30,
+    height: 30,
     borderRadius: 8,
     borderWidth: 2,
     justifyContent: "center",

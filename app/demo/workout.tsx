@@ -483,8 +483,8 @@ function ExecutionView({
               <Text style={[styles.setHeaderNum, { color: theme.colors.onSurfaceVariant }]}>{t("workout.set")}</Text>
               <Text style={[styles.setHeaderFlex, { color: theme.colors.onSurfaceVariant }]}>{t("workout.reps")}</Text>
               <Text style={[styles.setHeaderFlex, { color: theme.colors.onSurfaceVariant }]}>{t("workout.weight")}</Text>
-              <Text style={[styles.setHeaderFixed, { color: theme.colors.onSurfaceVariant, width: 48 }]}>{t("workout.rpe")}</Text>
-              <Text style={[styles.setHeaderFixed, { color: theme.colors.onSurfaceVariant, width: 32 }]}>✓</Text>
+              <Text style={[styles.setHeaderFixed, { color: theme.colors.onSurfaceVariant, width: 44 }]}>{t("workout.rpe")}</Text>
+              <Text style={[styles.setHeaderFixed, { color: theme.colors.onSurfaceVariant, width: 30 }]}>✓</Text>
             </View>
 
             {sets.map((set, sIdx) => (
@@ -696,15 +696,15 @@ const styles = StyleSheet.create({
   stepBody: { padding: 16 },
   instructionCard: { borderRadius: 14, elevation: 0, marginTop: 16, marginBottom: 12 },
   setsSection: { marginTop: 16 },
-  setHeaders: { flexDirection: "row", alignItems: "center", paddingBottom: 6, paddingHorizontal: 4, gap: 6 },
-  setHeaderNum: { width: 32, fontSize: 11, fontWeight: "600", textAlign: "center" },
-  setHeaderFlex: { flex: 1, fontSize: 11, fontWeight: "600", textAlign: "center" },
+  setHeaders: { flexDirection: "row", alignItems: "center", paddingBottom: 6, paddingHorizontal: 4, gap: 4 },
+  setHeaderNum: { width: 30, fontSize: 11, fontWeight: "600", textAlign: "center" },
+  setHeaderFlex: { flex: 1, minWidth: 0, fontSize: 11, fontWeight: "600", textAlign: "center" },
   setHeaderFixed: { fontSize: 11, fontWeight: "600", textAlign: "center" },
-  setRow: { flexDirection: "row", alignItems: "center", gap: 6, marginBottom: 6, paddingVertical: 4, paddingHorizontal: 4, borderRadius: 10 },
-  setNum: { width: 32, height: 32, borderRadius: 16, justifyContent: "center", alignItems: "center" },
-  logInput: { flex: 1, borderWidth: 1.5, borderRadius: 10, paddingHorizontal: 6, paddingVertical: 10, fontSize: 15, textAlign: "center", fontWeight: "600" },
-  rpeInput: { width: 48, borderWidth: 1.5, borderRadius: 10, paddingHorizontal: 4, paddingVertical: 10, fontSize: 14, textAlign: "center", fontWeight: "600" },
-  checkBox: { width: 32, height: 32, borderRadius: 8, borderWidth: 2, justifyContent: "center", alignItems: "center" },
+  setRow: { flexDirection: "row", alignItems: "center", gap: 4, marginBottom: 6, paddingVertical: 4, paddingHorizontal: 4, borderRadius: 10 },
+  setNum: { width: 30, height: 30, borderRadius: 15, justifyContent: "center", alignItems: "center" },
+  logInput: { flex: 1, minWidth: 0, borderWidth: 1.5, borderRadius: 10, paddingHorizontal: 4, paddingVertical: 8, fontSize: 15, textAlign: "center", fontWeight: "600" },
+  rpeInput: { width: 44, borderWidth: 1.5, borderRadius: 10, paddingHorizontal: 2, paddingVertical: 8, fontSize: 14, textAlign: "center", fontWeight: "600" },
+  checkBox: { width: 30, height: 30, borderRadius: 8, borderWidth: 2, justifyContent: "center", alignItems: "center" },
   navBar: { position: "absolute", bottom: 0, left: 0, right: 0, flexDirection: "row", padding: 16, paddingBottom: 32, gap: 12 },
   navButton: { flex: 1, flexDirection: "row", justifyContent: "center", alignItems: "center", paddingVertical: 14, borderRadius: 14, gap: 4 },
   summaryContent: { padding: 24, alignItems: "center" },
