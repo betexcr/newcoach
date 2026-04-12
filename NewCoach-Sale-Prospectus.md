@@ -60,9 +60,11 @@ Construir este producto desde cero costaría aproximadamente **$15,000–$25,000
 
 | Escenario | Rango de Precio (USD) |
 |-----------|-----------------------|
-| Venta del código tal cual | $2,000–$7,000 |
 | Venta a comprador estratégico (gimnasio, negocio de coaching) | $8,000–$12,000 |
+| Con personalización, branding y despliegue incluido | $12,000–$18,000 |
 | Con usuarios activos o ingresos | Significativamente mayor (3–5x ingresos anuales es el estándar para SaaS) |
+
+**Costo de reconstrucción desde cero:** $15,000–$25,000 USD
 
 ---
 
@@ -149,8 +151,8 @@ Aplicación completa para entrenadores personales y sus clientes.
 - Startups de fitness
 - Agencias de desarrollo
 
-**Precio:** Desde $2,000 USD
-**Costo de reconstrucción:** $15,000–$25,000 USD
+**Costo de desarrollo:** $15,000–$25,000 USD
+**Precio:** Consultar por DM
 
 DM para demo en vivo o más información.
 
