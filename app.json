@@ -51,6 +51,12 @@
         "projectId": "53ee86e4-9e08-4664-9020-e4edeaaa08af"
       }
     },
-    "owner": "betexcr"
+    "owner": "betexcr",
+    "runtimeVersion": {
+      "policy": "appVersion"
+    },
+    "updates": {
+      "url": "https://u.expo.dev/53ee86e4-9e08-4664-9020-e4edeaaa08af"
+    }
   }
 }
