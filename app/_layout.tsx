@@ -108,7 +108,7 @@ export default function RootLayout() {
               <Stack.Screen name="(auth)" />
               <Stack.Screen name="(coach)" />
               <Stack.Screen name="(client)" />
-              <Stack.Screen name="(demo)" />
+              <Stack.Screen name="demo" />
               <Stack.Screen name="workout/[id]" />
             </Stack>
           </AuthProvider>

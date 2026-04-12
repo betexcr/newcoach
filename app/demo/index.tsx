@@ -15,14 +15,14 @@ export default function DemoIndex() {
       description: "Dashboard, clients, workout builder, programs, exercise library, and messaging",
       icon: "clipboard-pulse" as const,
       color: theme.colors.primary,
-      route: "/(demo)/coach" as const,
+      route: "/demo/coach" as const,
     },
     {
       label: "Client View",
       description: "Today's workout, calendar, progress, milestones, habits, nutrition, and messaging",
       icon: "account-heart" as const,
       color: theme.colors.secondary,
-      route: "/(demo)/client" as const,
+      route: "/demo/client" as const,
     },
   ];
 

@@ -144,7 +144,7 @@ export default function LoginScreen() {
 
         <Pressable
           style={styles.demoLink}
-          onPress={() => router.push("/(demo)" as any)}
+          onPress={() => router.push("/demo" as any)}
           accessibilityRole="link"
         >
           <Text
