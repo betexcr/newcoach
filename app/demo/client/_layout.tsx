@@ -1,8 +1,9 @@
-import { Platform, Pressable } from "react-native";
+import { Pressable } from "react-native";
 import { Tabs, useRouter } from "expo-router";
 import { useTheme } from "react-native-paper";
 import { MaterialCommunityIcons } from "@expo/vector-icons";
 import { useTranslation } from "react-i18next";
+import { useSafeAreaInsets } from "react-native-safe-area-context";
 
 type TabIcon = React.ComponentProps<typeof MaterialCommunityIcons>["name"];
 
@@ -18,6 +19,8 @@ export default function DemoClientLayout() {
   const theme = useTheme();
   const { t } = useTranslation();
   const router = useRouter();
+  const insets = useSafeAreaInsets();
+  const bottomInset = Math.max(insets.bottom, 6);
 
   return (
     <Tabs
@@ -34,8 +37,8 @@ export default function DemoClientLayout() {
           backgroundColor: theme.colors.surface,
           borderTopColor: theme.colors.outline,
           borderTopWidth: 0.5,
-          height: Platform.OS === "ios" ? 88 : 60,
-          paddingBottom: Platform.OS === "ios" ? 28 : 6,
+          height: 54 + bottomInset,
+          paddingBottom: bottomInset,
           paddingTop: 6,
         },
         tabBarActiveTintColor: theme.colors.primary,

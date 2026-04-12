@@ -1,8 +1,9 @@
-import { View, Platform } from "react-native";
+import { View } from "react-native";
 import { Tabs } from "expo-router";
 import { useTheme, ActivityIndicator } from "react-native-paper";
 import { MaterialCommunityIcons } from "@expo/vector-icons";
 import { useTranslation } from "react-i18next";
+import { useSafeAreaInsets } from "react-native-safe-area-context";
 import { useRequireAuth } from "@/lib/use-require-auth";
 
 type TabIcon = React.ComponentProps<typeof MaterialCommunityIcons>["name"];
@@ -18,7 +19,9 @@ const tabDefs: { name: string; titleKey: string; icon: TabIcon; focusedIcon: Tab
 export default function ClientLayout() {
   const theme = useTheme();
   const { t } = useTranslation();
+  const insets = useSafeAreaInsets();
   const authLoading = useRequireAuth();
+  const bottomInset = Math.max(insets.bottom, 6);
 
   if (authLoading) {
     return (
@@ -38,8 +41,8 @@ export default function ClientLayout() {
           backgroundColor: theme.colors.surface,
           borderTopColor: theme.colors.outline,
           borderTopWidth: 0.5,
-          height: Platform.OS === "ios" ? 88 : 60,
-          paddingBottom: Platform.OS === "ios" ? 28 : 6,
+          height: 54 + bottomInset,
+          paddingBottom: bottomInset,
           paddingTop: 6,
         },
         tabBarActiveTintColor: theme.colors.primary,
