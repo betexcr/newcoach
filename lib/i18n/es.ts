@@ -633,6 +633,16 @@ const es: TranslationKeys = {
     weeks: "semanas",
     clients: "Clientes",
     clientProfile: "Perfil del Cliente",
+    introDashboard: "Tu centro de control. Ve clientes activos, entrenamientos del día y actividad reciente. Usa las acciones rápidas para crear entrenamientos, agregar clientes o enviar difusiones.",
+    introClients: "Gestiona tu lista de atletas. Busca, filtra por estado, y consulta perfiles individuales con estadísticas de cumplimiento e historial de entrenamientos.",
+    introLibrary: "Explora más de 200 ejercicios por grupo muscular, crea entrenamientos personalizados con series/reps/peso y diseña programas de varias semanas.",
+    introMessages: "Mantente conectado con mensajes directos 1 a 1, chats grupales y difusiones a todos tus clientes a la vez.",
+    introSettings: "Personaliza tu experiencia. Cambia entre tema claro y oscuro, cambia el idioma de la app y gestiona tu perfil.",
+    introToday: "Tu centro de entrenamiento diario. Ve el entrenamiento de hoy, sigue tu progreso semanal y consulta tus estadísticas.",
+    introCalendar: "Tu calendario de entrenamientos completo. Navega entre semanas, ve entrenamientos completados y pendientes, y consulta planes de ejercicios detallados.",
+    introHabits: "Registra los hábitos diarios asignados por tu entrenador. Toca las casillas para marcarlos como completados — ¡pruébalo!",
+    introClientMessages: "Mantente conectado con tu entrenador a través de mensajes directos. Recibe comentarios, haz preguntas y comparte novedades.",
+    introClientSettings: "Tu perfil, estadísticas de progreso, logros y seguimiento nutricional. Cambia el tema y el idioma abajo.",
   },
 } as const;
 

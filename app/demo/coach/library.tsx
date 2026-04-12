@@ -1,0 +1,159 @@
+import { View, StyleSheet, ScrollView } from "react-native";
+import { Text, useTheme, Card, Chip } from "react-native-paper";
+import { MaterialCommunityIcons } from "@expo/vector-icons";
+import { useTranslation } from "react-i18next";
+import type { AppTheme } from "@/lib/theme";
+import { demoExercises, demoTemplates, demoProgram, demoProgramWorkouts } from "../mock-data";
+
+export default function DemoLibrary() {
+  const theme = useTheme<AppTheme>();
+  const { t } = useTranslation();
+
+  return (
+    <ScrollView style={{ flex: 1, backgroundColor: theme.colors.background }} contentContainerStyle={s.content}>
+      <Card style={[s.introCard, { backgroundColor: `${theme.colors.primary}10` }]} mode="contained">
+        <Card.Content style={s.introContent}>
+          <MaterialCommunityIcons name="information-outline" size={20} color={theme.colors.primary} />
+          <Text variant="bodySmall" style={{ color: theme.colors.primary, flex: 1, marginLeft: 10, lineHeight: 18 }}>
+            {t("demo.introLibrary")}
+          </Text>
+        </Card.Content>
+      </Card>
+
+      <Text variant="titleLarge" style={{ color: theme.colors.onSurface, fontWeight: "700", marginBottom: 12 }}>
+        {t("demo.exerciseLibrary")}
+      </Text>
+
+      <View style={s.chipRow}>
+        {["All", "Chest", "Back", "Legs", "Shoulders", "Arms", "Core"].map((label, i) => (
+          <Chip key={label} mode={i === 0 ? "flat" : "outlined"} selected={i === 0}
+            style={[s.chip, i === 0 && { backgroundColor: theme.colors.primary }]}
+            textStyle={[{ textTransform: "capitalize", fontSize: 13 }, i === 0 && { color: theme.colors.onPrimary }]}>
+            {label}
+          </Chip>
+        ))}
+      </View>
+
+      {demoExercises.slice(0, 8).map((ex) => (
+        <View key={ex.id} style={[s.exerciseRow, { backgroundColor: theme.colors.surface }]}>
+          <View style={{ flex: 1 }}>
+            <Text variant="titleMedium" style={{ color: theme.colors.onSurface, fontWeight: "600" }}>{ex.name}</Text>
+            <Text variant="bodySmall" style={{ color: theme.colors.onSurfaceVariant, textTransform: "capitalize", marginTop: 2 }}>
+              {ex.muscle_group}{ex.equipment ? ` \u00B7 ${ex.equipment}` : ""}
+            </Text>
+          </View>
+          <MaterialCommunityIcons name="chevron-right" size={20} color={theme.colors.onSurfaceVariant} />
+        </View>
+      ))}
+
+      <Card style={[s.detailCard, { backgroundColor: theme.colors.surface }]}>
+        <Card.Content>
+          <Text variant="titleLarge" style={{ color: theme.colors.onSurface, fontWeight: "700" }}>Barbell Bench Press</Text>
+          <View style={{ flexDirection: "row", gap: 8, marginTop: 8 }}>
+            <Chip mode="flat" style={{ backgroundColor: theme.colors.primaryContainer }} textStyle={{ fontSize: 11, textTransform: "capitalize" }}>chest</Chip>
+            <Chip mode="flat" style={{ backgroundColor: theme.colors.surfaceVariant }} textStyle={{ fontSize: 11, textTransform: "capitalize" }}>barbell</Chip>
+          </View>
+          <Text variant="bodyMedium" style={{ color: theme.colors.onSurfaceVariant, marginTop: 12, lineHeight: 20 }}>
+            Lie on bench, grip bar slightly wider than shoulders, lower to chest, press up. Keep feet flat on floor and maintain a slight arch in your lower back.
+          </Text>
+        </Card.Content>
+      </Card>
+
+      <View style={{ height: 24 }} />
+      <Text variant="titleLarge" style={{ color: theme.colors.onSurface, fontWeight: "700", marginBottom: 12 }}>
+        {t("demo.workoutBuilder")}
+      </Text>
+
+      <Card style={[s.builderCard, { backgroundColor: theme.colors.surface }]}>
+        <Card.Content>
+          <Text variant="labelLarge" style={{ color: theme.colors.onSurfaceVariant, marginBottom: 4 }}>{t("demo.workoutName")}</Text>
+          <View style={[s.fakeInput, { borderColor: theme.colors.outline }]}>
+            <Text variant="bodyLarge" style={{ color: theme.colors.onSurface }}>Upper Body Strength</Text>
+          </View>
+          <Text variant="labelLarge" style={{ color: theme.colors.onSurfaceVariant, marginBottom: 4, marginTop: 12 }}>{t("demo.description")}</Text>
+          <View style={[s.fakeInput, { borderColor: theme.colors.outline }]}>
+            <Text variant="bodyMedium" style={{ color: theme.colors.onSurface }}>Compound upper body focus</Text>
+          </View>
+        </Card.Content>
+      </Card>
+
+      {demoTemplates[0].exercises.slice(0, 3).map((ex) => (
+        <Card key={ex.exercise_id + ex.order} style={[s.exerciseBlock, { backgroundColor: theme.colors.surface }]}>
+          <Card.Content>
+            <View style={{ flexDirection: "row", alignItems: "center", justifyContent: "space-between" }}>
+              <Text variant="titleMedium" style={{ color: theme.colors.onSurface, fontWeight: "600" }}>{ex.exercise_name}</Text>
+              <Text variant="labelSmall" style={{ color: theme.colors.onSurfaceVariant }}>{ex.sets.length} sets</Text>
+            </View>
+            <View style={[s.setHeader, { borderBottomColor: theme.colors.outline }]}>
+              <Text variant="labelSmall" style={[s.setCol, { color: theme.colors.onSurfaceVariant }]}>{t("demo.set")}</Text>
+              <Text variant="labelSmall" style={[s.setCol, { color: theme.colors.onSurfaceVariant }]}>{t("demo.reps")}</Text>
+              <Text variant="labelSmall" style={[s.setCol, { color: theme.colors.onSurfaceVariant }]}>{t("demo.weight")}</Text>
+              <Text variant="labelSmall" style={[s.setCol, { color: theme.colors.onSurfaceVariant }]}>{t("demo.rest")}</Text>
+            </View>
+            {ex.sets.map((set) => (
+              <View key={set.set_number} style={s.setRow}>
+                <Text variant="bodyMedium" style={[s.setCol, { color: theme.colors.onSurface }]}>{set.set_number}</Text>
+                <Text variant="bodyMedium" style={[s.setCol, { color: theme.colors.onSurface }]}>{set.reps ?? "—"}</Text>
+                <Text variant="bodyMedium" style={[s.setCol, { color: theme.colors.onSurface }]}>{set.weight ? `${set.weight} kg` : "—"}</Text>
+                <Text variant="bodyMedium" style={[s.setCol, { color: theme.colors.onSurfaceVariant }]}>{set.rest_seconds ? `${set.rest_seconds}s` : "—"}</Text>
+              </View>
+            ))}
+          </Card.Content>
+        </Card>
+      ))}
+
+      <View style={[s.addExerciseBtn, { borderColor: theme.colors.outline }]}>
+        <MaterialCommunityIcons name="plus" size={20} color={theme.colors.primary} />
+        <Text variant="labelLarge" style={{ color: theme.colors.primary, marginLeft: 6 }}>{t("demo.addExercise")}</Text>
+      </View>
+
+      <View style={{ height: 24 }} />
+      <Text variant="titleLarge" style={{ color: theme.colors.onSurface, fontWeight: "700", marginBottom: 12 }}>
+        {t("demo.programs")}
+      </Text>
+
+      <Card style={[s.programCard, { backgroundColor: theme.colors.surface }]}>
+        <Card.Content>
+          <Text variant="titleLarge" style={{ color: theme.colors.onSurface, fontWeight: "700" }}>{demoProgram.name}</Text>
+          <Text variant="bodySmall" style={{ color: theme.colors.onSurfaceVariant, marginTop: 4 }}>{demoProgram.description}</Text>
+          <Chip mode="flat" style={{ backgroundColor: theme.colors.primaryContainer, alignSelf: "flex-start", marginTop: 8 }} textStyle={{ fontSize: 11 }}>
+            {demoProgram.duration_weeks} {t("demo.weeks")}
+          </Chip>
+        </Card.Content>
+      </Card>
+
+      <Text variant="titleSmall" style={{ color: theme.colors.onSurfaceVariant, marginTop: 12, marginBottom: 8 }}>{t("demo.week1")}</Text>
+      {demoProgramWorkouts.map((pw) => (
+        <View key={pw.id} style={[s.workoutRow, { backgroundColor: theme.colors.surface }]}>
+          <View style={[s.dayBadge, { backgroundColor: theme.colors.primaryContainer }]}>
+            <Text variant="labelSmall" style={{ color: theme.colors.primary, fontWeight: "700" }}>D{pw.day_number}</Text>
+          </View>
+          <View style={{ flex: 1, marginLeft: 10 }}>
+            <Text variant="bodyMedium" style={{ color: theme.colors.onSurface, fontWeight: "600" }}>{pw.name}</Text>
+            <Text variant="bodySmall" style={{ color: theme.colors.onSurfaceVariant }}>{pw.exercises.length} {t("demo.exercises")}</Text>
+          </View>
+        </View>
+      ))}
+    </ScrollView>
+  );
+}
+
+const s = StyleSheet.create({
+  content: { padding: 16, paddingBottom: 40 },
+  introCard: { borderRadius: 12, marginBottom: 16, elevation: 0 },
+  introContent: { flexDirection: "row", alignItems: "center" },
+  chipRow: { flexDirection: "row", flexWrap: "wrap", gap: 8, marginBottom: 14 },
+  chip: { borderRadius: 20 },
+  exerciseRow: { flexDirection: "row", alignItems: "center", padding: 14, borderRadius: 14, marginBottom: 6 },
+  detailCard: { borderRadius: 16, marginTop: 12, elevation: 0 },
+  builderCard: { borderRadius: 16, elevation: 0, marginBottom: 12 },
+  fakeInput: { borderWidth: 1, borderRadius: 8, paddingHorizontal: 12, paddingVertical: 10, marginBottom: 4 },
+  exerciseBlock: { borderRadius: 16, elevation: 0, marginBottom: 8 },
+  setHeader: { flexDirection: "row", borderBottomWidth: 1, paddingVertical: 8, marginTop: 12 },
+  setRow: { flexDirection: "row", paddingVertical: 6 },
+  setCol: { flex: 1, textAlign: "center" },
+  addExerciseBtn: { flexDirection: "row", alignItems: "center", justifyContent: "center", paddingVertical: 14, borderWidth: 1, borderStyle: "dashed", borderRadius: 14, marginTop: 4 },
+  programCard: { borderRadius: 16, elevation: 0 },
+  dayBadge: { width: 32, height: 32, borderRadius: 16, justifyContent: "center", alignItems: "center" },
+  workoutRow: { flexDirection: "row", alignItems: "center", padding: 14, borderRadius: 14, marginBottom: 6 },
+});

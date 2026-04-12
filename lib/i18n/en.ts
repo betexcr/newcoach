@@ -631,6 +631,16 @@ const en = {
     weeks: "weeks",
     clients: "Clients",
     clientProfile: "Client Profile",
+    introDashboard: "Your command center. See active clients, today's workouts, and recent activity at a glance. Use quick actions to create workouts, add clients, or send broadcasts.",
+    introClients: "Manage your roster of athletes. Search, filter by status, view individual profiles with compliance stats and workout history.",
+    introLibrary: "Browse 200+ exercises by muscle group, build custom workouts with sets/reps/weight, and create multi-week structured programs.",
+    introMessages: "Stay connected with 1-on-1 direct messages, group chats, and broadcast messages to all your clients at once.",
+    introSettings: "Customize your experience. Switch between light and dark theme, change the app language, and manage your profile.",
+    introToday: "Your daily training hub. See today's workout, track your weekly progress, and check your stats at a glance.",
+    introCalendar: "Your full training schedule. Navigate between weeks, see completed and upcoming workouts, and view detailed exercise plans.",
+    introHabits: "Track daily habits assigned by your coach. Tap the checkboxes to mark them as complete — try it!",
+    introClientMessages: "Stay connected with your coach through direct messaging. Get feedback, ask questions, and share updates.",
+    introClientSettings: "Your profile, progress stats, milestones, and nutrition tracking. Switch theme and language below.",
   },
 } as const;
 
