@@ -46,24 +46,22 @@ function RootLayoutInner() {
     : (orgThemes?.light ?? lightTheme);
 
   return (
-    <QueryClientProvider client={queryClient}>
-      <PaperProvider theme={theme}>
-        <ErrorBoundary>
-          <AuthProvider>
-            <StatusBar style={resolvedScheme === "dark" ? "light" : "dark"} />
-            <Stack screenOptions={{ headerShown: false }}>
-              <Stack.Screen name="index" />
-              <Stack.Screen name="(auth)" />
-              <Stack.Screen name="(coach)" />
-              <Stack.Screen name="(client)" />
-              <Stack.Screen name="demo" />
-              <Stack.Screen name="workout/[id]" />
-              <Stack.Screen name="coach/[slug]" options={{ headerShown: false }} />
-            </Stack>
-          </AuthProvider>
-        </ErrorBoundary>
-      </PaperProvider>
-    </QueryClientProvider>
+    <PaperProvider theme={theme}>
+      <ErrorBoundary>
+        <AuthProvider>
+          <StatusBar style={resolvedScheme === "dark" ? "light" : "dark"} />
+          <Stack screenOptions={{ headerShown: false }}>
+            <Stack.Screen name="index" />
+            <Stack.Screen name="(auth)" />
+            <Stack.Screen name="(coach)" />
+            <Stack.Screen name="(client)" />
+            <Stack.Screen name="demo" />
+            <Stack.Screen name="workout/[id]" />
+            <Stack.Screen name="coach/[slug]" options={{ headerShown: false }} />
+          </Stack>
+        </AuthProvider>
+      </ErrorBoundary>
+    </PaperProvider>
   );
 }
 
@@ -131,5 +129,9 @@ export default function RootLayout() {
 
   if (!ready) return null;
 
-  return <RootLayoutInner />;
+  return (
+    <QueryClientProvider client={queryClient}>
+      <RootLayoutInner />
+    </QueryClientProvider>
+  );
 }
