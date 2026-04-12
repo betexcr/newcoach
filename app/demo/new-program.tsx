@@ -17,8 +17,7 @@ export default function DemoCreateProgram() {
   const { introOpacity, introTranslateY, contentOpacity } = useDemoFadeIn("new-program");
 
   function goBack() {
-    if (router.canGoBack()) router.back();
-    else router.replace("/demo/coach/library" as any);
+    router.navigate({ pathname: "/demo/coach/library" } as any);
   }
 
   const [name, setName] = useState("");

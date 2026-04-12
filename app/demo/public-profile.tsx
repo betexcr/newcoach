@@ -22,7 +22,7 @@ export default function DemoPublicProfile() {
     <ScrollView style={{ flex: 1, backgroundColor: theme.colors.background }} contentContainerStyle={s.content}>
       <View style={s.topBar}>
         <Pressable
-          onPress={() => router.back()}
+          onPress={() => router.navigate({ pathname: "/demo/coach/settings" } as any)}
           hitSlop={10}
           accessibilityRole="button"
           accessibilityLabel={t("common.back")}

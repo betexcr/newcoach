@@ -16,8 +16,7 @@ export default function DemoBroadcast() {
   const { introOpacity, introTranslateY, contentOpacity } = useDemoFadeIn("broadcast");
 
   function goBack() {
-    if (router.canGoBack()) router.back();
-    else router.replace("/demo/coach/messages" as any);
+    router.navigate({ pathname: "/demo/coach/messages" } as any);
   }
 
   const [selectedIds, setSelectedIds] = useState<Set<string>>(new Set());

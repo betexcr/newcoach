@@ -13,8 +13,7 @@ export default function DemoAddClient() {
   const theme = useTheme<AppTheme>();
   const router = useRouter();
   function goBack() {
-    if (router.canGoBack()) router.back();
-    else router.replace("/demo/coach/clients" as any);
+    router.navigate({ pathname: "/demo/coach/clients" } as any);
   }
 
   const [email, setEmail] = useState("");

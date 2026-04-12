@@ -60,7 +60,7 @@ export default function DemoCoachDocuments() {
     <View style={[s.container, { backgroundColor: theme.colors.background }]}>
       <View style={s.topBar}>
         <Pressable
-          onPress={() => router.back()}
+          onPress={() => router.navigate({ pathname: "/demo/coach/library" } as any)}
           hitSlop={10}
           accessibilityRole="button"
           accessibilityLabel={t("common.back")}

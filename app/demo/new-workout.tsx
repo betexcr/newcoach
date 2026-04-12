@@ -42,8 +42,7 @@ export default function DemoWorkoutBuilder() {
   const [exercises, setExercises] = useState<WorkoutExercise[]>([]);
   const [showExercisePicker, setShowExercisePicker] = useState(false);
   function goBack() {
-    if (router.canGoBack()) router.back();
-    else router.replace("/demo/coach/library" as any);
+    router.navigate({ pathname: "/demo/coach/library" } as any);
   }
 
   function addExercise(exercise: Exercise) {
@@ -84,14 +83,7 @@ export default function DemoWorkoutBuilder() {
     <SafeAreaView style={[styles.container, { backgroundColor: theme.colors.background }]}>
       <View style={styles.topBar}>
         <Pressable
-          onPress={() => {
-            if (exercises.length > 0) {
-              Alert.alert(t("library.discardTitle"), t("library.discardMessage"), [
-                { text: t("library.keepEditing"), style: "cancel" },
-                { text: t("library.discard"), style: "destructive", onPress: goBack },
-              ]);
-            } else { goBack(); }
-          }}
+          onPress={goBack}
           hitSlop={10} accessibilityRole="button"
         >
           <MaterialCommunityIcons name="arrow-left" size={24} color={theme.colors.onSurface} />

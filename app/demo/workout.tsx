@@ -49,8 +49,7 @@ export default function DemoWorkoutScreen() {
   }, []);
 
   function goBack() {
-    if (router.canGoBack()) router.back();
-    else router.replace("/demo/client/today" as any);
+    router.navigate({ pathname: "/demo/client/today" } as any);
   }
 
   const [mode, setMode] = useState<ScreenMode>("detail");

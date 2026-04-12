@@ -31,7 +31,7 @@ export default function DemoClientDocuments() {
     <View style={[s.container, { backgroundColor: theme.colors.background }]}>
       <View style={s.topBar}>
         <Pressable
-          onPress={() => router.back()}
+          onPress={() => router.navigate({ pathname: "/demo/client/settings" } as any)}
           hitSlop={10}
           accessibilityRole="button"
           accessibilityLabel={t("common.back")}
