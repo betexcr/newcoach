@@ -78,7 +78,7 @@ export default function DemoClientSettings() {
 
       {/* Documents link */}
       <Pressable
-        onPress={() => router.push({ pathname: "/demo/client/documents" } as any)}
+        onPress={() => router.push({ pathname: "/demo/client-documents" } as any)}
         style={[s.docsLink, { backgroundColor: theme.colors.surface }]}
         accessibilityRole="button"
       >

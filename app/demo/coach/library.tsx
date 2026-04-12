@@ -192,7 +192,7 @@ export default function DemoLibrary() {
       </Pressable>
 
       <Pressable
-        onPress={() => router.push({ pathname: "/demo/coach/documents" } as any)}
+        onPress={() => router.push({ pathname: "/demo/coach-documents" } as any)}
         style={[s.docsBanner, { backgroundColor: `${theme.colors.primary}08` }]}
         accessibilityRole="button"
       >

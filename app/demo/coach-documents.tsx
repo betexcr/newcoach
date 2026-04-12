@@ -5,9 +5,9 @@ import { MaterialCommunityIcons } from "@expo/vector-icons";
 import { useTranslation } from "react-i18next";
 import { useRouter } from "expo-router";
 import type { AppTheme } from "@/lib/theme";
-import { useDemoFadeIn } from "../use-demo-fade";
-import { DemoPress } from "../DemoTooltip";
-import { demoDocuments, demoClients, type DemoDocument } from "../mock-data";
+import { useDemoFadeIn } from "./use-demo-fade";
+import { DemoPress } from "./DemoTooltip";
+import { demoDocuments, demoClients, type DemoDocument } from "./mock-data";
 
 const FILE_TYPE_ICONS: Record<string, string> = {
   pdf: "file-pdf-box",
