@@ -6,6 +6,9 @@ import {
   ScrollView,
   Pressable,
   Alert,
+  Platform,
+  Keyboard,
+  KeyboardAvoidingView,
 } from "react-native";
 import {
   Text,
@@ -42,6 +45,7 @@ export default function AssignProgramScreen() {
   const [startDate, setStartDate] = useState(formatDate(new Date()));
 
   async function handleAssign() {
+    Keyboard.dismiss();
     if (!selectedProgram) return;
     if (!clientId?.trim() || !coachId) {
       Alert.alert(t("common.error"), t("auth.sessionExpired"));
@@ -106,6 +110,7 @@ export default function AssignProgramScreen() {
         </Text>
       </View>
 
+      <KeyboardAvoidingView style={{ flex: 1 }} behavior={Platform.OS === "ios" ? "padding" : undefined}>
       <ScrollView contentContainerStyle={styles.content} keyboardShouldPersistTaps="handled">
         <Text
           variant="titleMedium"
@@ -238,6 +243,7 @@ export default function AssignProgramScreen() {
           </View>
         )}
       </ScrollView>
+      </KeyboardAvoidingView>
     </SafeAreaView>
   );
 }

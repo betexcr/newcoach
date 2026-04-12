@@ -6,6 +6,9 @@ import {
   Pressable,
   Alert,
   Image,
+  Platform,
+  Keyboard,
+  KeyboardAvoidingView,
 } from "react-native";
 import { Text, useTheme, Avatar } from "react-native-paper";
 import { SafeAreaView } from "react-native-safe-area-context";
@@ -93,6 +96,7 @@ export default function EditProfileScreen() {
   }
 
   async function handleSave() {
+    Keyboard.dismiss();
     if (!fullName.trim()) {
       setError(t("auth.enterName"));
       return;
@@ -159,6 +163,7 @@ export default function EditProfileScreen() {
         <View style={{ width: 24 }} />
       </View>
 
+      <KeyboardAvoidingView style={{ flex: 1 }} behavior={Platform.OS === "ios" ? "padding" : undefined}>
       <ScrollView contentContainerStyle={styles.content} keyboardShouldPersistTaps="handled">
         <Pressable style={styles.avatarSection} onPress={pickImage}>
           {avatarUri ? (
@@ -222,6 +227,7 @@ export default function EditProfileScreen() {
           {t("auth.saveChanges")}
         </AuthButton>
       </ScrollView>
+      </KeyboardAvoidingView>
     </SafeAreaView>
   );
 }

@@ -116,14 +116,24 @@ export default function CalendarScreen() {
       </View>
 
       <View style={styles.weekNav}>
-        <Pressable onPress={() => setWeekOffset((o) => o - 1)}>
+        <Pressable
+          onPress={() => setWeekOffset((o) => o - 1)}
+          hitSlop={{ top: 12, bottom: 12, left: 12, right: 12 }}
+          accessibilityRole="button"
+          accessibilityLabel={t("calendar.previousWeek")}
+        >
           <MaterialCommunityIcons
             name="chevron-left"
             size={28}
             color={theme.colors.primary}
           />
         </Pressable>
-        <Pressable onPress={() => setWeekOffset(0)}>
+        <Pressable
+          onPress={() => setWeekOffset(0)}
+          hitSlop={{ top: 8, bottom: 8, left: 8, right: 8 }}
+          accessibilityRole="button"
+          accessibilityLabel={t("calendar.jumpToToday")}
+        >
           <Text
             variant="titleMedium"
             style={{ color: theme.colors.onSurface, fontWeight: "600" }}
@@ -131,7 +141,12 @@ export default function CalendarScreen() {
             {weekLabel}
           </Text>
         </Pressable>
-        <Pressable onPress={() => setWeekOffset((o) => o + 1)}>
+        <Pressable
+          onPress={() => setWeekOffset((o) => o + 1)}
+          hitSlop={{ top: 12, bottom: 12, left: 12, right: 12 }}
+          accessibilityRole="button"
+          accessibilityLabel={t("calendar.nextWeek")}
+        >
           <MaterialCommunityIcons
             name="chevron-right"
             size={28}

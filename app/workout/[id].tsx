@@ -209,7 +209,7 @@ export default function WorkoutScreen() {
         setNotes={setNotes}
         onFinish={handleFinish}
         onBack={() => setMode("detail")}
-        saving={saveResult.isPending}
+        saving={saveResult.isPending || updateStatus.isPending}
         screenWidth={screenWidth}
         theme={theme}
         t={t}
@@ -925,6 +925,9 @@ function ExecutionView({
                           : "transparent",
                       },
                     ]}
+                    accessibilityRole="checkbox"
+                    accessibilityState={{ checked: set.completed }}
+                    accessibilityLabel={`${t("workout.set")} ${set.set_number}`}
                     onPress={() =>
                       updateSetLog(
                         exercise.exercise_id,

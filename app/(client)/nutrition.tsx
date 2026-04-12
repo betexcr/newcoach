@@ -7,6 +7,9 @@ import {
   Pressable,
   Alert,
   RefreshControl,
+  Platform,
+  Keyboard,
+  KeyboardAvoidingView,
 } from "react-native";
 import {
   Text,
@@ -113,6 +116,7 @@ export default function NutritionScreen() {
   );
 
   async function handleAdd() {
+    Keyboard.dismiss();
     if (!name.trim()) {
       Alert.alert(t("common.error"), t("nutrition.nameRequired"));
       return;
@@ -142,6 +146,7 @@ export default function NutritionScreen() {
   }
 
   async function handleSaveGoals() {
+    Keyboard.dismiss();
     if (!userId) return;
     const newGoals: MacroGoals = {
       calories: parseFloat(goalCalories) || DEFAULT_GOALS.calories,
@@ -194,6 +199,7 @@ export default function NutritionScreen() {
       style={[styles.container, { backgroundColor: theme.colors.background }]}
       edges={["top"]}
     >
+      <KeyboardAvoidingView style={{ flex: 1 }} behavior={Platform.OS === "ios" ? "padding" : undefined}>
       <ScrollView
         contentContainerStyle={styles.content}
         keyboardShouldPersistTaps="handled"
@@ -539,6 +545,7 @@ export default function NutritionScreen() {
           ))
         )}
       </ScrollView>
+      </KeyboardAvoidingView>
     </SafeAreaView>
   );
 }

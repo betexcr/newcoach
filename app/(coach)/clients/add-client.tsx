@@ -1,6 +1,6 @@
 import { useState } from "react";
 import { useTranslation } from "react-i18next";
-import { View, StyleSheet, Alert } from "react-native";
+import { View, StyleSheet, Alert, Platform, Keyboard, KeyboardAvoidingView } from "react-native";
 import { Text, useTheme } from "react-native-paper";
 import { SafeAreaView } from "react-native-safe-area-context";
 import { MaterialCommunityIcons } from "@expo/vector-icons";
@@ -21,6 +21,7 @@ export default function AddClientScreen() {
   const [email, setEmail] = useState("");
 
   async function handleAdd() {
+    Keyboard.dismiss();
     if (!userId) {
       Alert.alert(t("common.error"), t("auth.sessionExpired"));
       return;
@@ -74,6 +75,7 @@ export default function AddClientScreen() {
         <View style={{ width: 24 }} />
       </View>
 
+      <KeyboardAvoidingView style={{ flex: 1 }} behavior={Platform.OS === "ios" ? "padding" : undefined}>
       <View style={styles.content}>
         <Text
           variant="bodyLarge"
@@ -105,6 +107,7 @@ export default function AddClientScreen() {
           {t("clients.addClient")}
         </AuthButton>
       </View>
+      </KeyboardAvoidingView>
     </SafeAreaView>
   );
 }

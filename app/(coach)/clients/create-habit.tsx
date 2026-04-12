@@ -1,6 +1,6 @@
 import { useState } from "react";
 import { useTranslation } from "react-i18next";
-import { View, StyleSheet, Alert, Pressable } from "react-native";
+import { View, StyleSheet, Alert, Pressable, Platform, Keyboard, KeyboardAvoidingView } from "react-native";
 import { Text, useTheme, SegmentedButtons } from "react-native-paper";
 import { SafeAreaView } from "react-native-safe-area-context";
 import { MaterialCommunityIcons } from "@expo/vector-icons";
@@ -24,6 +24,7 @@ export default function CreateHabitScreen() {
   const [frequency, setFrequency] = useState<"daily" | "weekly" | "monthly">("daily");
 
   async function handleCreate() {
+    Keyboard.dismiss();
     if (!name.trim()) {
       Alert.alert(t("common.required"), t("clientProfile.enterHabitName"));
       return;
@@ -68,6 +69,7 @@ export default function CreateHabitScreen() {
         <View style={{ width: 24 }} />
       </View>
 
+      <KeyboardAvoidingView style={{ flex: 1 }} behavior={Platform.OS === "ios" ? "padding" : undefined}>
       <View style={styles.content}>
         <AuthInput
           label={t("clientProfile.habitName")}
@@ -111,6 +113,7 @@ export default function CreateHabitScreen() {
           {t("clientProfile.createHabit")}
         </AuthButton>
       </View>
+      </KeyboardAvoidingView>
     </SafeAreaView>
   );
 }

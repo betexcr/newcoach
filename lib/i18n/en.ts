@@ -336,6 +336,9 @@ const en = {
     title: "Calendar",
     noWorkouts: "No workouts scheduled",
     exerciseSets: "{{exercises}} exercises · {{sets}} sets",
+    previousWeek: "Previous week",
+    nextWeek: "Next week",
+    jumpToToday: "Jump to current week",
   },
   habits: {
     title: "Habits",

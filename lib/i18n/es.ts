@@ -338,6 +338,9 @@ const es: TranslationKeys = {
     title: "Calendario",
     noWorkouts: "No hay entrenamientos programados",
     exerciseSets: "{{exercises}} ejercicios · {{sets}} series",
+    previousWeek: "Semana anterior",
+    nextWeek: "Semana siguiente",
+    jumpToToday: "Ir a la semana actual",
   },
   habits: {
     title: "Hábitos",

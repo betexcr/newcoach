@@ -6,6 +6,9 @@ import {
   ScrollView,
   Pressable,
   Alert,
+  Platform,
+  Keyboard,
+  KeyboardAvoidingView,
 } from "react-native";
 import { Text, useTheme, TextInput } from "react-native-paper";
 import { SafeAreaView } from "react-native-safe-area-context";
@@ -29,6 +32,7 @@ export default function CreateExerciseScreen() {
   const [videoUrl, setVideoUrl] = useState("");
 
   async function handleCreate() {
+    Keyboard.dismiss();
     if (!name.trim()) {
       Alert.alert(t("common.required"), t("library.enterExerciseName"));
       return;
@@ -82,6 +86,7 @@ export default function CreateExerciseScreen() {
         <View style={{ width: 24 }} />
       </View>
 
+      <KeyboardAvoidingView style={{ flex: 1 }} behavior={Platform.OS === "ios" ? "padding" : undefined}>
       <ScrollView contentContainerStyle={styles.content} keyboardShouldPersistTaps="handled">
         <TextInput
           mode="outlined"
@@ -209,6 +214,7 @@ export default function CreateExerciseScreen() {
           {t("library.createExerciseButton")}
         </AuthButton>
       </ScrollView>
+      </KeyboardAvoidingView>
     </SafeAreaView>
   );
 }

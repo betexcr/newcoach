@@ -1,6 +1,6 @@
 import { useState } from "react";
 import { useTranslation } from "react-i18next";
-import { View, StyleSheet, ScrollView, Pressable, Alert } from "react-native";
+import { View, StyleSheet, ScrollView, Pressable, Alert, Platform, Keyboard, KeyboardAvoidingView } from "react-native";
 import { Text, useTheme, TextInput } from "react-native-paper";
 import { SafeAreaView } from "react-native-safe-area-context";
 import { MaterialCommunityIcons } from "@expo/vector-icons";
@@ -24,6 +24,7 @@ export default function CreateProgramScreen() {
   const [customDuration, setCustomDuration] = useState("");
 
   async function handleCreate() {
+    Keyboard.dismiss();
     if (!name.trim()) {
       Alert.alert(t("common.required"), t("library.enterProgramName"));
       return;
@@ -74,6 +75,7 @@ export default function CreateProgramScreen() {
         <View style={{ width: 24 }} />
       </View>
 
+      <KeyboardAvoidingView style={{ flex: 1 }} behavior={Platform.OS === "ios" ? "padding" : undefined}>
       <ScrollView contentContainerStyle={styles.content} keyboardShouldPersistTaps="handled">
         <TextInput
           mode="outlined"
@@ -196,6 +198,7 @@ export default function CreateProgramScreen() {
           {t("library.createProgramButton")}
         </AuthButton>
       </ScrollView>
+      </KeyboardAvoidingView>
     </SafeAreaView>
   );
 }

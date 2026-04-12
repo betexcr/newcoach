@@ -6,6 +6,9 @@ import {
   ScrollView,
   Pressable,
   Alert,
+  Platform,
+  Keyboard,
+  KeyboardAvoidingView,
 } from "react-native";
 import { Text, useTheme, TextInput } from "react-native-paper";
 import { SafeAreaView } from "react-native-safe-area-context";
@@ -34,6 +37,7 @@ export default function AssignWorkoutScreen() {
   );
 
   async function handleAssign() {
+    Keyboard.dismiss();
     if (!workoutName.trim()) {
       Alert.alert(t("common.required"), t("clients.enterWorkoutName"));
       return;
@@ -91,6 +95,7 @@ export default function AssignWorkoutScreen() {
         <View style={{ width: 24 }} />
       </View>
 
+      <KeyboardAvoidingView style={{ flex: 1 }} behavior={Platform.OS === "ios" ? "padding" : undefined}>
       <ScrollView contentContainerStyle={styles.content} keyboardShouldPersistTaps="handled">
         <View
           style={[styles.clientBadge, { backgroundColor: theme.colors.primaryContainer }]}
@@ -209,6 +214,7 @@ export default function AssignWorkoutScreen() {
           {t("clients.assignTo", { name: clientName ?? t("dashboard.fallbackClient") })}
         </AuthButton>
       </ScrollView>
+      </KeyboardAvoidingView>
     </SafeAreaView>
   );
 }
