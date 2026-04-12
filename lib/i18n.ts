@@ -16,7 +16,7 @@ function getDeviceLanguage(): SupportedLanguage {
 }
 
 export function resolveLanguage(preference: "auto" | SupportedLanguage): SupportedLanguage {
-  return preference === "auto" ? getDeviceLanguage() : preference;
+  return preference === "auto" ? "es" : preference;
 }
 
 i18n.use(initReactI18next).init({
