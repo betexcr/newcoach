@@ -91,9 +91,7 @@ export default function DemoWorkoutScreen() {
 
   function handleFinish() {
     setCompleted(true);
-    Alert.alert(t("workout.completeTitle"), t("workout.completeMessage"), [
-      { text: t("common.ok"), onPress: goBack },
-    ]);
+    goBack();
   }
 
   if (!workout) {
@@ -403,17 +401,7 @@ function ExecutionView({
         <Pressable
           hitSlop={10}
           accessibilityRole="button"
-          onPress={() => {
-            const hasLoggedSets = Object.keys(loggedData).length > 0;
-            if (hasLoggedSets) {
-              Alert.alert(t("workout.abandonTitle"), t("workout.abandonMessage"), [
-                { text: t("common.cancel"), style: "cancel" },
-                { text: t("workout.abandonConfirm"), style: "destructive", onPress: onBack },
-              ]);
-            } else {
-              onBack();
-            }
-          }}
+          onPress={onBack}
           style={styles.backBtn}
         >
           <MaterialCommunityIcons name="close" size={24} color={theme.colors.onSurface} />
