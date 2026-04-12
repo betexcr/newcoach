@@ -2,23 +2,26 @@
 
 ## Descripción del Producto
 
-**NewCoach** es una aplicación multiplataforma de coaching fitness diseñada para entrenadores personales y sus clientes. Ofrece un flujo de trabajo digital completo — desde la programación de entrenamientos y seguimiento de progreso hasta mensajería, nutrición, hábitos e insignias de logros.
+**NewCoach** es una aplicación multiplataforma de coaching fitness diseñada para entrenadores personales y sus clientes. Ofrece un flujo de trabajo digital completo — desde la programación de entrenamientos y seguimiento de progreso hasta mensajería, nutrición, hábitos, métricas corporales e insignias de logros.
 
 ### Funcionalidades Principales
 
 **Para Coaches:**
-- Dashboard con gestión de clientes
-- Biblioteca de ejercicios con ejercicios personalizados
+- Dashboard con gestión de clientes e ingresos
+- Biblioteca de ejercicios con videos demostrativos y ejercicios personalizados
 - Constructor de entrenamientos, plantillas y programas
 - Asignar entrenamientos y programas a clientes
 - Mensajería (incluyendo mensajes masivos)
 - Seguimiento de progreso y cumplimiento del cliente
 - Asignación de hábitos a clientes
+- Facturación y gestión de pagos
 
 **Para Clientes:**
 - Vista diaria y calendario
 - Ejecución y registro de entrenamientos
 - Seguimiento de progreso y récords personales
+- Fotos de progreso (frente, lado, espalda) para seguimiento de transformación
+- Métricas corporales: peso, grasa corporal, medidas (pecho, cintura, cadera, bíceps, muslos)
 - Seguimiento de nutrición y metas de macros
 - Hábitos e insignias/logros
 - Mensajería directa con el coach
@@ -52,7 +55,7 @@
 
 ## Costo Estimado de Desarrollo desde Cero
 
-Construir este producto desde cero costaría aproximadamente **$15,000–$25,000 USD**, lo que representa 3–5 meses de trabajo de desarrollo. Esto incluye arquitectura, UI/UX, esquema de base de datos con seguridad a nivel de fila (RLS), autenticación, localización, pipelines de CI/CD y testing.
+Construir este producto desde cero costaría aproximadamente **$20,000–$30,000 USD**, lo que representa 4–6 meses de trabajo de desarrollo. Esto incluye arquitectura, UI/UX, esquema de base de datos con seguridad a nivel de fila (RLS), autenticación, localización, biblioteca de videos de ejercicios, sistema de facturación, fotos de progreso, métricas corporales, pipelines de CI/CD y testing.
 
 ---
 
@@ -66,7 +69,7 @@ Construir este producto desde cero costaría aproximadamente **$15,000–$25,000
 | Con personalización, branding y despliegue incluido | $12,000–$18,000 |
 | Con usuarios activos o ingresos | Significativamente mayor (3–5x ingresos anuales es el estándar para SaaS) |
 
-**Costo de reconstrucción desde cero:** $15,000–$25,000 USD
+**Costo de reconstrucción desde cero:** $20,000–$30,000 USD
 
 ### Opción B — Suscripción Mensual para Gimnasios (SaaS)
 
@@ -118,13 +121,32 @@ Construir este producto desde cero costaría aproximadamente **$15,000–$25,000
 - Alternativa accesible a plataformas SaaS internacionales que cobran $20–$100+/mes **por coach** — NewCoach cobra **por gimnasio**, lo cual es significativamente más económico
 - Modelo de suscripción elimina la barrera de entrada para gimnasios pequeños y medianos
 
+### Funcionalidades que TrueCoach No Tiene
+
+| Funcionalidad | NewCoach | TrueCoach |
+|---------------|----------|-----------|
+| Hábitos asignados por el coach (diario/semanal/mensual) | ✅ | ❌ |
+| Gamificación con insignias y logros | ✅ | ❌ |
+| Mensajes masivos (broadcast) con selección de destinatarios | ✅ | ❌ |
+| Localización completa en español | ✅ | ❌ |
+| Demo interactivo integrado para ventas | ✅ | ❌ |
+| Precio por gimnasio (no por coach) | ✅ | ❌ |
+| White-label / código fuente propio | ✅ | ❌ |
+| Fotos de progreso (frente, lado, espalda) | ✅ | ✅ |
+| Métricas corporales (peso, medidas, grasa) | ✅ | ✅ |
+| Biblioteca de videos de ejercicios | ✅ | ✅ |
+| Facturación y pagos integrados | ✅ | ✅ |
+| Seguimiento de nutrición nativo | ✅ | Parcial (depende de MyFitnessPal) |
+
 ---
 
 ## Qué Incluye la Venta
 
 - Código fuente completo (TypeScript/React Native)
 - Esquema de base de datos Supabase y migraciones
-- Datos semilla (biblioteca de ejercicios)
+- Datos semilla (biblioteca de ejercicios con videos)
+- Sistema de facturación y pagos integrado
+- Módulo de fotos de progreso y métricas corporales
 - Configuraciones de CI/CD (GitHub Actions)
 - Configuraciones de build EAS (iOS + Android)
 - Configuración de despliegue en Vercel (web)
@@ -136,7 +158,7 @@ Construir este producto desde cero costaría aproximadamente **$15,000–$25,000
 ## Complementos Opcionales (Negociables)
 
 - Soporte técnico post-venta y onboarding
-- Integración de pagos (Stripe, Sinpe Móvil, o pasarela local)
+- Configuración de pasarela de pago local (Sinpe Móvil u otra)
 - Branding personalizado y despliegue
 - Contrato de mantenimiento continuo
 
@@ -164,8 +186,11 @@ Aplicación completa para entrenadores personales y sus clientes.
 
 **Qué hace:**
 - Crear y asignar entrenamientos y programas
+- Biblioteca de ejercicios con videos demostrativos
 - Seguimiento de progreso, nutrición y hábitos
-- Mensajería directa coach-cliente
+- Fotos de progreso y métricas corporales
+- Facturación y pagos integrados
+- Mensajería directa y masiva coach-clientes
 - Insignias y logros para motivar clientes
 - App con la marca de tu gimnasio
 
@@ -181,7 +206,7 @@ Aplicación completa para entrenadores personales y sus clientes.
 Tu propia app con tu marca. Sin inversión inicial.
 
 **Compra del código fuente** — Desde $8,000 USD
-Para agencias y startups (valor de desarrollo: $15,000–$25,000)
+Para agencias y startups (valor de desarrollo: $20,000–$30,000)
 
 DM para demo en vivo o más información.
 
