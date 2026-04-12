@@ -58,26 +58,55 @@ Construir este producto desde cero costaría aproximadamente **$15,000–$25,000
 
 ## Guía de Precios
 
+### Opción A — Venta Única (Código Fuente)
+
 | Escenario | Rango de Precio (USD) |
 |-----------|-----------------------|
-| Venta a comprador estratégico (gimnasio, negocio de coaching) | $8,000–$12,000 |
+| Venta a comprador estratégico (agencia, startup) | $8,000–$12,000 |
 | Con personalización, branding y despliegue incluido | $12,000–$18,000 |
 | Con usuarios activos o ingresos | Significativamente mayor (3–5x ingresos anuales es el estándar para SaaS) |
 
 **Costo de reconstrucción desde cero:** $15,000–$25,000 USD
 
+### Opción B — Suscripción Mensual para Gimnasios (SaaS)
+
+| Plan | Precio Mensual (USD) | Precio Anual (USD) | Incluye |
+|------|---------------------|-------------------|---------|
+| Starter | $200/mes | $2,000/año (ahorra $400) | Hasta 2 coaches, 30 clientes, branding del gimnasio |
+| Profesional | $400/mes | $4,000/año (ahorra $800) | Hasta 10 coaches, 200 clientes, branding completo, soporte prioritario |
+| Enterprise | $700/mes | $7,000/año (ahorra $1,400) | Coaches y clientes ilimitados, branding completo, soporte dedicado, integraciones personalizadas |
+
+**Ventajas para el gimnasio:**
+- Sin inversión inicial grande — gasto operativo mensual manejable
+- Hosting, actualizaciones y soporte técnico incluidos
+- App con la marca del gimnasio (white-label)
+- Escalable según crecimiento del negocio
+- Descuento de 2 meses gratis al pagar anualmente
+
+**Ventajas para el vendedor:**
+- Ingreso recurrente mensual (MRR)
+- Retención del código fuente y propiedad intelectual
+- Escalable a múltiples gimnasios simultáneamente
+- Un gimnasio pagando $400/mes genera $4,800/año — supera la venta única en 2 años
+- Pagos anuales aseguran flujo de caja y reducen churn
+
 ---
 
 ## Perfiles de Comprador Ideal
 
-### 1. Negocios de Fitness
-Cadenas de gimnasios, estudios de entrenamiento personal, centros de bienestar o coaches independientes que buscan digitalizar su negocio. La app se puede personalizar con marca propia (white-label).
+### Para Venta Única (Opción A)
 
-### 2. Agencias de Desarrollo
-Agencias de desarrollo de software que atienden clientes de fitness o salud. El código sirve como base lista para personalizar y revender a múltiples clientes.
+**Agencias de Desarrollo** — Agencias de software que atienden clientes de fitness o salud. El código sirve como base lista para personalizar y revender a múltiples clientes.
 
-### 3. Startups
-Emprendedores entrando al espacio fitness-tech que quieren un punto de partida listo para producción en vez de construir desde cero.
+**Startups** — Emprendedores entrando al espacio fitness-tech que quieren un punto de partida listo para producción en vez de construir desde cero.
+
+### Para Suscripción SaaS (Opción B)
+
+**Gimnasios y Centros de Fitness** — Cadenas de gimnasios, estudios de entrenamiento personal y centros de bienestar que quieren su propia app con su marca sin invertir en desarrollo.
+
+**Coaches Independientes con Equipo** — Coaches que manejan varios entrenadores y necesitan una plataforma profesional a un costo mensual accesible.
+
+**Centros de Bienestar y CrossFit Boxes** — Negocios de fitness especializados que buscan diferenciarse con tecnología propia.
 
 ---
 
@@ -86,7 +115,8 @@ Emprendedores entrando al espacio fitness-tech que quieren un punto de partida l
 - **Localización en español** ya incluida — la mayoría de plataformas competidoras (TrueCoach, Trainerize, etc.) son en inglés y cobran precios premium en USD
 - Cultura fitness en crecimiento en Costa Rica, especialmente en el GAM, Santa Ana, Escazú y las zonas turísticas de Guanacaste
 - Muchos coaches actualmente dependen de WhatsApp y hojas de cálculo — una app dedicada es una mejora clara
-- Alternativa accesible a plataformas SaaS internacionales que cobran $20–$100+/mes por coach
+- Alternativa accesible a plataformas SaaS internacionales que cobran $20–$100+/mes **por coach** — NewCoach cobra **por gimnasio**, lo cual es significativamente más económico
+- Modelo de suscripción elimina la barrera de entrada para gimnasios pequeños y medianos
 
 ---
 
@@ -128,7 +158,7 @@ Para consultas, demos o discutir términos, comuníquese directamente.
 
 ---
 
-**SE VENDE — App de Coaching Fitness**
+**App de Coaching Fitness — Tu Gimnasio, Tu App**
 
 Aplicación completa para entrenadores personales y sus clientes.
 
@@ -137,22 +167,21 @@ Aplicación completa para entrenadores personales y sus clientes.
 - Seguimiento de progreso, nutrición y hábitos
 - Mensajería directa coach-cliente
 - Insignias y logros para motivar clientes
-- Modo demo incluido
+- App con la marca de tu gimnasio
 
 **Tecnología:**
-- React Native (iOS, Android y Web)
-- Backend en la nube (Supabase)
+- iOS, Android y Web
+- Backend en la nube
 - Bilingüe: Español e Inglés
-- Lista para publicar en App Store y Play Store
+- Lista para App Store y Play Store
 
-**Ideal para:**
-- Gimnasios que quieren su propia app
-- Coaches independientes
-- Startups de fitness
-- Agencias de desarrollo
+**2 opciones:**
 
-**Desde $8,000 USD**
-**Costo de desarrollo:** $15,000–$25,000 USD
+**Suscripción para gimnasios** — Desde $200/mes
+Tu propia app con tu marca. Sin inversión inicial.
+
+**Compra del código fuente** — Desde $8,000 USD
+Para agencias y startups (valor de desarrollo: $15,000–$25,000)
 
 DM para demo en vivo o más información.
 

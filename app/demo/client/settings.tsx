@@ -1,10 +1,12 @@
-import { View, StyleSheet, ScrollView } from "react-native";
+import { View, StyleSheet, ScrollView, Pressable, Animated } from "react-native";
 import { Text, useTheme, Card, Avatar, SegmentedButtons, ProgressBar } from "react-native-paper";
 import { MaterialCommunityIcons } from "@expo/vector-icons";
 import { useTranslation } from "react-i18next";
+import { useRouter } from "expo-router";
 import type { AppTheme } from "@/lib/theme";
+import { useDemoFadeIn } from "../use-demo-fade";
 import { useSettingsStore, type ThemePreference, type LanguagePreference } from "@/stores/settings-store";
-import { clientProfile, demoProgressStats, demoMilestones, demoNutritionLogs, demoMacroGoals } from "../mock-data";
+import { clientProfile, demoProgressStats, demoMilestones, demoNutritionLogs, demoMacroGoals, demoBodyMetrics, demoMeasurements, demoProgressPhotos } from "../mock-data";
 
 function initials(name: string | null): string {
   if (!name) return "?";
@@ -25,6 +27,8 @@ function ComplianceRing({ label, value, theme }: { label: string; value: number;
 export default function DemoClientSettings() {
   const theme = useTheme<AppTheme>();
   const { t } = useTranslation();
+  const router = useRouter();
+  const { introOpacity, introTranslateY, contentOpacity } = useDemoFadeIn("client-settings");
   const themePref = useSettingsStore((s) => s.theme);
   const langPref = useSettingsStore((s) => s.language);
   const setTheme = useSettingsStore((s) => s.setTheme);
@@ -38,15 +42,18 @@ export default function DemoClientSettings() {
 
   return (
     <ScrollView style={{ flex: 1, backgroundColor: theme.colors.background }} contentContainerStyle={s.content}>
-      <Card style={[s.introCard, { backgroundColor: `${theme.colors.secondary}10` }]} mode="contained">
-        <Card.Content style={s.introContent}>
-          <MaterialCommunityIcons name="information-outline" size={20} color={theme.colors.secondary} />
-          <Text variant="bodySmall" style={{ color: theme.colors.secondary, flex: 1, marginLeft: 10, lineHeight: 18 }}>
-            {t("demo.introClientSettings")}
-          </Text>
-        </Card.Content>
-      </Card>
+      <Animated.View style={{ opacity: introOpacity, transform: [{ translateY: introTranslateY }] }}>
+        <Card style={[s.introCard, { backgroundColor: `${theme.colors.secondary}10` }]} mode="contained">
+          <Card.Content style={s.introContent}>
+            <MaterialCommunityIcons name="information-outline" size={20} color={theme.colors.secondary} />
+            <Text variant="bodySmall" style={{ color: theme.colors.secondary, flex: 1, marginLeft: 10, lineHeight: 18 }}>
+              {t("demo.introClientSettings")}
+            </Text>
+          </Card.Content>
+        </Card>
+      </Animated.View>
 
+      <Animated.View style={{ opacity: contentOpacity }}>
       <View style={[s.profileCard, { backgroundColor: theme.colors.surface }]}>
         <Avatar.Text size={56} label={initials(clientProfile.full_name)} style={{ backgroundColor: theme.colors.secondaryContainer }} labelStyle={{ color: theme.colors.secondary }} />
         <View style={{ marginLeft: 14, flex: 1 }}>
@@ -109,6 +116,104 @@ export default function DemoClientSettings() {
         ))}
       </View>
 
+      {/* Progress Photos */}
+      <Text variant="titleMedium" style={{ color: theme.colors.onSurface, fontWeight: "700", marginTop: 20, marginBottom: 12 }}>
+        {t("demo.progressPhotosSection")}
+      </Text>
+      <Card style={[s.photosCard, { backgroundColor: theme.colors.surface }]}>
+        <Card.Content>
+          {[demoProgressPhotos.slice(0, 3), demoProgressPhotos.slice(3, 6)].map((row, rowIdx) => (
+            <View key={rowIdx}>
+              <Text variant="labelSmall" style={{ color: theme.colors.onSurfaceVariant, marginBottom: 8, marginTop: rowIdx > 0 ? 14 : 0 }}>
+                {rowIdx === 0 ? t("demo.twoWeeksAgo") : t("demo.weekAgo")}
+              </Text>
+              <View style={s.photoRow}>
+                {row.map((photo) => (
+                  <View key={photo.id} style={[s.photoPlaceholder, { backgroundColor: theme.colors.surfaceVariant }]}>
+                    <MaterialCommunityIcons name="account-outline" size={32} color={theme.colors.onSurfaceVariant} />
+                    <Text variant="labelSmall" style={{ color: theme.colors.onSurfaceVariant, marginTop: 4 }}>
+                      {t(`demo.${photo.pose}Pose`)}
+                    </Text>
+                  </View>
+                ))}
+              </View>
+            </View>
+          ))}
+          <Pressable style={[s.addPhotoBtn, { borderColor: theme.colors.outline }]} accessibilityRole="button">
+            <MaterialCommunityIcons name="camera-plus" size={20} color={theme.colors.secondary} />
+            <Text variant="labelLarge" style={{ color: theme.colors.secondary, marginLeft: 6 }}>{t("demo.addPhoto")}</Text>
+          </Pressable>
+        </Card.Content>
+      </Card>
+
+      {/* Body Metrics */}
+      <Text variant="titleMedium" style={{ color: theme.colors.onSurface, fontWeight: "700", marginTop: 20, marginBottom: 12 }}>
+        {t("demo.bodyMetricsSection")}
+      </Text>
+      <View style={s.metricsStatsRow}>
+        {[
+          { label: t("demo.currentWeight"), value: `${demoBodyMetrics[demoBodyMetrics.length - 1].weight} kg`, icon: "scale-bathroom" },
+          { label: t("demo.goalWeight"), value: `${demoMeasurements.goalWeight} kg`, icon: "flag-checkered" },
+          { label: t("demo.bodyFat"), value: `${demoMeasurements.bodyFat}%`, icon: "percent" },
+        ].map((m) => (
+          <Card key={m.label} style={[s.metricStatCard, { backgroundColor: theme.colors.surface }]}>
+            <Card.Content style={s.metricStatContent}>
+              <MaterialCommunityIcons name={m.icon as any} size={22} color={theme.colors.secondary} />
+              <Text variant="titleMedium" style={{ color: theme.colors.onSurface, fontWeight: "700", marginTop: 6 }}>{m.value}</Text>
+              <Text variant="labelSmall" style={{ color: theme.colors.onSurfaceVariant, marginTop: 2 }}>{m.label}</Text>
+            </Card.Content>
+          </Card>
+        ))}
+      </View>
+
+      <Card style={[s.weightTrendCard, { backgroundColor: theme.colors.surface }]}>
+        <Card.Content>
+          <View style={{ flexDirection: "row", justifyContent: "space-between", alignItems: "center", marginBottom: 12 }}>
+            <Text variant="titleMedium" style={{ color: theme.colors.onSurface, fontWeight: "700" }}>{t("demo.weightTrend")}</Text>
+            <View style={[s.trendBadge, { backgroundColor: `${theme.colors.secondary}15` }]}>
+              <MaterialCommunityIcons name="trending-down" size={16} color={theme.colors.secondary} />
+              <Text variant="labelSmall" style={{ color: theme.colors.secondary, fontWeight: "700", marginLeft: 4 }}>
+                -{(demoBodyMetrics[0].weight - demoBodyMetrics[demoBodyMetrics.length - 1].weight).toFixed(1)} kg
+              </Text>
+            </View>
+          </View>
+          <View style={s.chartContainer}>
+            {demoBodyMetrics.map((point, i) => {
+              const minW = Math.min(...demoBodyMetrics.map((p) => p.weight));
+              const maxW = Math.max(...demoBodyMetrics.map((p) => p.weight));
+              const range = maxW - minW || 1;
+              const heightPct = ((point.weight - minW) / range) * 60 + 20;
+              return (
+                <View key={i} style={s.chartBarWrapper}>
+                  <View style={[s.chartBar, { height: `${heightPct}%`, backgroundColor: i === demoBodyMetrics.length - 1 ? theme.colors.secondary : `${theme.colors.secondary}40` }]} />
+                  <Text variant="labelSmall" style={{ color: theme.colors.onSurfaceVariant, marginTop: 4, fontSize: 9 }}>
+                    {point.weight}
+                  </Text>
+                </View>
+              );
+            })}
+          </View>
+        </Card.Content>
+      </Card>
+
+      <Card style={[s.measurementsCard, { backgroundColor: theme.colors.surface }]}>
+        <Card.Content>
+          <Text variant="titleMedium" style={{ color: theme.colors.onSurface, fontWeight: "700", marginBottom: 12 }}>{t("demo.measurements")}</Text>
+          {[
+            { label: t("demo.chest"), value: demoMeasurements.chest },
+            { label: t("demo.waist"), value: demoMeasurements.waist },
+            { label: t("demo.hips"), value: demoMeasurements.hips },
+            { label: t("demo.biceps"), value: demoMeasurements.biceps },
+            { label: t("demo.thighs"), value: demoMeasurements.thighs },
+          ].map((m) => (
+            <View key={m.label} style={s.measurementRow}>
+              <Text variant="bodyMedium" style={{ color: theme.colors.onSurface, flex: 1 }}>{m.label}</Text>
+              <Text variant="bodyMedium" style={{ color: theme.colors.onSurface, fontWeight: "600" }}>{m.value} cm</Text>
+            </View>
+          ))}
+        </Card.Content>
+      </Card>
+
       {/* Nutrition preview */}
       <Text variant="titleMedium" style={{ color: theme.colors.onSurface, fontWeight: "700", marginTop: 20, marginBottom: 12 }}>
         {t("demo.nutritionSection")}
@@ -119,7 +224,9 @@ export default function DemoClientSettings() {
             <Text variant="titleMedium" style={{ color: theme.colors.onSurface, fontWeight: "700" }}>{t("demo.todaySummary")}</Text>
             <Text variant="bodySmall" style={{ color: theme.colors.onSurfaceVariant }}>{totals.calories} / {demoMacroGoals.calories} kcal</Text>
           </View>
-          <ProgressBar progress={Math.min(totals.calories / demoMacroGoals.calories, 1)} color={theme.colors.primary} style={{ height: 8, borderRadius: 4, marginBottom: 16 }} />
+          <View style={{ height: 8, marginBottom: 16 }}>
+            <ProgressBar progress={Math.min(totals.calories / demoMacroGoals.calories, 1)} color={theme.colors.primary} style={{ height: 8, borderRadius: 4 }} />
+          </View>
           {[
             { label: t("demo.protein"), current: totals.protein, goal: demoMacroGoals.protein, color: theme.custom.info },
             { label: t("demo.carbs"), current: totals.carbs, goal: demoMacroGoals.carbs, color: theme.custom.warning },
@@ -130,7 +237,9 @@ export default function DemoClientSettings() {
                 <Text variant="bodySmall" style={{ color: theme.colors.onSurface, fontWeight: "600" }}>{macro.label}</Text>
                 <Text variant="bodySmall" style={{ color: theme.colors.onSurfaceVariant }}>{macro.current}g / {macro.goal}g</Text>
               </View>
-              <ProgressBar progress={Math.min(macro.current / macro.goal, 1)} color={macro.color} style={{ height: 6, borderRadius: 3 }} />
+              <View style={{ height: 6 }}>
+                <ProgressBar progress={Math.min(macro.current / macro.goal, 1)} color={macro.color} style={{ height: 6, borderRadius: 3 }} />
+              </View>
             </View>
           ))}
         </Card.Content>
@@ -163,7 +272,13 @@ export default function DemoClientSettings() {
         style={{ marginBottom: 16 }}
       />
 
+      <Pressable style={[s.signOutRow, { backgroundColor: theme.colors.surface }]} onPress={() => router.replace({ pathname: "/demo" } as any)} accessibilityRole="button">
+        <MaterialCommunityIcons name="logout" size={22} color={theme.custom.error} />
+        <Text variant="bodyLarge" style={{ color: theme.custom.error, marginLeft: 12 }}>{t("settings.signOut")}</Text>
+      </Pressable>
+
       <Text variant="bodySmall" style={{ color: theme.colors.onSurfaceVariant, textAlign: "center", marginTop: 24 }}>{t("common.version")}</Text>
+      </Animated.View>
     </ScrollView>
   );
 }
@@ -185,4 +300,19 @@ const s = StyleSheet.create({
   badgeIcon: { width: 52, height: 52, borderRadius: 26, justifyContent: "center", alignItems: "center" },
   earnedBadge: { position: "absolute", top: 8, right: 8, width: 18, height: 18, borderRadius: 9, justifyContent: "center", alignItems: "center" },
   nutritionCard: { borderRadius: 16, elevation: 0 },
+  photosCard: { borderRadius: 16, elevation: 0 },
+  photoRow: { flexDirection: "row", gap: 8 },
+  photoPlaceholder: { flex: 1, aspectRatio: 0.75, borderRadius: 12, justifyContent: "center", alignItems: "center" },
+  addPhotoBtn: { flexDirection: "row", alignItems: "center", justifyContent: "center", paddingVertical: 12, borderWidth: 1, borderStyle: "dashed", borderRadius: 12, marginTop: 14 },
+  metricsStatsRow: { flexDirection: "row", gap: 10, marginBottom: 12 },
+  metricStatCard: { flex: 1, borderRadius: 16, elevation: 0 },
+  metricStatContent: { alignItems: "center", paddingVertical: 14 },
+  weightTrendCard: { borderRadius: 16, elevation: 0, marginBottom: 12 },
+  trendBadge: { flexDirection: "row", alignItems: "center", paddingHorizontal: 8, paddingVertical: 4, borderRadius: 8 },
+  chartContainer: { flexDirection: "row", justifyContent: "space-around", alignItems: "flex-end", height: 80 },
+  chartBarWrapper: { alignItems: "center", flex: 1 },
+  chartBar: { width: 20, borderRadius: 6 },
+  measurementsCard: { borderRadius: 16, elevation: 0 },
+  measurementRow: { flexDirection: "row", alignItems: "center", paddingVertical: 8, borderBottomWidth: 0.5, borderBottomColor: "rgba(0,0,0,0.06)" },
+  signOutRow: { flexDirection: "row", alignItems: "center", padding: 16, borderRadius: 16, marginTop: 16 },
 });

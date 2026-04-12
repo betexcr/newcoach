@@ -1,25 +1,32 @@
-import { View, StyleSheet, ScrollView } from "react-native";
+import { View, StyleSheet, ScrollView, Pressable, Animated } from "react-native";
 import { Text, useTheme, Card, Chip } from "react-native-paper";
 import { MaterialCommunityIcons } from "@expo/vector-icons";
 import { useTranslation } from "react-i18next";
+import { useRouter } from "expo-router";
 import type { AppTheme } from "@/lib/theme";
-import { demoExercises, demoTemplates, demoProgram, demoProgramWorkouts } from "../mock-data";
+import { useDemoFadeIn } from "../use-demo-fade";
+import { demoExercises, demoTemplates, demoProgram, demoProgramWorkouts, demoExerciseVideos } from "../mock-data";
 
 export default function DemoLibrary() {
   const theme = useTheme<AppTheme>();
   const { t } = useTranslation();
+  const router = useRouter();
+  const { introOpacity, introTranslateY, contentOpacity } = useDemoFadeIn("coach-library");
 
   return (
     <ScrollView style={{ flex: 1, backgroundColor: theme.colors.background }} contentContainerStyle={s.content}>
-      <Card style={[s.introCard, { backgroundColor: `${theme.colors.primary}10` }]} mode="contained">
-        <Card.Content style={s.introContent}>
-          <MaterialCommunityIcons name="information-outline" size={20} color={theme.colors.primary} />
-          <Text variant="bodySmall" style={{ color: theme.colors.primary, flex: 1, marginLeft: 10, lineHeight: 18 }}>
-            {t("demo.introLibrary")}
-          </Text>
-        </Card.Content>
-      </Card>
+      <Animated.View style={{ opacity: introOpacity, transform: [{ translateY: introTranslateY }] }}>
+        <Card style={[s.introCard, { backgroundColor: `${theme.colors.primary}10` }]} mode="contained">
+          <Card.Content style={s.introContent}>
+            <MaterialCommunityIcons name="information-outline" size={20} color={theme.colors.primary} />
+            <Text variant="bodySmall" style={{ color: theme.colors.primary, flex: 1, marginLeft: 10, lineHeight: 18 }}>
+              {t("demo.introLibrary")}
+            </Text>
+          </Card.Content>
+        </Card>
+      </Animated.View>
 
+      <Animated.View style={{ opacity: contentOpacity }}>
       <Text variant="titleLarge" style={{ color: theme.colors.onSurface, fontWeight: "700", marginBottom: 12 }}>
         {t("demo.exerciseLibrary")}
       </Text>
@@ -42,6 +49,11 @@ export default function DemoLibrary() {
               {ex.muscle_group}{ex.equipment ? ` \u00B7 ${ex.equipment}` : ""}
             </Text>
           </View>
+          {demoExerciseVideos[ex.id] && (
+            <View style={[s.videoBadge, { backgroundColor: `${theme.colors.primary}15` }]}>
+              <MaterialCommunityIcons name="play-circle" size={18} color={theme.colors.primary} />
+            </View>
+          )}
           <MaterialCommunityIcons name="chevron-right" size={20} color={theme.colors.onSurfaceVariant} />
         </View>
       ))}
@@ -56,26 +68,49 @@ export default function DemoLibrary() {
           <Text variant="bodyMedium" style={{ color: theme.colors.onSurfaceVariant, marginTop: 12, lineHeight: 20 }}>
             Lie on bench, grip bar slightly wider than shoulders, lower to chest, press up. Keep feet flat on floor and maintain a slight arch in your lower back.
           </Text>
+          <Pressable style={[s.videoPreview, { backgroundColor: theme.colors.surfaceVariant }]} accessibilityRole="button">
+            <View style={[s.videoPlayBtn, { backgroundColor: `${theme.colors.primary}DD` }]}>
+              <MaterialCommunityIcons name="play" size={28} color="#fff" />
+            </View>
+            <Text variant="labelMedium" style={{ color: theme.colors.onSurfaceVariant, marginTop: 8 }}>{t("demo.watchDemo")}</Text>
+          </Pressable>
+        </Card.Content>
+      </Card>
+
+      <Card style={[s.videoLibraryCard, { backgroundColor: `${theme.colors.primary}08` }]}>
+        <Card.Content style={s.videoLibraryContent}>
+          <View style={[s.videoLibraryIcon, { backgroundColor: `${theme.colors.primary}15` }]}>
+            <MaterialCommunityIcons name="play-box-multiple" size={28} color={theme.colors.primary} />
+          </View>
+          <View style={{ flex: 1, marginLeft: 14 }}>
+            <Text variant="titleMedium" style={{ color: theme.colors.onSurface, fontWeight: "700" }}>{t("demo.exerciseVideos")}</Text>
+            <Text variant="bodySmall" style={{ color: theme.colors.onSurfaceVariant, marginTop: 2 }}>
+              {t("demo.videosAvailable", { count: Object.values(demoExerciseVideos).filter(Boolean).length })}
+            </Text>
+          </View>
+          <MaterialCommunityIcons name="chevron-right" size={22} color={theme.colors.onSurfaceVariant} />
         </Card.Content>
       </Card>
 
       <View style={{ height: 24 }} />
-      <Text variant="titleLarge" style={{ color: theme.colors.onSurface, fontWeight: "700", marginBottom: 12 }}>
-        {t("demo.workoutBuilder")}
-      </Text>
+      <Pressable onPress={() => router.push({ pathname: "/demo/new-workout" } as any)} accessibilityRole="button">
+        <Text variant="titleLarge" style={{ color: theme.colors.onSurface, fontWeight: "700", marginBottom: 12 }}>
+          {t("demo.workoutBuilder")}
+        </Text>
 
-      <Card style={[s.builderCard, { backgroundColor: theme.colors.surface }]}>
-        <Card.Content>
-          <Text variant="labelLarge" style={{ color: theme.colors.onSurfaceVariant, marginBottom: 4 }}>{t("demo.workoutName")}</Text>
-          <View style={[s.fakeInput, { borderColor: theme.colors.outline }]}>
-            <Text variant="bodyLarge" style={{ color: theme.colors.onSurface }}>Upper Body Strength</Text>
-          </View>
-          <Text variant="labelLarge" style={{ color: theme.colors.onSurfaceVariant, marginBottom: 4, marginTop: 12 }}>{t("demo.description")}</Text>
-          <View style={[s.fakeInput, { borderColor: theme.colors.outline }]}>
-            <Text variant="bodyMedium" style={{ color: theme.colors.onSurface }}>Compound upper body focus</Text>
-          </View>
-        </Card.Content>
-      </Card>
+        <Card style={[s.builderCard, { backgroundColor: theme.colors.surface }]}>
+          <Card.Content>
+            <Text variant="labelLarge" style={{ color: theme.colors.onSurfaceVariant, marginBottom: 4 }}>{t("demo.workoutName")}</Text>
+            <View style={[s.fakeInput, { borderColor: theme.colors.outline }]}>
+              <Text variant="bodyLarge" style={{ color: theme.colors.onSurface }}>Upper Body Strength</Text>
+            </View>
+            <Text variant="labelLarge" style={{ color: theme.colors.onSurfaceVariant, marginBottom: 4, marginTop: 12 }}>{t("demo.description")}</Text>
+            <View style={[s.fakeInput, { borderColor: theme.colors.outline }]}>
+              <Text variant="bodyMedium" style={{ color: theme.colors.onSurface }}>Compound upper body focus</Text>
+            </View>
+          </Card.Content>
+        </Card>
+      </Pressable>
 
       {demoTemplates[0].exercises.slice(0, 3).map((ex) => (
         <Card key={ex.exercise_id + ex.order} style={[s.exerciseBlock, { backgroundColor: theme.colors.surface }]}>
@@ -102,25 +137,30 @@ export default function DemoLibrary() {
         </Card>
       ))}
 
-      <View style={[s.addExerciseBtn, { borderColor: theme.colors.outline }]}>
+      <Pressable style={[s.addExerciseBtn, { borderColor: theme.colors.outline }]} onPress={() => router.push({ pathname: "/demo/new-workout" } as any)} accessibilityRole="button">
         <MaterialCommunityIcons name="plus" size={20} color={theme.colors.primary} />
         <Text variant="labelLarge" style={{ color: theme.colors.primary, marginLeft: 6 }}>{t("demo.addExercise")}</Text>
-      </View>
+      </Pressable>
 
       <View style={{ height: 24 }} />
       <Text variant="titleLarge" style={{ color: theme.colors.onSurface, fontWeight: "700", marginBottom: 12 }}>
         {t("demo.programs")}
       </Text>
 
-      <Card style={[s.programCard, { backgroundColor: theme.colors.surface }]}>
-        <Card.Content>
-          <Text variant="titleLarge" style={{ color: theme.colors.onSurface, fontWeight: "700" }}>{demoProgram.name}</Text>
-          <Text variant="bodySmall" style={{ color: theme.colors.onSurfaceVariant, marginTop: 4 }}>{demoProgram.description}</Text>
-          <Chip mode="flat" style={{ backgroundColor: theme.colors.primaryContainer, alignSelf: "flex-start", marginTop: 8 }} textStyle={{ fontSize: 11 }}>
-            {demoProgram.duration_weeks} {t("demo.weeks")}
-          </Chip>
-        </Card.Content>
-      </Card>
+      <Pressable onPress={() => router.push({ pathname: "/demo/new-program" } as any)} accessibilityRole="button">
+        <Card style={[s.programCard, { backgroundColor: theme.colors.surface }]}>
+          <Card.Content>
+            <View style={{ flexDirection: "row", justifyContent: "space-between", alignItems: "center" }}>
+              <Text variant="titleLarge" style={{ color: theme.colors.onSurface, fontWeight: "700" }}>{demoProgram.name}</Text>
+              <MaterialCommunityIcons name="chevron-right" size={22} color={theme.colors.onSurfaceVariant} />
+            </View>
+            <Text variant="bodySmall" style={{ color: theme.colors.onSurfaceVariant, marginTop: 4 }}>{demoProgram.description}</Text>
+            <Chip mode="flat" style={{ backgroundColor: theme.colors.primaryContainer, alignSelf: "flex-start", marginTop: 8 }} textStyle={{ fontSize: 11 }}>
+              {demoProgram.duration_weeks} {t("demo.weeks")}
+            </Chip>
+          </Card.Content>
+        </Card>
+      </Pressable>
 
       <Text variant="titleSmall" style={{ color: theme.colors.onSurfaceVariant, marginTop: 12, marginBottom: 8 }}>{t("demo.week1")}</Text>
       {demoProgramWorkouts.map((pw) => (
@@ -134,6 +174,7 @@ export default function DemoLibrary() {
           </View>
         </View>
       ))}
+      </Animated.View>
     </ScrollView>
   );
 }
@@ -156,4 +197,10 @@ const s = StyleSheet.create({
   programCard: { borderRadius: 16, elevation: 0 },
   dayBadge: { width: 32, height: 32, borderRadius: 16, justifyContent: "center", alignItems: "center" },
   workoutRow: { flexDirection: "row", alignItems: "center", padding: 14, borderRadius: 14, marginBottom: 6 },
+  videoBadge: { width: 32, height: 32, borderRadius: 16, justifyContent: "center", alignItems: "center", marginRight: 6 },
+  videoPreview: { height: 120, borderRadius: 12, justifyContent: "center", alignItems: "center", marginTop: 14 },
+  videoPlayBtn: { width: 48, height: 48, borderRadius: 24, justifyContent: "center", alignItems: "center" },
+  videoLibraryCard: { borderRadius: 16, elevation: 0, marginTop: 12 },
+  videoLibraryContent: { flexDirection: "row", alignItems: "center" },
+  videoLibraryIcon: { width: 48, height: 48, borderRadius: 14, justifyContent: "center", alignItems: "center" },
 });

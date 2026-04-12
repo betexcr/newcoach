@@ -1,3 +1,4 @@
+import { useEffect } from "react";
 import { View, StyleSheet, Pressable } from "react-native";
 import { Text, useTheme } from "react-native-paper";
 import { SafeAreaView } from "react-native-safe-area-context";
@@ -5,11 +6,33 @@ import { MaterialCommunityIcons } from "@expo/vector-icons";
 import { useRouter } from "expo-router";
 import { useTranslation } from "react-i18next";
 import type { AppTheme } from "@/lib/theme";
+import { useSettingsStore, type ThemePreference, type LanguagePreference } from "@/stores/settings-store";
+import { useDemoSeenStore } from "./use-demo-fade";
+
+const THEME_OPTIONS: { value: ThemePreference; icon: React.ComponentProps<typeof MaterialCommunityIcons>["name"] }[] = [
+  { value: "auto", icon: "theme-light-dark" },
+  { value: "light", icon: "white-balance-sunny" },
+  { value: "dark", icon: "moon-waning-crescent" },
+];
+
+const LANG_OPTIONS: { value: LanguagePreference; label: string }[] = [
+  { value: "auto", label: "Auto" },
+  { value: "en", label: "EN" },
+  { value: "es", label: "ES" },
+];
 
 export default function DemoIndex() {
   const theme = useTheme<AppTheme>();
   const router = useRouter();
   const { t } = useTranslation();
+  const themePref = useSettingsStore((s) => s.theme);
+  const langPref = useSettingsStore((s) => s.language);
+  const setTheme = useSettingsStore((s) => s.setTheme);
+  const setLanguage = useSettingsStore((s) => s.setLanguage);
+
+  useEffect(() => {
+    useDemoSeenStore.getState().reset();
+  }, []);
 
   const options = [
     {
@@ -52,7 +75,7 @@ export default function DemoIndex() {
           <Pressable
             key={opt.label}
             style={[styles.card, { backgroundColor: theme.colors.surface }]}
-            onPress={() => router.push(opt.route as any)}
+            onPress={() => router.push({ pathname: opt.route } as any)}
             accessibilityRole="button"
             accessibilityLabel={opt.label}
           >
@@ -81,9 +104,54 @@ export default function DemoIndex() {
         ))}
       </View>
 
+      <View style={styles.toggleRow}>
+        <View style={[styles.toggleGroup, { backgroundColor: theme.colors.surface }]}>
+          {THEME_OPTIONS.map((opt) => {
+            const active = themePref === opt.value;
+            return (
+              <Pressable
+                key={opt.value}
+                onPress={() => setTheme(opt.value)}
+                style={[styles.toggleBtn, active && { backgroundColor: theme.colors.primaryContainer }]}
+                accessibilityRole="button"
+                accessibilityLabel={opt.value}
+              >
+                <MaterialCommunityIcons
+                  name={opt.icon}
+                  size={18}
+                  color={active ? theme.colors.primary : theme.colors.onSurfaceVariant}
+                />
+              </Pressable>
+            );
+          })}
+        </View>
+
+        <View style={[styles.toggleGroup, { backgroundColor: theme.colors.surface }]}>
+          {LANG_OPTIONS.map((opt) => {
+            const active = langPref === opt.value;
+            return (
+              <Pressable
+                key={opt.value}
+                onPress={() => setLanguage(opt.value)}
+                style={[styles.toggleBtn, active && { backgroundColor: theme.colors.primaryContainer }]}
+                accessibilityRole="button"
+                accessibilityLabel={opt.value}
+              >
+                <Text
+                  variant="labelMedium"
+                  style={{ color: active ? theme.colors.primary : theme.colors.onSurfaceVariant, fontWeight: active ? "700" : "500" }}
+                >
+                  {opt.label}
+                </Text>
+              </Pressable>
+            );
+          })}
+        </View>
+      </View>
+
       <Pressable
         style={styles.loginLink}
-        onPress={() => router.replace("/(auth)/login")}
+        onPress={() => router.replace({ pathname: "/(auth)/login" } as any)}
         accessibilityRole="link"
       >
         <Text
@@ -128,10 +196,27 @@ const styles = StyleSheet.create({
     justifyContent: "center",
     alignItems: "center",
   },
+  toggleRow: {
+    flexDirection: "row",
+    justifyContent: "center",
+    gap: 12,
+    marginTop: 28,
+  },
+  toggleGroup: {
+    flexDirection: "row",
+    borderRadius: 12,
+    overflow: "hidden",
+  },
+  toggleBtn: {
+    paddingHorizontal: 14,
+    paddingVertical: 10,
+    alignItems: "center",
+    justifyContent: "center",
+  },
   loginLink: {
     flexDirection: "row",
     justifyContent: "center",
     alignItems: "center",
-    marginTop: 32,
+    marginTop: 16,
   },
 });

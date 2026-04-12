@@ -1,14 +1,17 @@
-import { View, StyleSheet, ScrollView } from "react-native";
+import { View, StyleSheet, ScrollView, Pressable, Animated } from "react-native";
 import { Text, useTheme, Card, Avatar } from "react-native-paper";
 import { MaterialCommunityIcons } from "@expo/vector-icons";
 import { useTranslation } from "react-i18next";
+import { useRouter } from "expo-router";
 import type { AppTheme } from "@/lib/theme";
+import { useDemoFadeIn } from "../use-demo-fade";
 import {
   coachProfile,
   demoClients,
   demoAssignedWorkouts,
   demoConversations,
   demoActivityFeed,
+  demoBilling,
 } from "../mock-data";
 
 function initials(name: string | null): string {
@@ -19,6 +22,8 @@ function initials(name: string | null): string {
 export default function DemoDashboard() {
   const theme = useTheme<AppTheme>();
   const { t } = useTranslation();
+  const router = useRouter();
+  const { introOpacity, introTranslateY, contentOpacity } = useDemoFadeIn("coach-dashboard");
 
   const activeClients = demoClients.filter((c) => c.status === "active");
   const todayWorkouts = demoAssignedWorkouts.filter((w) => {
@@ -28,15 +33,18 @@ export default function DemoDashboard() {
 
   return (
     <ScrollView style={{ flex: 1, backgroundColor: theme.colors.background }} contentContainerStyle={s.content}>
-      <Card style={[s.introCard, { backgroundColor: `${theme.colors.primary}10` }]} mode="contained">
-        <Card.Content style={s.introContent}>
-          <MaterialCommunityIcons name="information-outline" size={20} color={theme.colors.primary} />
-          <Text variant="bodySmall" style={{ color: theme.colors.primary, flex: 1, marginLeft: 10, lineHeight: 18 }}>
-            {t("demo.introDashboard")}
-          </Text>
-        </Card.Content>
-      </Card>
+      <Animated.View style={{ opacity: introOpacity, transform: [{ translateY: introTranslateY }] }}>
+        <Card style={[s.introCard, { backgroundColor: `${theme.colors.primary}10` }]} mode="contained">
+          <Card.Content style={s.introContent}>
+            <MaterialCommunityIcons name="information-outline" size={20} color={theme.colors.primary} />
+            <Text variant="bodySmall" style={{ color: theme.colors.primary, flex: 1, marginLeft: 10, lineHeight: 18 }}>
+              {t("demo.introDashboard")}
+            </Text>
+          </Card.Content>
+        </Card>
+      </Animated.View>
 
+      <Animated.View style={{ opacity: contentOpacity }}>
       <View style={s.greeting}>
         <View style={{ flex: 1 }}>
           <Text variant="titleMedium" style={{ color: theme.colors.onSurfaceVariant }}>
@@ -54,6 +62,7 @@ export default function DemoDashboard() {
           { label: t("dashboard.activeClients"), value: String(activeClients.length), icon: "account-group" },
           { label: t("dashboard.todaysWorkouts"), value: String(todayWorkouts.length), icon: "dumbbell" },
           { label: t("dashboard.messages"), value: String(demoConversations.length), icon: "message" },
+          { label: t("demo.revenue"), value: `$${demoBilling.monthlyRevenue}`, icon: "cash-multiple" },
         ].map((st) => (
           <Card key={st.label} style={[s.statCard, { backgroundColor: theme.colors.surface }]}>
             <Card.Content style={s.statContent}>
@@ -74,19 +83,19 @@ export default function DemoDashboard() {
       </Text>
       <View style={s.actionsGrid}>
         {[
-          { label: t("demo.newWorkout"), icon: "plus-circle", color: theme.colors.primary },
-          { label: t("demo.addClient"), icon: "account-plus", color: theme.colors.secondary },
-          { label: t("demo.newProgram"), icon: "clipboard-list", color: theme.custom.warning },
-          { label: t("demo.broadcast"), icon: "bullhorn", color: theme.custom.purple },
+          { label: t("demo.newWorkout"), icon: "plus-circle", color: theme.colors.primary, route: "/demo/new-workout" },
+          { label: t("demo.addClient"), icon: "account-plus", color: theme.colors.secondary, route: "/demo/add-client" },
+          { label: t("demo.newProgram"), icon: "clipboard-list", color: theme.custom.warning, route: "/demo/new-program" },
+          { label: t("demo.broadcast"), icon: "bullhorn", color: theme.custom.purple, route: "/demo/broadcast" },
         ].map((a) => (
-          <View key={a.label} style={[s.actionCard, { backgroundColor: theme.colors.surface }]}>
+          <Pressable key={a.label} style={[s.actionCard, { backgroundColor: theme.colors.surface }]} onPress={() => router.push({ pathname: a.route } as any)} accessibilityRole="button">
             <View style={[s.actionIcon, { backgroundColor: `${a.color}15` }]}>
               <MaterialCommunityIcons name={a.icon as any} size={28} color={a.color} />
             </View>
             <Text variant="labelLarge" style={{ color: theme.colors.onSurface, marginTop: 8, fontWeight: "600" }}>
               {a.label}
             </Text>
-          </View>
+          </Pressable>
         ))}
       </View>
 
@@ -127,6 +136,7 @@ export default function DemoDashboard() {
           </View>
         ))}
       </View>
+      </Animated.View>
     </ScrollView>
   );
 }

@@ -1,8 +1,10 @@
-import { View, StyleSheet, ScrollView, Pressable } from "react-native";
+import { View, StyleSheet, ScrollView, Pressable, Animated } from "react-native";
 import { Text, useTheme, Card, Chip } from "react-native-paper";
 import { MaterialCommunityIcons } from "@expo/vector-icons";
 import { useTranslation } from "react-i18next";
+import { useRouter } from "expo-router";
 import type { AppTheme } from "@/lib/theme";
+import { useDemoFadeIn } from "../use-demo-fade";
 import { demoAssignedWorkouts, today } from "../mock-data";
 
 const statusColor = (status: string, theme: AppTheme) => {
@@ -15,6 +17,8 @@ const statusColor = (status: string, theme: AppTheme) => {
 export default function DemoCalendar() {
   const theme = useTheme<AppTheme>();
   const { t } = useTranslation();
+  const router = useRouter();
+  const { introOpacity, introTranslateY, contentOpacity } = useDemoFadeIn("client-calendar");
 
   const now = new Date();
   const dayOfWeek = now.getDay();
@@ -37,15 +41,18 @@ export default function DemoCalendar() {
 
   return (
     <ScrollView style={{ flex: 1, backgroundColor: theme.colors.background }} contentContainerStyle={s.content}>
-      <Card style={[s.introCard, { backgroundColor: `${theme.colors.secondary}10` }]} mode="contained">
-        <Card.Content style={s.introContent}>
-          <MaterialCommunityIcons name="information-outline" size={20} color={theme.colors.secondary} />
-          <Text variant="bodySmall" style={{ color: theme.colors.secondary, flex: 1, marginLeft: 10, lineHeight: 18 }}>
-            {t("demo.introCalendar")}
-          </Text>
-        </Card.Content>
-      </Card>
+      <Animated.View style={{ opacity: introOpacity, transform: [{ translateY: introTranslateY }] }}>
+        <Card style={[s.introCard, { backgroundColor: `${theme.colors.secondary}10` }]} mode="contained">
+          <Card.Content style={s.introContent}>
+            <MaterialCommunityIcons name="information-outline" size={20} color={theme.colors.secondary} />
+            <Text variant="bodySmall" style={{ color: theme.colors.secondary, flex: 1, marginLeft: 10, lineHeight: 18 }}>
+              {t("demo.introCalendar")}
+            </Text>
+          </Card.Content>
+        </Card>
+      </Animated.View>
 
+      <Animated.View style={{ opacity: contentOpacity }}>
       <View style={s.calendarNav}>
         <MaterialCommunityIcons name="chevron-left" size={24} color={theme.colors.onSurfaceVariant} />
         <Text variant="titleMedium" style={{ color: theme.colors.primary, fontWeight: "600" }}>{t("demo.thisWeek")}</Text>
@@ -115,12 +122,17 @@ export default function DemoCalendar() {
                 </Card.Content>
               </Card>
             ))}
-            <View style={[s.startBtnLarge, { backgroundColor: theme.colors.primary }]}>
+            <Pressable
+              style={[s.startBtnLarge, { backgroundColor: theme.colors.primary }]}
+              onPress={() => router.push({ pathname: "/demo/workout", params: { id: w.id } } as any)}
+              accessibilityRole="button"
+            >
               <Text variant="labelLarge" style={{ color: theme.colors.onPrimary, fontWeight: "600" }}>{t("demo.startWorkout")}</Text>
-            </View>
+            </Pressable>
           </View>
         );
       })()}
+      </Animated.View>
     </ScrollView>
   );
 }

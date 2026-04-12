@@ -1,14 +1,16 @@
 import { useState } from "react";
-import { View, StyleSheet, ScrollView, Pressable } from "react-native";
+import { View, StyleSheet, ScrollView, Pressable, Animated } from "react-native";
 import { Text, useTheme, Card } from "react-native-paper";
 import { MaterialCommunityIcons } from "@expo/vector-icons";
 import { useTranslation } from "react-i18next";
 import type { AppTheme } from "@/lib/theme";
+import { useDemoFadeIn } from "../use-demo-fade";
 import { demoHabits, demoHabitLogs } from "../mock-data";
 
 export default function DemoHabits() {
   const theme = useTheme<AppTheme>();
   const { t } = useTranslation();
+  const { introOpacity, introTranslateY, contentOpacity } = useDemoFadeIn("client-habits");
 
   const initialState = Object.fromEntries(
     demoHabits.map((h) => [h.id, demoHabitLogs.find((l) => l.habit_id === h.id)?.completed ?? false])
@@ -19,15 +21,18 @@ export default function DemoHabits() {
 
   return (
     <ScrollView style={{ flex: 1, backgroundColor: theme.colors.background }} contentContainerStyle={s.content}>
-      <Card style={[s.introCard, { backgroundColor: `${theme.colors.secondary}10` }]} mode="contained">
-        <Card.Content style={s.introContent}>
-          <MaterialCommunityIcons name="information-outline" size={20} color={theme.colors.secondary} />
-          <Text variant="bodySmall" style={{ color: theme.colors.secondary, flex: 1, marginLeft: 10, lineHeight: 18 }}>
-            {t("demo.introHabits")}
-          </Text>
-        </Card.Content>
-      </Card>
+      <Animated.View style={{ opacity: introOpacity, transform: [{ translateY: introTranslateY }] }}>
+        <Card style={[s.introCard, { backgroundColor: `${theme.colors.secondary}10` }]} mode="contained">
+          <Card.Content style={s.introContent}>
+            <MaterialCommunityIcons name="information-outline" size={20} color={theme.colors.secondary} />
+            <Text variant="bodySmall" style={{ color: theme.colors.secondary, flex: 1, marginLeft: 10, lineHeight: 18 }}>
+              {t("demo.introHabits")}
+            </Text>
+          </Card.Content>
+        </Card>
+      </Animated.View>
 
+      <Animated.View style={{ opacity: contentOpacity }}>
       {demoHabits.map((habit) => {
         const completed = checked[habit.id];
         return (
@@ -49,6 +54,7 @@ export default function DemoHabits() {
           </Card>
         );
       })}
+      </Animated.View>
     </ScrollView>
   );
 }

@@ -1,10 +1,12 @@
-import { View, StyleSheet, ScrollView } from "react-native";
+import { View, StyleSheet, ScrollView, Pressable, Animated } from "react-native";
 import { Text, useTheme, Card, Avatar, SegmentedButtons } from "react-native-paper";
 import { MaterialCommunityIcons } from "@expo/vector-icons";
 import { useTranslation } from "react-i18next";
+import { useRouter } from "expo-router";
 import type { AppTheme } from "@/lib/theme";
+import { useDemoFadeIn } from "../use-demo-fade";
 import { useSettingsStore, type ThemePreference, type LanguagePreference } from "@/stores/settings-store";
-import { coachProfile } from "../mock-data";
+import { coachProfile, demoBilling } from "../mock-data";
 
 function initials(name: string | null): string {
   if (!name) return "?";
@@ -14,6 +16,8 @@ function initials(name: string | null): string {
 export default function DemoSettings() {
   const theme = useTheme<AppTheme>();
   const { t } = useTranslation();
+  const router = useRouter();
+  const { introOpacity, introTranslateY, contentOpacity } = useDemoFadeIn("coach-settings");
   const themePref = useSettingsStore((s) => s.theme);
   const langPref = useSettingsStore((s) => s.language);
   const setTheme = useSettingsStore((s) => s.setTheme);
@@ -21,15 +25,18 @@ export default function DemoSettings() {
 
   return (
     <ScrollView style={{ flex: 1, backgroundColor: theme.colors.background }} contentContainerStyle={s.content}>
-      <Card style={[s.introCard, { backgroundColor: `${theme.colors.primary}10` }]} mode="contained">
-        <Card.Content style={s.introContent}>
-          <MaterialCommunityIcons name="information-outline" size={20} color={theme.colors.primary} />
-          <Text variant="bodySmall" style={{ color: theme.colors.primary, flex: 1, marginLeft: 10, lineHeight: 18 }}>
-            {t("demo.introSettings")}
-          </Text>
-        </Card.Content>
-      </Card>
+      <Animated.View style={{ opacity: introOpacity, transform: [{ translateY: introTranslateY }] }}>
+        <Card style={[s.introCard, { backgroundColor: `${theme.colors.primary}10` }]} mode="contained">
+          <Card.Content style={s.introContent}>
+            <MaterialCommunityIcons name="information-outline" size={20} color={theme.colors.primary} />
+            <Text variant="bodySmall" style={{ color: theme.colors.primary, flex: 1, marginLeft: 10, lineHeight: 18 }}>
+              {t("demo.introSettings")}
+            </Text>
+          </Card.Content>
+        </Card>
+      </Animated.View>
 
+      <Animated.View style={{ opacity: contentOpacity }}>
       <View style={[s.profileCard, { backgroundColor: theme.colors.surface }]}>
         <Avatar.Text size={56} label={initials(coachProfile.full_name)} style={{ backgroundColor: theme.colors.primaryContainer }} labelStyle={{ color: theme.colors.primary }} />
         <View style={{ marginLeft: 14, flex: 1 }}>
@@ -39,6 +46,45 @@ export default function DemoSettings() {
             <Text variant="labelSmall" style={{ color: theme.colors.primary, fontWeight: "700" }}>{t("settings.roleCoach")}</Text>
           </View>
         </View>
+      </View>
+
+      {/* Billing & Payments */}
+      <Text variant="titleMedium" style={{ color: theme.colors.onSurface, fontWeight: "700", marginTop: 20, marginBottom: 12 }}>
+        {t("demo.billingSection")}
+      </Text>
+      <Card style={[s.billingCard, { backgroundColor: theme.colors.surface }]}>
+        <Card.Content>
+          <View style={{ flexDirection: "row", justifyContent: "space-between", alignItems: "center", marginBottom: 14 }}>
+            <View>
+              <Text variant="labelSmall" style={{ color: theme.colors.onSurfaceVariant }}>{t("demo.activePlan")}</Text>
+              <Text variant="titleLarge" style={{ color: theme.colors.primary, fontWeight: "700" }}>{t("demo.planPro")}</Text>
+            </View>
+            <View style={[s.revenueBadge, { backgroundColor: `${theme.colors.primary}15` }]}>
+              <MaterialCommunityIcons name="cash-multiple" size={18} color={theme.colors.primary} />
+              <Text variant="titleMedium" style={{ color: theme.colors.primary, fontWeight: "700", marginLeft: 6 }}>${demoBilling.monthlyRevenue}/mo</Text>
+            </View>
+          </View>
+          <View style={[s.billingRow, { borderTopColor: theme.colors.surfaceVariant }]}>
+            <MaterialCommunityIcons name="credit-card-outline" size={20} color={theme.colors.onSurfaceVariant} />
+            <Text variant="bodyMedium" style={{ color: theme.colors.onSurface, marginLeft: 10, flex: 1 }}>{t("demo.cardEnding")}</Text>
+          </View>
+          <View style={s.billingRow}>
+            <MaterialCommunityIcons name="calendar-clock" size={20} color={theme.colors.onSurfaceVariant} />
+            <Text variant="bodyMedium" style={{ color: theme.colors.onSurface, marginLeft: 10, flex: 1 }}>
+              {t("demo.nextBilling")}: {new Date(demoBilling.nextBillingDate).toLocaleDateString(undefined, { month: "short", day: "numeric" })}
+            </Text>
+          </View>
+        </Card.Content>
+      </Card>
+      <View style={{ flexDirection: "row", gap: 10, marginTop: 10, marginBottom: 8 }}>
+        <Pressable style={[s.billingBtn, { backgroundColor: theme.colors.primaryContainer }]} accessibilityRole="button">
+          <MaterialCommunityIcons name="cog-outline" size={18} color={theme.colors.primary} />
+          <Text variant="labelMedium" style={{ color: theme.colors.primary, fontWeight: "600", marginLeft: 6 }}>{t("demo.manageSubscription")}</Text>
+        </Pressable>
+        <Pressable style={[s.billingBtn, { backgroundColor: theme.colors.surfaceVariant }]} accessibilityRole="button">
+          <MaterialCommunityIcons name="receipt" size={18} color={theme.colors.onSurfaceVariant} />
+          <Text variant="labelMedium" style={{ color: theme.colors.onSurface, fontWeight: "600", marginLeft: 6 }}>{t("demo.viewInvoices")}</Text>
+        </Pressable>
       </View>
 
       <Text variant="titleMedium" style={{ color: theme.colors.onSurface, fontWeight: "700", marginTop: 20, marginBottom: 10 }}>
@@ -68,14 +114,15 @@ export default function DemoSettings() {
         style={{ marginBottom: 16 }}
       />
 
-      <View style={[s.signOutRow, { backgroundColor: theme.colors.surface }]}>
+      <Pressable style={[s.signOutRow, { backgroundColor: theme.colors.surface }]} onPress={() => router.replace({ pathname: "/demo" } as any)} accessibilityRole="button">
         <MaterialCommunityIcons name="logout" size={22} color={theme.custom.error} />
         <Text variant="bodyLarge" style={{ color: theme.custom.error, marginLeft: 12 }}>{t("settings.signOut")}</Text>
-      </View>
+      </Pressable>
 
       <Text variant="bodySmall" style={{ color: theme.colors.onSurfaceVariant, textAlign: "center", marginTop: 24 }}>
         {t("common.version")}
       </Text>
+      </Animated.View>
     </ScrollView>
   );
 }
@@ -87,4 +134,8 @@ const s = StyleSheet.create({
   profileCard: { flexDirection: "row", alignItems: "center", padding: 16, borderRadius: 16 },
   roleBadge: { alignSelf: "flex-start", paddingHorizontal: 8, paddingVertical: 2, borderRadius: 6, marginTop: 6 },
   signOutRow: { flexDirection: "row", alignItems: "center", padding: 16, borderRadius: 16, marginTop: 8 },
+  billingCard: { borderRadius: 16, elevation: 0 },
+  revenueBadge: { flexDirection: "row", alignItems: "center", paddingHorizontal: 12, paddingVertical: 6, borderRadius: 12 },
+  billingRow: { flexDirection: "row", alignItems: "center", paddingVertical: 10, borderTopWidth: 1, borderTopColor: "transparent" },
+  billingBtn: { flex: 1, flexDirection: "row", alignItems: "center", justifyContent: "center", paddingVertical: 12, borderRadius: 12 },
 });

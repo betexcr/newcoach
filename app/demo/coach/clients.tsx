@@ -1,8 +1,9 @@
-import { View, StyleSheet, ScrollView } from "react-native";
+import { View, StyleSheet, ScrollView, Animated } from "react-native";
 import { Text, useTheme, Card, Avatar, Chip, Searchbar } from "react-native-paper";
 import { MaterialCommunityIcons } from "@expo/vector-icons";
 import { useTranslation } from "react-i18next";
 import type { AppTheme } from "@/lib/theme";
+import { useDemoFadeIn } from "../use-demo-fade";
 import { demoClients, demoAssignedWorkouts } from "../mock-data";
 
 function initials(name: string | null): string {
@@ -20,18 +21,22 @@ const statusColor = (status: string, theme: AppTheme) => {
 export default function DemoClients() {
   const theme = useTheme<AppTheme>();
   const { t } = useTranslation();
+  const { introOpacity, introTranslateY, contentOpacity } = useDemoFadeIn("coach-clients");
 
   return (
     <ScrollView style={{ flex: 1, backgroundColor: theme.colors.background }} contentContainerStyle={s.content}>
-      <Card style={[s.introCard, { backgroundColor: `${theme.colors.primary}10` }]} mode="contained">
-        <Card.Content style={s.introContent}>
-          <MaterialCommunityIcons name="information-outline" size={20} color={theme.colors.primary} />
-          <Text variant="bodySmall" style={{ color: theme.colors.primary, flex: 1, marginLeft: 10, lineHeight: 18 }}>
-            {t("demo.introClients")}
-          </Text>
-        </Card.Content>
-      </Card>
+      <Animated.View style={{ opacity: introOpacity, transform: [{ translateY: introTranslateY }] }}>
+        <Card style={[s.introCard, { backgroundColor: `${theme.colors.primary}10` }]} mode="contained">
+          <Card.Content style={s.introContent}>
+            <MaterialCommunityIcons name="information-outline" size={20} color={theme.colors.primary} />
+            <Text variant="bodySmall" style={{ color: theme.colors.primary, flex: 1, marginLeft: 10, lineHeight: 18 }}>
+              {t("demo.introClients")}
+            </Text>
+          </Card.Content>
+        </Card>
+      </Animated.View>
 
+      <Animated.View style={{ opacity: contentOpacity }}>
       <Searchbar placeholder={t("demo.searchClients")} value="" onChangeText={() => {}} style={[s.searchBar, { backgroundColor: theme.colors.surface }]} inputStyle={{ fontSize: 15 }} />
 
       <View style={s.chipRow}>
@@ -125,6 +130,7 @@ export default function DemoClients() {
           </Text>
         </View>
       ))}
+      </Animated.View>
     </ScrollView>
   );
 }

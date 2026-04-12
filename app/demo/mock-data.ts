@@ -321,4 +321,71 @@ export const demoProgressStats = {
   ],
 };
 
+// ── Body Metrics ─────────────────────────────────────────────────────────────
+export interface DemoBodyMetric {
+  date: string;
+  weight: number;
+}
+
+export const demoBodyMetrics: DemoBodyMetric[] = [
+  { date: daysFromNow(-28), weight: 82.5 },
+  { date: daysFromNow(-21), weight: 81.8 },
+  { date: daysFromNow(-14), weight: 81.2 },
+  { date: daysFromNow(-7), weight: 80.5 },
+  { date: today, weight: 79.8 },
+];
+
+export const demoMeasurements = {
+  chest: 102,
+  waist: 82,
+  hips: 96,
+  biceps: 36,
+  thighs: 60,
+  goalWeight: 78,
+  bodyFat: 14.2,
+};
+
+// ── Progress Photos ──────────────────────────────────────────────────────────
+export interface DemoProgressPhoto {
+  id: string;
+  date: string;
+  pose: "front" | "side" | "back";
+  label: string;
+}
+
+export const demoProgressPhotos: DemoProgressPhoto[] = [
+  { id: "pp-01", date: daysFromNow(-14), pose: "front", label: "2 weeks ago" },
+  { id: "pp-02", date: daysFromNow(-14), pose: "side", label: "2 weeks ago" },
+  { id: "pp-03", date: daysFromNow(-14), pose: "back", label: "2 weeks ago" },
+  { id: "pp-04", date: daysFromNow(-7), pose: "front", label: "1 week ago" },
+  { id: "pp-05", date: daysFromNow(-7), pose: "side", label: "1 week ago" },
+  { id: "pp-06", date: daysFromNow(-7), pose: "back", label: "1 week ago" },
+];
+
+// ── Billing (Coach) ──────────────────────────────────────────────────────────
+export const demoBilling = {
+  plan: "Professional",
+  monthlyRevenue: 2_480,
+  activeSubscriptions: 12,
+  nextBillingDate: daysFromNow(18),
+  cardLast4: "4242",
+  cardBrand: "Visa",
+};
+
+// ── Exercise Video URLs (enriched exercises) ─────────────────────────────────
+export const demoExerciseVideos: Record<string, boolean> = {
+  "ex-001": true,
+  "ex-002": true,
+  "ex-003": true,
+  "ex-004": true,
+  "ex-005": true,
+  "ex-006": true,
+  "ex-007": true,
+  "ex-008": false,
+  "ex-009": false,
+  "ex-010": true,
+  "ex-011": false,
+  "ex-012": true,
+};
+
 export { COACH_ID, CLIENT_1_ID, today };

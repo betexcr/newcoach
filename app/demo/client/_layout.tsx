@@ -26,7 +26,7 @@ export default function DemoClientLayout() {
         headerTintColor: theme.colors.onSurface,
         headerShadowVisible: false,
         headerLeft: () => (
-          <Pressable onPress={() => router.push("/demo")} style={{ marginLeft: 12 }} hitSlop={8}>
+          <Pressable onPress={() => router.navigate({ pathname: "/demo" } as any)} style={{ marginLeft: 12 }} hitSlop={8}>
             <MaterialCommunityIcons name="arrow-left" size={24} color={theme.colors.secondary} />
           </Pressable>
         ),
