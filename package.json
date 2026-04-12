@@ -10,7 +10,8 @@
     "build:ios": "eas build --platform ios --profile production",
     "typecheck": "tsc --noEmit",
     "test:e2e": "playwright test",
-    "seed": "tsx scripts/seed-test-data.ts"
+    "seed": "tsx scripts/seed-test-data.ts",
+    "build:web": "npx expo export --platform web"
   },
   "dependencies": {
     "@expo/vector-icons": "^15.0.2",
