@@ -12,6 +12,11 @@ export default function DemoAddClient() {
   const { t } = useTranslation();
   const theme = useTheme<AppTheme>();
   const router = useRouter();
+  function goBack() {
+    if (router.canGoBack()) router.back();
+    else router.replace("/demo/coach/clients" as any);
+  }
+
   const [email, setEmail] = useState("");
   const { introOpacity, introTranslateY, contentOpacity } = useDemoFadeIn("add-client");
 
@@ -22,14 +27,14 @@ export default function DemoAddClient() {
       return;
     }
     Alert.alert(t("clients.addClient"), t("clients.inviteSent"), [
-      { text: t("common.ok"), onPress: () => router.back() },
+      { text: t("common.ok"), onPress: goBack },
     ]);
   }
 
   return (
     <SafeAreaView style={[styles.container, { backgroundColor: theme.colors.background }]}>
       <View style={styles.topBar}>
-        <Pressable onPress={() => router.back()} hitSlop={10} accessibilityRole="button">
+        <Pressable onPress={goBack} hitSlop={10} accessibilityRole="button">
           <MaterialCommunityIcons name="arrow-left" size={24} color={theme.colors.onSurface} />
         </Pressable>
         <Text variant="titleLarge" style={{ color: theme.colors.onSurface, fontWeight: "700" }}>{t("clients.addClient")}</Text>

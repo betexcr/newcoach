@@ -15,6 +15,11 @@ export default function DemoBroadcast() {
   const router = useRouter();
   const { introOpacity, introTranslateY, contentOpacity } = useDemoFadeIn("broadcast");
 
+  function goBack() {
+    if (router.canGoBack()) router.back();
+    else router.replace("/demo/coach/messages" as any);
+  }
+
   const [selectedIds, setSelectedIds] = useState<Set<string>>(new Set());
   const [message, setMessage] = useState("");
   const [broadcastName, setBroadcastName] = useState("");
@@ -53,14 +58,14 @@ export default function DemoBroadcast() {
     if (!message.trim()) { Alert.alert(t("common.required"), t("messages.enterMessage")); return; }
     if (selectedIds.size === 0) { Alert.alert(t("common.required"), t("messages.selectAtLeastOne")); return; }
     Alert.alert(t("messages.sent"), t("messages.broadcastSent", { count: selectedIds.size }), [
-      { text: t("common.ok"), onPress: () => router.back() },
+      { text: t("common.ok"), onPress: goBack },
     ]);
   }
 
   return (
     <SafeAreaView style={[styles.container, { backgroundColor: theme.colors.background }]}>
       <View style={styles.topBar}>
-        <Pressable onPress={() => router.back()} hitSlop={10} accessibilityRole="button">
+        <Pressable onPress={goBack} hitSlop={10} accessibilityRole="button">
           <MaterialCommunityIcons name="arrow-left" size={24} color={theme.colors.onSurface} />
         </Pressable>
         <Text variant="titleLarge" style={{ color: theme.colors.onSurface, fontWeight: "700" }}>{t("messages.broadcastTitle")}</Text>

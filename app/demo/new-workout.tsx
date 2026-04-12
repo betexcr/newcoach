@@ -48,6 +48,11 @@ export default function DemoWorkoutBuilder() {
   const [showExercisePicker, setShowExercisePicker] = useState(false);
   const [showClientPicker, setShowClientPicker] = useState(false);
 
+  function goBack() {
+    if (router.canGoBack()) router.back();
+    else router.replace("/demo/coach/library" as any);
+  }
+
   function addExercise(exercise: Exercise) {
     setExercises((prev) => [
       ...prev,
@@ -84,14 +89,14 @@ export default function DemoWorkoutBuilder() {
   function handleSaveTemplate() {
     if (!name.trim()) { Alert.alert(t("common.required"), t("library.enterWorkoutName")); return; }
     if (exercises.length === 0) { Alert.alert(t("common.required"), t("library.addAtLeastOneExercise")); return; }
-    Alert.alert(t("library.workoutBuilder"), t("demo.savedDemo"), [{ text: t("common.ok"), onPress: () => router.back() }]);
+    Alert.alert(t("library.workoutBuilder"), t("demo.savedDemo"), [{ text: t("common.ok"), onPress: goBack }]);
   }
 
   function handleAssignToClient(clientName: string) {
     if (!name.trim()) { Alert.alert(t("common.required"), t("library.enterWorkoutName")); return; }
     if (exercises.length === 0) { Alert.alert(t("common.required"), t("library.addAtLeastOneExercise")); return; }
     setShowClientPicker(false);
-    Alert.alert(t("library.assignedTitle"), t("library.assignedMessage", { name: clientName }), [{ text: t("common.ok"), onPress: () => router.back() }]);
+    Alert.alert(t("library.assignedTitle"), t("library.assignedMessage", { name: clientName }), [{ text: t("common.ok"), onPress: goBack }]);
   }
 
   const activeClients = demoClients.filter((c) => c.status === "active");
@@ -104,9 +109,9 @@ export default function DemoWorkoutBuilder() {
             if (exercises.length > 0) {
               Alert.alert(t("library.discardTitle"), t("library.discardMessage"), [
                 { text: t("library.keepEditing"), style: "cancel" },
-                { text: t("library.discard"), style: "destructive", onPress: () => router.back() },
+                { text: t("library.discard"), style: "destructive", onPress: goBack },
               ]);
-            } else { router.back(); }
+            } else { goBack(); }
           }}
           hitSlop={10} accessibilityRole="button"
         >

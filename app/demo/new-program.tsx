@@ -16,6 +16,11 @@ export default function DemoCreateProgram() {
   const router = useRouter();
   const { introOpacity, introTranslateY, contentOpacity } = useDemoFadeIn("new-program");
 
+  function goBack() {
+    if (router.canGoBack()) router.back();
+    else router.replace("/demo/coach/library" as any);
+  }
+
   const [name, setName] = useState("");
   const [description, setDescription] = useState("");
   const [durationWeeks, setDurationWeeks] = useState(4);
@@ -28,14 +33,14 @@ export default function DemoCreateProgram() {
       return;
     }
     Alert.alert(t("library.createProgram"), t("demo.savedDemo"), [
-      { text: t("common.ok"), onPress: () => router.back() },
+      { text: t("common.ok"), onPress: goBack },
     ]);
   }
 
   return (
     <SafeAreaView style={[styles.container, { backgroundColor: theme.colors.background }]}>
       <View style={styles.topBar}>
-        <Pressable onPress={() => router.back()} hitSlop={10} accessibilityRole="button">
+        <Pressable onPress={goBack} hitSlop={10} accessibilityRole="button">
           <MaterialCommunityIcons name="arrow-left" size={24} color={theme.colors.onSurface} />
         </Pressable>
         <Text variant="titleLarge" style={{ color: theme.colors.onSurface, fontWeight: "700" }}>{t("library.createProgram")}</Text>

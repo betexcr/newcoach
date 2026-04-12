@@ -47,6 +47,11 @@ export default function DemoWorkoutScreen() {
     return map;
   }, []);
 
+  function goBack() {
+    if (router.canGoBack()) router.back();
+    else router.replace("/demo/client/today" as any);
+  }
+
   const [mode, setMode] = useState<ScreenMode>("detail");
   const [currentStep, setCurrentStep] = useState(0);
   const [loggedData, setLoggedData] = useState<Record<string, LoggedSet[]>>({});
@@ -84,7 +89,7 @@ export default function DemoWorkoutScreen() {
 
   function handleFinish() {
     Alert.alert(t("workout.completeTitle"), t("workout.completeMessage"), [
-      { text: t("common.ok"), onPress: () => router.back() },
+      { text: t("common.ok"), onPress: goBack },
     ]);
   }
 
@@ -139,7 +144,7 @@ export default function DemoWorkoutScreen() {
       workout={workout}
       exerciseMap={exerciseMap}
       onStartWorkout={() => { setCurrentStep(0); setLoggedData({}); setNotes(""); setMode("execution"); }}
-      onBack={() => router.back()}
+      onBack={goBack}
       theme={theme}
       t={t}
     />
