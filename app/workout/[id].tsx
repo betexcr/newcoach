@@ -53,7 +53,7 @@ export default function WorkoutScreen() {
     () => (workout?.exercises ?? []).map((ex) => ex.exercise_id),
     [workout]
   );
-  const { data: exerciseDetails = [] } = useExercisesByIds(exerciseIds);
+  const { data: exerciseDetails = [], isLoading: exercisesLoading, isError: exercisesError, refetch: refetchExercises } = useExercisesByIds(exerciseIds);
 
   const exerciseMap = useMemo(() => {
     const map: Record<string, Exercise> = {};
@@ -139,7 +139,7 @@ export default function WorkoutScreen() {
     }
   }
 
-  if (!isInitialized || workoutsLoading) {
+  if (!isInitialized || workoutsLoading || exercisesLoading) {
     return (
       <SafeAreaView style={[styles.container, { backgroundColor: theme.colors.background }]}>
         <View style={styles.centered}>
@@ -149,14 +149,14 @@ export default function WorkoutScreen() {
     );
   }
 
-  if (isError || !workout) {
+  if (isError || exercisesError || !workout) {
     return (
       <SafeAreaView
         style={[styles.container, { backgroundColor: theme.colors.background }]}
       >
         <ErrorState
-          message={isError ? undefined : t("workout.notFound")}
-          onRetry={refetch}
+          message={isError || exercisesError ? undefined : t("workout.notFound")}
+          onRetry={() => { refetch(); refetchExercises(); }}
         />
       </SafeAreaView>
     );
@@ -250,7 +250,7 @@ function DetailView({
   onStartWorkout: () => void;
   onViewResults: () => void;
   onBack: () => void;
-  theme: any;
+  theme: AppTheme;
   t: (key: string, opts?: Record<string, unknown>) => string;
 }) {
   const exerciseCount = workout.exercises?.length ?? 0;
@@ -322,7 +322,7 @@ function DetailView({
           const detail = exerciseMap[exercise.exercise_id];
           return (
             <ExerciseDetailCard
-              key={`ex-${idx}`}
+              key={`${exercise.exercise_id}-${idx}`}
               exercise={exercise}
               detail={detail}
               index={idx}
@@ -387,7 +387,7 @@ function ExerciseDetailCard({
   exercise: WorkoutExercise;
   detail?: Exercise;
   index: number;
-  theme: any;
+  theme: AppTheme;
   t: (key: string, opts?: Record<string, unknown>) => string;
 }) {
   const [expanded, setExpanded] = useState(false);
@@ -589,7 +589,7 @@ function ExecutionView({
   onBack: () => void;
   saving: boolean;
   screenWidth: number;
-  theme: any;
+  theme: AppTheme;
   t: (key: string, opts?: Record<string, unknown>) => string;
 }) {
   const exercises = workout.exercises;
@@ -1004,7 +1004,7 @@ function ResultsView({
   exerciseMap: Record<string, Exercise>;
   onBack: () => void;
   onRedo: () => void;
-  theme: any;
+  theme: AppTheme;
   t: (key: string, opts?: Record<string, unknown>) => string;
 }) {
   const loggedExercises = Array.isArray(result.logged_sets) ? result.logged_sets : [];

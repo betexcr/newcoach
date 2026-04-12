@@ -161,6 +161,8 @@ export default function ClientMessagesScreen() {
                 styles.convoItem,
                 { backgroundColor: theme.colors.surface },
               ]}
+              accessibilityRole="button"
+              accessibilityLabel={item.name ?? t("messages.coachFallback")}
               onPress={() => {
                 useChatNavStore.getState().set(item.id, item.name ?? t("messages.coachFallback"));
                 router.push({

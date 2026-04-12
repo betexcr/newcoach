@@ -59,6 +59,9 @@ function ClientRow({
         },
       ]}
       onPress={onToggle}
+      accessibilityRole="checkbox"
+      accessibilityState={{ checked: selected }}
+      accessibilityLabel={client.profile?.full_name ?? client.profile?.email ?? ""}
     >
       <Avatar.Text
         size={40}

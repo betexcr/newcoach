@@ -34,6 +34,8 @@ function ConversationItem({
     <Pressable
       style={[styles.convoItem, { backgroundColor: theme.colors.surface }]}
       onPress={onPress}
+      accessibilityRole="button"
+      accessibilityLabel={conversation.name ?? t("messages.directMessage")}
     >
       <Avatar.Icon
         size={48}

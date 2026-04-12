@@ -392,9 +392,18 @@ export default function WorkoutBuilderScreen() {
           </Text>
         </View>
 
-        {exercises.map((ex, index) => (
-          <ExerciseBlock key={`${ex.exercise_id}-${index}`} exerciseIndex={index} />
-        ))}
+        {exercises.length === 0 ? (
+          <Text
+            variant="bodyMedium"
+            style={{ color: theme.colors.onSurfaceVariant, textAlign: "center", marginVertical: 16 }}
+          >
+            {t("clients.noExercisesAdded")}
+          </Text>
+        ) : (
+          exercises.map((ex, index) => (
+            <ExerciseBlock key={`${ex.exercise_id}-${index}`} exerciseIndex={index} />
+          ))
+        )}
 
         <Pressable
           style={[

@@ -396,7 +396,7 @@ function TemplatesListView({
   onDelete,
 }: {
   templates: WorkoutTemplate[];
-  theme: any;
+  theme: AppTheme;
   t: any;
   router: any;
   isRefetching: boolean;

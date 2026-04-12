@@ -145,6 +145,8 @@ export default function ClientProfileScreen() {
             onPress={handleRemoveClient}
             disabled={removeClient.isPending}
             style={{ opacity: removeClient.isPending ? 0.5 : 1 }}
+            accessibilityRole="button"
+            accessibilityLabel={t("clientProfile.removeClientLabel")}
           >
             <MaterialCommunityIcons
               name="account-remove"
@@ -342,7 +344,7 @@ function WorkoutsTab({
   workouts: AssignedWorkout[];
   results: WorkoutResult[];
   loading: boolean;
-  theme: any;
+  theme: AppTheme;
   t: any;
   router: any;
   clientName: string;
@@ -437,7 +439,7 @@ function ProgressTab({
   workouts: AssignedWorkout[];
   results: WorkoutResult[];
   loading: boolean;
-  theme: any;
+  theme: AppTheme;
   t: any;
 }) {
   const exerciseStats = useMemo(() => {
@@ -518,7 +520,7 @@ function HabitsTab({
 }: {
   habits: Habit[];
   loading: boolean;
-  theme: any;
+  theme: AppTheme;
   t: any;
   router: any;
   coachId: string;
@@ -587,7 +589,7 @@ function NutritionTab({
 }: {
   entries: NutritionLog[];
   loading: boolean;
-  theme: any;
+  theme: AppTheme;
   t: any;
 }) {
   if (loading) {

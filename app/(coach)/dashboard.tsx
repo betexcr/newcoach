@@ -350,6 +350,8 @@ export default function CoachDashboard() {
                   { backgroundColor: theme.colors.surface },
                 ]}
                 onPress={action.onPress}
+                accessibilityRole="button"
+                accessibilityLabel={action.label}
               >
                 <View
                   style={[
@@ -426,6 +428,8 @@ export default function CoachDashboard() {
                       borderBottomRightRadius: 16,
                     },
                   ]}
+                  accessibilityRole="button"
+                  accessibilityLabel={item.title}
                   onPress={() => {
                     if (item.workoutId) {
                       router.push({
@@ -479,6 +483,8 @@ export default function CoachDashboard() {
                       {item.clientName && (
                         <Pressable
                           style={[styles.clientTag, { backgroundColor: theme.colors.primaryContainer }]}
+                          accessibilityRole="button"
+                          accessibilityLabel={item.clientName ?? t("dashboard.fallbackClient")}
                           onPress={(e) => {
                             e.stopPropagation?.();
                             if (item.clientId) {

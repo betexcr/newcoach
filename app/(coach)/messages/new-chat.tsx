@@ -168,6 +168,8 @@ export default function NewChatScreen() {
               <Pressable
                 style={[styles.clientRow, { backgroundColor: theme.colors.surface }]}
                 onPress={() => handleSelect(item)}
+                accessibilityRole="button"
+                accessibilityLabel={name}
               >
                 <Avatar.Text
                   size={44}

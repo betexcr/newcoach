@@ -173,6 +173,8 @@ export default function TodayScreen() {
           <Pressable
             onPress={() => refetchInvites()}
             style={[styles.inviteBanner, { backgroundColor: theme.colors.errorContainer }]}
+            accessibilityRole="button"
+            accessibilityLabel={t("invites.loadFailed")}
           >
             <MaterialCommunityIcons
               name="alert-circle-outline"
@@ -200,6 +202,8 @@ export default function TodayScreen() {
           <Pressable
             onPress={() => router.push("/(client)/invites" as any)}
             style={[styles.inviteBanner, { backgroundColor: theme.colors.primaryContainer }]}
+            accessibilityRole="button"
+            accessibilityLabel={t("invites.bannerTitle")}
           >
             <MaterialCommunityIcons
               name="account-plus"
@@ -403,7 +407,7 @@ function TodayWorkoutCard({
   onPress,
 }: {
   workout: AssignedWorkout;
-  theme: any;
+  theme: AppTheme;
   t: (key: string, opts?: Record<string, unknown>) => string;
   onPress: () => void;
 }) {
@@ -456,7 +460,7 @@ function TodayWorkoutCard({
 
         <View style={styles.exercisePreview}>
           {workout.exercises?.slice(0, 4).map((ex, i) => (
-            <View key={i} style={styles.exerciseRow}>
+            <View key={`${ex.exercise_id}-${i}`} style={styles.exerciseRow}>
               <MaterialCommunityIcons
                 name="chevron-right"
                 size={16}

@@ -214,7 +214,7 @@ export default function NutritionScreen() {
           >
             {t("nutrition.title")}
           </Text>
-          <Pressable onPress={openGoalsForm}>
+          <Pressable onPress={openGoalsForm} accessibilityRole="button" accessibilityLabel={t("nutrition.editGoalsLabel")}>
             <MaterialCommunityIcons
               name="target"
               size={26}
@@ -361,7 +361,7 @@ export default function NutritionScreen() {
           >
             {t("nutrition.foodLog")}
           </Text>
-          <Pressable onPress={() => { setShowForm(!showForm); setShowGoalsForm(false); }}>
+          <Pressable onPress={() => { setShowForm(!showForm); setShowGoalsForm(false); }} accessibilityRole="button" accessibilityLabel={t("nutrition.addEntryLabel")}>
             <MaterialCommunityIcons
               name={showForm ? "close" : "plus-circle"}
               size={28}

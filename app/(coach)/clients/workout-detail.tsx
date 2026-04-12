@@ -204,7 +204,7 @@ export default function CoachWorkoutDetailScreen() {
 
           return (
             <ExerciseResultCard
-              key={`ex-${idx}`}
+              key={`${exercise.exercise_id}-${idx}`}
               exercise={exercise}
               detail={detail}
               logged={logged}
@@ -229,7 +229,7 @@ function ExerciseResultCard({
   detail: any;
   logged?: LoggedExercise;
   index: number;
-  theme: any;
+  theme: AppTheme;
 }) {
   const { t } = useTranslation();
   return (

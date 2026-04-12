@@ -173,6 +173,9 @@ export default function CalendarScreen() {
                 },
               ]}
               onPress={() => setSelectedDate(dateStr)}
+              accessibilityRole="button"
+              accessibilityLabel={date.toLocaleDateString(undefined, { weekday: "long", month: "short", day: "numeric" })}
+              accessibilityState={{ selected: isSelected }}
             >
               <Text
                 variant="labelSmall"
@@ -267,7 +270,7 @@ function WorkoutCard({
   t,
 }: {
   workout: AssignedWorkout;
-  theme: any;
+  theme: AppTheme;
   t: (key: string, opts?: Record<string, unknown>) => string;
 }) {
   const router = useRouter();
