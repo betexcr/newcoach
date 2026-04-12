@@ -1,11 +1,12 @@
 import { useState } from "react";
 import { useTranslation } from "react-i18next";
-import { View, StyleSheet, ScrollView, Pressable, Alert, Platform, Keyboard, KeyboardAvoidingView } from "react-native";
-import { Text, useTheme, TextInput } from "react-native-paper";
+import { View, StyleSheet, ScrollView, Pressable, Alert, Platform, Keyboard, KeyboardAvoidingView, Animated } from "react-native";
+import { Text, useTheme, TextInput, Card } from "react-native-paper";
 import { SafeAreaView } from "react-native-safe-area-context";
 import { MaterialCommunityIcons } from "@expo/vector-icons";
 import { useRouter } from "expo-router";
 import type { AppTheme } from "@/lib/theme";
+import { useDemoFadeIn } from "./use-demo-fade";
 
 const DURATION_PRESETS = [4, 6, 8, 12, 16];
 
@@ -13,6 +14,7 @@ export default function DemoCreateProgram() {
   const { t } = useTranslation();
   const theme = useTheme<AppTheme>();
   const router = useRouter();
+  const { introOpacity, introTranslateY, contentOpacity } = useDemoFadeIn("new-program");
 
   const [name, setName] = useState("");
   const [description, setDescription] = useState("");
@@ -42,6 +44,18 @@ export default function DemoCreateProgram() {
 
       <KeyboardAvoidingView style={{ flex: 1 }} behavior={Platform.OS === "ios" ? "padding" : undefined}>
         <ScrollView contentContainerStyle={styles.content} keyboardShouldPersistTaps="handled">
+          <Animated.View style={{ opacity: introOpacity, transform: [{ translateY: introTranslateY }] }}>
+            <Card style={[styles.introCard, { backgroundColor: `${theme.colors.primary}10` }]} mode="contained">
+              <Card.Content style={styles.introContent}>
+                <MaterialCommunityIcons name="information-outline" size={20} color={theme.colors.primary} />
+                <Text variant="bodySmall" style={{ color: theme.colors.primary, flex: 1, marginLeft: 10, lineHeight: 18 }}>
+                  {t("demo.introNewProgram")}
+                </Text>
+              </Card.Content>
+            </Card>
+          </Animated.View>
+
+          <Animated.View style={{ opacity: contentOpacity }}>
           <TextInput mode="outlined" label={t("library.programNameLabel")} value={name} onChangeText={setName} style={styles.input} outlineStyle={styles.outline} />
           <TextInput mode="outlined" label={t("library.descriptionLabel")} value={description} onChangeText={setDescription} multiline numberOfLines={3} style={styles.input} outlineStyle={styles.outline} />
 
@@ -98,6 +112,7 @@ export default function DemoCreateProgram() {
               {t("library.createProgramButton")}
             </Text>
           </Pressable>
+          </Animated.View>
         </ScrollView>
       </KeyboardAvoidingView>
     </SafeAreaView>
@@ -106,6 +121,8 @@ export default function DemoCreateProgram() {
 
 const styles = StyleSheet.create({
   container: { flex: 1 },
+  introCard: { borderRadius: 12, marginBottom: 16, elevation: 0 },
+  introContent: { flexDirection: "row", alignItems: "center" },
   topBar: { flexDirection: "row", justifyContent: "space-between", alignItems: "center", paddingHorizontal: 16, paddingVertical: 12 },
   content: { padding: 16, paddingBottom: 40 },
   input: { marginBottom: 12 },

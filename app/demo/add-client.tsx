@@ -1,17 +1,19 @@
 import { useState } from "react";
 import { useTranslation } from "react-i18next";
-import { View, StyleSheet, Alert, Platform, Keyboard, KeyboardAvoidingView, Pressable } from "react-native";
-import { Text, useTheme, TextInput } from "react-native-paper";
+import { View, StyleSheet, Alert, Platform, Keyboard, KeyboardAvoidingView, Pressable, Animated } from "react-native";
+import { Text, useTheme, TextInput, Card } from "react-native-paper";
 import { SafeAreaView } from "react-native-safe-area-context";
 import { MaterialCommunityIcons } from "@expo/vector-icons";
 import { useRouter } from "expo-router";
 import type { AppTheme } from "@/lib/theme";
+import { useDemoFadeIn } from "./use-demo-fade";
 
 export default function DemoAddClient() {
   const { t } = useTranslation();
   const theme = useTheme<AppTheme>();
   const router = useRouter();
   const [email, setEmail] = useState("");
+  const { introOpacity, introTranslateY, contentOpacity } = useDemoFadeIn("add-client");
 
   function handleAdd() {
     Keyboard.dismiss();
@@ -36,6 +38,18 @@ export default function DemoAddClient() {
 
       <KeyboardAvoidingView style={{ flex: 1 }} behavior={Platform.OS === "ios" ? "padding" : undefined}>
         <View style={styles.content}>
+          <Animated.View style={{ opacity: introOpacity, transform: [{ translateY: introTranslateY }], width: "100%" }}>
+            <Card style={[styles.introCard, { backgroundColor: `${theme.colors.primary}10` }]} mode="contained">
+              <Card.Content style={styles.introContent}>
+                <MaterialCommunityIcons name="information-outline" size={20} color={theme.colors.primary} />
+                <Text variant="bodySmall" style={{ color: theme.colors.primary, flex: 1, marginLeft: 10, lineHeight: 18 }}>
+                  {t("demo.introAddClient")}
+                </Text>
+              </Card.Content>
+            </Card>
+          </Animated.View>
+
+          <Animated.View style={{ opacity: contentOpacity, width: "100%", alignItems: "center" }}>
           <View style={[styles.iconContainer, { backgroundColor: `${theme.colors.secondary}15` }]}>
             <MaterialCommunityIcons name="account-plus" size={48} color={theme.colors.secondary} />
           </View>
@@ -66,6 +80,7 @@ export default function DemoAddClient() {
               {t("clients.addClient")}
             </Text>
           </Pressable>
+          </Animated.View>
         </View>
       </KeyboardAvoidingView>
     </SafeAreaView>
@@ -74,6 +89,8 @@ export default function DemoAddClient() {
 
 const styles = StyleSheet.create({
   container: { flex: 1 },
+  introCard: { borderRadius: 12, marginBottom: 16, elevation: 0 },
+  introContent: { flexDirection: "row", alignItems: "center" },
   topBar: { flexDirection: "row", justifyContent: "space-between", alignItems: "center", paddingHorizontal: 16, paddingVertical: 12 },
   content: { padding: 24, alignItems: "center" },
   iconContainer: { width: 96, height: 96, borderRadius: 48, justifyContent: "center", alignItems: "center", marginBottom: 20, marginTop: 20 },

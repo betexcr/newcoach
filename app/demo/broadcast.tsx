@@ -1,17 +1,19 @@
 import { useState, useMemo } from "react";
 import { useTranslation } from "react-i18next";
-import { View, StyleSheet, ScrollView, Pressable, Alert } from "react-native";
-import { Text, useTheme, TextInput, Avatar, Checkbox, Searchbar } from "react-native-paper";
+import { View, StyleSheet, ScrollView, Pressable, Alert, Animated } from "react-native";
+import { Text, useTheme, TextInput, Avatar, Checkbox, Searchbar, Card } from "react-native-paper";
 import { SafeAreaView } from "react-native-safe-area-context";
 import { MaterialCommunityIcons } from "@expo/vector-icons";
 import { useRouter } from "expo-router";
 import { demoClients } from "./mock-data";
 import type { AppTheme } from "@/lib/theme";
+import { useDemoFadeIn } from "./use-demo-fade";
 
 export default function DemoBroadcast() {
   const { t } = useTranslation();
   const theme = useTheme<AppTheme>();
   const router = useRouter();
+  const { introOpacity, introTranslateY, contentOpacity } = useDemoFadeIn("broadcast");
 
   const [selectedIds, setSelectedIds] = useState<Set<string>>(new Set());
   const [message, setMessage] = useState("");
@@ -66,6 +68,18 @@ export default function DemoBroadcast() {
       </View>
 
       <ScrollView contentContainerStyle={styles.content} keyboardShouldPersistTaps="handled">
+        <Animated.View style={{ opacity: introOpacity, transform: [{ translateY: introTranslateY }] }}>
+          <Card style={[styles.introCard, { backgroundColor: `${theme.colors.primary}10` }]} mode="contained">
+            <Card.Content style={styles.introContent}>
+              <MaterialCommunityIcons name="information-outline" size={20} color={theme.colors.primary} />
+              <Text variant="bodySmall" style={{ color: theme.colors.primary, flex: 1, marginLeft: 10, lineHeight: 18 }}>
+                {t("demo.introBroadcast")}
+              </Text>
+            </Card.Content>
+          </Card>
+        </Animated.View>
+
+        <Animated.View style={{ opacity: contentOpacity }}>
         <TextInput mode="outlined" label={t("messages.broadcastNameLabel")} value={broadcastName} onChangeText={setBroadcastName} style={styles.input} outlineStyle={styles.outline} />
         <TextInput mode="outlined" label={t("messages.messageLabel")} value={message} onChangeText={setMessage} multiline numberOfLines={4} style={styles.input} outlineStyle={styles.outline} />
 
@@ -119,6 +133,7 @@ export default function DemoBroadcast() {
             {t("messages.sendToClients", { count: selectedIds.size })}
           </Text>
         </Pressable>
+        </Animated.View>
       </ScrollView>
     </SafeAreaView>
   );
@@ -126,6 +141,8 @@ export default function DemoBroadcast() {
 
 const styles = StyleSheet.create({
   container: { flex: 1 },
+  introCard: { borderRadius: 12, marginBottom: 16, elevation: 0 },
+  introContent: { flexDirection: "row", alignItems: "center" },
   topBar: { flexDirection: "row", justifyContent: "space-between", alignItems: "center", paddingHorizontal: 16, paddingVertical: 12 },
   content: { padding: 16, paddingBottom: 40 },
   input: { marginBottom: 12 },

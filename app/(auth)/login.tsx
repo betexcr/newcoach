@@ -8,7 +8,7 @@ import {
   Pressable,
 } from "react-native";
 import { Text, useTheme } from "react-native-paper";
-import { Link, useRouter } from "expo-router";
+import { useRouter } from "expo-router";
 import { useTranslation } from "react-i18next";
 import { supabase } from "@/lib/supabase";
 import { AuthInput } from "@/components/AuthInput";
@@ -128,20 +128,6 @@ export default function LoginScreen() {
           </AuthButton>
         </View>
 
-        <View style={styles.footer}>
-          <Text
-            variant="bodyMedium"
-            style={{ color: theme.colors.onSurfaceVariant }}
-          >
-            {t("auth.noAccount")}{" "}
-          </Text>
-          <Link href="/(auth)/signup" asChild>
-            <AuthButton variant="text" compact>
-              {t("auth.signUp")}
-            </AuthButton>
-          </Link>
-        </View>
-
         <Pressable
           style={styles.demoLink}
           onPress={() => router.push("/demo" as any)}
@@ -192,12 +178,6 @@ const styles = StyleSheet.create({
     textAlign: "center",
     marginVertical: 8,
     fontSize: 14,
-  },
-  footer: {
-    flexDirection: "row",
-    justifyContent: "center",
-    alignItems: "center",
-    marginTop: 32,
   },
   demoLink: {
     flexDirection: "row",

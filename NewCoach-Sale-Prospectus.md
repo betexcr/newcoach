@@ -121,25 +121,6 @@ Construir este producto desde cero costaría aproximadamente **$20,000–$30,000
 - Alternativa accesible a plataformas SaaS internacionales que cobran $20–$100+/mes **por coach** — NewCoach cobra **por gimnasio**, lo cual es significativamente más económico
 - Modelo de suscripción elimina la barrera de entrada para gimnasios pequeños y medianos
 
-### Funcionalidades que TrueCoach No Tiene
-
-| Funcionalidad | NewCoach | TrueCoach |
-|---------------|----------|-----------|
-| Hábitos asignados por el coach (diario/semanal/mensual) | ✅ | ❌ |
-| Gamificación con insignias y logros | ✅ | ❌ |
-| Mensajes masivos (broadcast) con selección de destinatarios | ✅ | ❌ |
-| Localización completa en español | ✅ | ❌ |
-| Demo interactivo integrado para ventas | ✅ | ❌ |
-| Precio por gimnasio (no por coach) | ✅ | ❌ |
-| White-label / código fuente propio | ✅ | ❌ |
-| Fotos de progreso (frente, lado, espalda) | ✅ | ✅ |
-| Métricas corporales (peso, medidas, grasa) | ✅ | ✅ |
-| Biblioteca de videos de ejercicios | ✅ | ✅ |
-| Facturación y pagos integrados | ✅ | ✅ |
-| Seguimiento de nutrición nativo | ✅ | Parcial (depende de MyFitnessPal) |
-
----
-
 ## Qué Incluye la Venta
 
 - Código fuente completo (TypeScript/React Native)

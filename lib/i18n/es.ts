@@ -680,6 +680,11 @@ const es: TranslationKeys = {
     introBodyMetrics: "Registra peso, medidas corporales y porcentaje de grasa a lo largo del tiempo. Visualiza tu transformación con gráficos y fotos de progreso.",
     introProgressPhotos: "Toma y compara fotos de progreso lado a lado. Poses de frente, lado y espalda para registrar tu transformación.",
     introBilling: "Gestiona tu suscripción, método de pago y consulta facturas. Mantén tu negocio de coaching funcionando sin problemas.",
+    introAddClient: "Invita nuevos atletas a tu lista por correo electrónico. Recibirán un enlace para descargar la app y conectarse contigo.",
+    introBroadcast: "Envía un mensaje a varios clientes a la vez. Selecciona destinatarios, escribe tu mensaje y envíalo.",
+    introNewProgram: "Crea programas estructurados de varias semanas. Establece la duración, añade una descripción y completa los entrenamientos de cada día.",
+    introNewWorkout: "Crea entrenamientos personalizados desde tu biblioteca de ejercicios. Añade ejercicios, configura series/reps/peso y asígnalo a un cliente o guárdalo como plantilla.",
+    introWorkout: "Previsualiza e inicia tu entrenamiento. Toca cada ejercicio para ver los detalles y pulsa Iniciar para registrar tus series.",
   },
 } as const;
 

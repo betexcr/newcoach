@@ -678,6 +678,11 @@ const en = {
     introBodyMetrics: "Track body weight, measurements, and body fat over time. See your transformation with charts and progress photos.",
     introProgressPhotos: "Take and compare progress photos side by side. Front, side, and back poses to track your transformation.",
     introBilling: "Manage your subscription, payment method, and view invoices. Keep your coaching business running smoothly.",
+    introAddClient: "Invite new athletes to your roster by email. They'll receive a link to download the app and connect with you.",
+    introBroadcast: "Send a message to multiple clients at once. Select recipients, compose your message, and hit send.",
+    introNewProgram: "Create structured multi-week programs. Set the duration, add a description, then fill in workouts for each day.",
+    introNewWorkout: "Build custom workouts from your exercise library. Add exercises, configure sets/reps/weight, then assign to a client or save as a template.",
+    introWorkout: "Preview and start your workout. Tap each exercise to see details, then hit Start to begin logging your sets.",
   },
 } as const;
 

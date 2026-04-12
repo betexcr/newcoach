@@ -228,3 +228,41 @@ INSERT INTO exercises (name, description, muscle_group, equipment, is_custom) VA
 ('Sprint Intervals', 'Alternate between maximal sprints and rest periods.', 'cardio', 'bodyweight', false),
 ('Shuttle Runs', 'Sprint back and forth between two markers.', 'cardio', 'bodyweight', false),
 ('Farmers Walk', 'Carry heavy weights at sides while walking for distance or time.', 'cardio', 'dumbbell', false);
+
+-- Add video URLs for popular exercises
+UPDATE exercises SET video_url = 'https://www.youtube.com/watch?v=rT7DgCr-3pg' WHERE name = 'Barbell Bench Press';
+UPDATE exercises SET video_url = 'https://www.youtube.com/watch?v=VmB1G1K7v94' WHERE name = 'Dumbbell Bench Press';
+UPDATE exercises SET video_url = 'https://www.youtube.com/watch?v=SrqOu55lrYU' WHERE name = 'Incline Barbell Bench Press';
+UPDATE exercises SET video_url = 'https://www.youtube.com/watch?v=8iPEnn-ltC8' WHERE name = 'Cable Crossover';
+UPDATE exercises SET video_url = 'https://www.youtube.com/watch?v=IODxDxX7oi4' WHERE name = 'Push-ups';
+UPDATE exercises SET video_url = 'https://www.youtube.com/watch?v=ytGaGIn3SjE' WHERE name = 'Barbell Deadlift';
+UPDATE exercises SET video_url = 'https://www.youtube.com/watch?v=JFZWM-_JNhQ' WHERE name = 'Sumo Deadlift';
+UPDATE exercises SET video_url = 'https://www.youtube.com/watch?v=kBWAon7ItDw' WHERE name = 'Barbell Row';
+UPDATE exercises SET video_url = 'https://www.youtube.com/watch?v=XB_7En-zf_M' WHERE name = 'Pull-ups';
+UPDATE exercises SET video_url = 'https://www.youtube.com/watch?v=brhRXlOhWAM' WHERE name = 'Chin-ups';
+UPDATE exercises SET video_url = 'https://www.youtube.com/watch?v=CnBmiBqp-AI' WHERE name = 'Lat Pulldown';
+UPDATE exercises SET video_url = 'https://www.youtube.com/watch?v=GZbfZ033f74' WHERE name = 'Seated Cable Row';
+UPDATE exercises SET video_url = 'https://www.youtube.com/watch?v=dZmZJhRxOn0' WHERE name = 'Dumbbell Row';
+UPDATE exercises SET video_url = 'https://www.youtube.com/watch?v=_RlRDWO2jfg' WHERE name = 'Overhead Press';
+UPDATE exercises SET video_url = 'https://www.youtube.com/watch?v=qEwKCR5JCog' WHERE name = 'Dumbbell Shoulder Press';
+UPDATE exercises SET video_url = 'https://www.youtube.com/watch?v=3VcKaXpzqRo' WHERE name = 'Lateral Raise';
+UPDATE exercises SET video_url = 'https://www.youtube.com/watch?v=V8dZ3pyiCBo' WHERE name = 'Face Pull';
+UPDATE exercises SET video_url = 'https://www.youtube.com/watch?v=ultWZbUMPL8' WHERE name = 'Barbell Back Squat';
+UPDATE exercises SET video_url = 'https://www.youtube.com/watch?v=m4ytaCJZpl0' WHERE name = 'Front Squat';
+UPDATE exercises SET video_url = 'https://www.youtube.com/watch?v=2C-uNgKwPLE' WHERE name = 'Romanian Deadlift';
+UPDATE exercises SET video_url = 'https://www.youtube.com/watch?v=IZxyjW7MPJQ' WHERE name = 'Leg Press';
+UPDATE exercises SET video_url = 'https://www.youtube.com/watch?v=dQqApCGd5Ss' WHERE name = 'Walking Lunges';
+UPDATE exercises SET video_url = 'https://www.youtube.com/watch?v=2C-uNgKwPLE' WHERE name = 'Bulgarian Split Squat';
+UPDATE exercises SET video_url = 'https://www.youtube.com/watch?v=SrqOu55lrYU' WHERE name = 'Hip Thrust';
+UPDATE exercises SET video_url = 'https://www.youtube.com/watch?v=YyvSfVjQeL0' WHERE name = 'Goblet Squat';
+UPDATE exercises SET video_url = 'https://www.youtube.com/watch?v=kwG2ipFRgFo' WHERE name = 'Barbell Curl';
+UPDATE exercises SET video_url = 'https://www.youtube.com/watch?v=ykJhGtCAIN8' WHERE name = 'Dumbbell Curl';
+UPDATE exercises SET video_url = 'https://www.youtube.com/watch?v=TwD-YGVP4Bk' WHERE name = 'Hammer Curl';
+UPDATE exercises SET video_url = 'https://www.youtube.com/watch?v=2-LAMcpzODU' WHERE name = 'Tricep Pushdown';
+UPDATE exercises SET video_url = 'https://www.youtube.com/watch?v=nRiJVZDpdL0' WHERE name = 'Close-Grip Bench Press';
+UPDATE exercises SET video_url = 'https://www.youtube.com/watch?v=d_KZxkY_0cM' WHERE name = 'Skull Crushers';
+UPDATE exercises SET video_url = 'https://www.youtube.com/watch?v=ASdvN_XEl_c' WHERE name = 'Plank';
+UPDATE exercises SET video_url = 'https://www.youtube.com/watch?v=Eb3jx9UMhLs' WHERE name = 'Hanging Leg Raise';
+UPDATE exercises SET video_url = 'https://www.youtube.com/watch?v=jDwoBqPH0jk' WHERE name = 'Ab Wheel Rollout';
+UPDATE exercises SET video_url = 'https://www.youtube.com/watch?v=wPM8icPu6H8' WHERE name = 'Dead Bug';
+UPDATE exercises SET video_url = 'https://www.youtube.com/watch?v=h4OCT23KSqQ' WHERE name = 'Kettlebell Swing';

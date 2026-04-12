@@ -8,6 +8,7 @@ import {
   Alert,
   TextInput as RNTextInput,
   useWindowDimensions,
+  Animated,
 } from "react-native";
 import {
   Text,
@@ -27,6 +28,7 @@ import type {
   AssignedWorkout,
 } from "@/types/database";
 import type { AppTheme } from "@/lib/theme";
+import { useDemoFadeIn } from "./use-demo-fade";
 
 type ScreenMode = "detail" | "execution" | "finish";
 
@@ -163,6 +165,7 @@ function DetailView({
 }) {
   const exerciseCount = workout.exercises?.length ?? 0;
   const totalSets = workout.exercises?.reduce((s, ex) => s + (ex.sets?.length ?? 0), 0) ?? 0;
+  const { introOpacity, introTranslateY, contentOpacity } = useDemoFadeIn("workout");
 
   return (
     <SafeAreaView style={[styles.container, { backgroundColor: theme.colors.background }]}>
@@ -178,6 +181,18 @@ function DetailView({
       </View>
 
       <ScrollView contentContainerStyle={styles.detailContent}>
+        <Animated.View style={{ opacity: introOpacity, transform: [{ translateY: introTranslateY }] }}>
+          <Card style={[styles.introCard, { backgroundColor: `${theme.colors.primary}10` }]} mode="contained">
+            <Card.Content style={styles.introContent}>
+              <MaterialCommunityIcons name="information-outline" size={20} color={theme.colors.primary} />
+              <Text variant="bodySmall" style={{ color: theme.colors.primary, flex: 1, marginLeft: 10, lineHeight: 18 }}>
+                {t("demo.introWorkout")}
+              </Text>
+            </Card.Content>
+          </Card>
+        </Animated.View>
+
+        <Animated.View style={{ opacity: contentOpacity }}>
         <View style={styles.summaryRow}>
           {[
             { icon: "dumbbell" as const, label: t("workout.exercisesCount", { count: exerciseCount }) },
@@ -206,6 +221,7 @@ function DetailView({
           />
         ))}
         <View style={{ height: 80 }} />
+        </Animated.View>
       </ScrollView>
 
       <View style={[styles.bottomBar, { backgroundColor: theme.colors.background }]}>
@@ -605,6 +621,8 @@ function FinishView({
 
 const styles = StyleSheet.create({
   container: { flex: 1 },
+  introCard: { borderRadius: 12, marginBottom: 16, elevation: 0 },
+  introContent: { flexDirection: "row", alignItems: "center" },
   centered: { flex: 1, justifyContent: "center", alignItems: "center" },
   topBar: { flexDirection: "row", alignItems: "center", paddingHorizontal: 16, paddingVertical: 12, gap: 12 },
   backBtn: { width: 40, height: 40, borderRadius: 20, justifyContent: "center", alignItems: "center" },
