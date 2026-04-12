@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useMemo } from "react";
 import { useTranslation } from "react-i18next";
 import {
   View,
@@ -21,7 +21,7 @@ import {
 import { SafeAreaView } from "react-native-safe-area-context";
 import { MaterialCommunityIcons } from "@expo/vector-icons";
 import { useRouter } from "expo-router";
-import { demoExercises } from "./mock-data";
+import { getDemoExercises } from "./mock-data";
 import type { AppTheme } from "@/lib/theme";
 import { useDemoFadeIn } from "./use-demo-fade";
 import { DemoPress } from "./DemoTooltip";
@@ -35,6 +35,7 @@ export default function DemoWorkoutBuilder() {
   const { t } = useTranslation();
   const theme = useTheme<AppTheme>();
   const router = useRouter();
+  const demoExercises = useMemo(() => getDemoExercises(t), [t]);
   const { introOpacity, introTranslateY, contentOpacity } = useDemoFadeIn("new-workout");
 
   const [name, setName] = useState("");

@@ -868,6 +868,20 @@ const en = {
     exerciseDemoMedia:
       "DEMO — Stock loop for preview only (not your coach’s exercise video).",
   },
+  exerciseCatalog: {
+    barbellBenchPress: { name: "Barbell Bench Press", description: "Lie on bench, grip bar slightly wider than shoulders, lower to chest, press up." },
+    barbellBackSquat: { name: "Barbell Back Squat", description: "Bar on upper back, squat to parallel or below, stand back up." },
+    barbellDeadlift: { name: "Barbell Deadlift", description: "Stand over bar, hip-hinge to grip, drive through floor to stand." },
+    overheadPress: { name: "Overhead Press", description: "Stand with bar at shoulders, press overhead to lockout." },
+    barbellRow: { name: "Barbell Row", description: "Hinge forward, pull bar to lower chest/upper abdomen." },
+    latPulldown: { name: "Lat Pulldown", description: "Sit at machine, pull bar to upper chest." },
+    romanianDeadlift: { name: "Romanian Deadlift", description: "Slight knee bend, hinge at hips, lower bar along legs." },
+    dumbbellCurl: { name: "Dumbbell Curl", description: "Alternate or simultaneous curls with dumbbells." },
+    tricepPushdown: { name: "Tricep Pushdown", description: "Push cable attachment down until arms extended." },
+    plank: { name: "Plank", description: "Hold push-up position on forearms, keep body straight." },
+    lateralRaise: { name: "Lateral Raise", description: "Stand with dumbbells at sides, raise to shoulder height." },
+    legPress: { name: "Leg Press", description: "Sit in machine, push platform away with legs." },
+  },
 } as const;
 
 export default en;

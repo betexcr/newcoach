@@ -870,6 +870,20 @@ const es: TranslationKeys = {
     exerciseDemoMedia:
       "DEMO — Clip de muestra solo para vista previa (no es el video del ejercicio de tu entrenador).",
   },
+  exerciseCatalog: {
+    barbellBenchPress: { name: "Press de Banca con Barra", description: "Acostado en banco, agarra la barra un poco más ancho que los hombros, baja al pecho, empuja hacia arriba." },
+    barbellBackSquat: { name: "Sentadilla con Barra", description: "Barra en la espalda alta, baja hasta paralelo o más abajo, sube de nuevo." },
+    barbellDeadlift: { name: "Peso Muerto con Barra", description: "De pie sobre la barra, bisagra de cadera para agarrar, empuja el piso para ponerte de pie." },
+    overheadPress: { name: "Press Militar", description: "De pie con la barra a los hombros, empuja hacia arriba hasta extensión completa." },
+    barbellRow: { name: "Remo con Barra", description: "Inclínate hacia adelante, jala la barra al pecho bajo/abdomen superior." },
+    latPulldown: { name: "Jalón al Pecho", description: "Sentado en la máquina, jala la barra hacia el pecho." },
+    romanianDeadlift: { name: "Peso Muerto Rumano", description: "Rodillas ligeramente flexionadas, bisagra de cadera, baja la barra a lo largo de las piernas." },
+    dumbbellCurl: { name: "Curl con Mancuernas", description: "Curls alternados o simultáneos con mancuernas." },
+    tricepPushdown: { name: "Extensión de Tríceps en Polea", description: "Empuja el accesorio del cable hacia abajo hasta extensión de brazos." },
+    plank: { name: "Plancha", description: "Mantén posición de lagartija sobre antebrazos, cuerpo recto." },
+    lateralRaise: { name: "Elevación Lateral", description: "De pie con mancuernas a los lados, eleva hasta la altura de los hombros." },
+    legPress: { name: "Prensa de Piernas", description: "Sentado en la máquina, empuja la plataforma con las piernas." },
+  },
 } as const;
 
 export default es;

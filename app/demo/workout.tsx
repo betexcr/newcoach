@@ -21,7 +21,7 @@ import {
 import { SafeAreaView } from "react-native-safe-area-context";
 import { MaterialCommunityIcons } from "@expo/vector-icons";
 import { useRouter, useLocalSearchParams } from "expo-router";
-import { demoAssignedWorkouts, demoExercises } from "./mock-data";
+import { demoAssignedWorkouts, getDemoExercises } from "./mock-data";
 import type {
   LoggedSet,
   WorkoutExercise,
@@ -42,11 +42,12 @@ export default function DemoWorkoutScreen() {
 
   const workout = demoAssignedWorkouts.find((w) => w.id === id) ?? demoAssignedWorkouts.find((w) => w.status === "pending");
 
+  const demoExercises = useMemo(() => getDemoExercises(t), [t]);
   const exerciseMap = useMemo(() => {
     const map: Record<string, Exercise> = {};
     for (const ex of demoExercises) map[ex.id] = ex;
     return map;
-  }, []);
+  }, [demoExercises]);
 
   function goBack() {
     router.navigate({ pathname: "/demo/client/today" } as any);

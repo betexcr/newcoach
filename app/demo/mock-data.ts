@@ -126,20 +126,35 @@ export const demoClients: ClientWithProfile[] = [
 ];
 
 // ── Exercises ────────────────────────────────────────────────────────────────
-export const demoExercises: Exercise[] = [
-  { id: "ex-001", name: "Barbell Bench Press", description: "Lie on bench, grip bar slightly wider than shoulders, lower to chest, press up.", muscle_group: "chest", equipment: "barbell", video_url: null, thumbnail_url: null, created_by: null, is_custom: false, created_at: "2025-01-01T00:00:00Z" },
-  { id: "ex-002", name: "Barbell Back Squat", description: "Bar on upper back, squat to parallel or below, stand back up.", muscle_group: "legs", equipment: "barbell", video_url: null, thumbnail_url: null, created_by: null, is_custom: false, created_at: "2025-01-01T00:00:00Z" },
-  { id: "ex-003", name: "Barbell Deadlift", description: "Stand over bar, hip-hinge to grip, drive through floor to stand.", muscle_group: "back", equipment: "barbell", video_url: null, thumbnail_url: null, created_by: null, is_custom: false, created_at: "2025-01-01T00:00:00Z" },
-  { id: "ex-004", name: "Overhead Press", description: "Stand with bar at shoulders, press overhead to lockout.", muscle_group: "shoulders", equipment: "barbell", video_url: null, thumbnail_url: null, created_by: null, is_custom: false, created_at: "2025-01-01T00:00:00Z" },
-  { id: "ex-005", name: "Barbell Row", description: "Hinge forward, pull bar to lower chest/upper abdomen.", muscle_group: "back", equipment: "barbell", video_url: null, thumbnail_url: null, created_by: null, is_custom: false, created_at: "2025-01-01T00:00:00Z" },
-  { id: "ex-006", name: "Lat Pulldown", description: "Sit at machine, pull bar to upper chest.", muscle_group: "back", equipment: "cable", video_url: null, thumbnail_url: null, created_by: null, is_custom: false, created_at: "2025-01-01T00:00:00Z" },
-  { id: "ex-007", name: "Romanian Deadlift", description: "Slight knee bend, hinge at hips, lower bar along legs.", muscle_group: "legs", equipment: "barbell", video_url: null, thumbnail_url: null, created_by: null, is_custom: false, created_at: "2025-01-01T00:00:00Z" },
-  { id: "ex-008", name: "Dumbbell Curl", description: "Alternate or simultaneous curls with dumbbells.", muscle_group: "arms", equipment: "dumbbell", video_url: null, thumbnail_url: null, created_by: null, is_custom: false, created_at: "2025-01-01T00:00:00Z" },
-  { id: "ex-009", name: "Tricep Pushdown", description: "Push cable attachment down until arms extended.", muscle_group: "arms", equipment: "cable", video_url: null, thumbnail_url: null, created_by: null, is_custom: false, created_at: "2025-01-01T00:00:00Z" },
-  { id: "ex-010", name: "Plank", description: "Hold push-up position on forearms, keep body straight.", muscle_group: "core", equipment: "bodyweight", video_url: null, thumbnail_url: null, created_by: null, is_custom: false, created_at: "2025-01-01T00:00:00Z" },
-  { id: "ex-011", name: "Lateral Raise", description: "Stand with dumbbells at sides, raise to shoulder height.", muscle_group: "shoulders", equipment: "dumbbell", video_url: null, thumbnail_url: null, created_by: null, is_custom: false, created_at: "2025-01-01T00:00:00Z" },
-  { id: "ex-012", name: "Leg Press", description: "Sit in machine, push platform away with legs.", muscle_group: "legs", equipment: "machine", video_url: null, thumbnail_url: null, created_by: null, is_custom: false, created_at: "2025-01-01T00:00:00Z" },
+const exerciseDefs: { id: string; i18nKey: string; muscle_group: string; equipment: string }[] = [
+  { id: "ex-001", i18nKey: "barbellBenchPress", muscle_group: "chest", equipment: "barbell" },
+  { id: "ex-002", i18nKey: "barbellBackSquat", muscle_group: "legs", equipment: "barbell" },
+  { id: "ex-003", i18nKey: "barbellDeadlift", muscle_group: "back", equipment: "barbell" },
+  { id: "ex-004", i18nKey: "overheadPress", muscle_group: "shoulders", equipment: "barbell" },
+  { id: "ex-005", i18nKey: "barbellRow", muscle_group: "back", equipment: "barbell" },
+  { id: "ex-006", i18nKey: "latPulldown", muscle_group: "back", equipment: "cable" },
+  { id: "ex-007", i18nKey: "romanianDeadlift", muscle_group: "legs", equipment: "barbell" },
+  { id: "ex-008", i18nKey: "dumbbellCurl", muscle_group: "arms", equipment: "dumbbell" },
+  { id: "ex-009", i18nKey: "tricepPushdown", muscle_group: "arms", equipment: "cable" },
+  { id: "ex-010", i18nKey: "plank", muscle_group: "core", equipment: "bodyweight" },
+  { id: "ex-011", i18nKey: "lateralRaise", muscle_group: "shoulders", equipment: "dumbbell" },
+  { id: "ex-012", i18nKey: "legPress", muscle_group: "legs", equipment: "machine" },
 ];
+
+export function getDemoExercises(t: (key: string) => string): Exercise[] {
+  return exerciseDefs.map((def) => ({
+    id: def.id,
+    name: t(`exerciseCatalog.${def.i18nKey}.name`),
+    description: t(`exerciseCatalog.${def.i18nKey}.description`),
+    muscle_group: def.muscle_group,
+    equipment: def.equipment,
+    video_url: null,
+    thumbnail_url: null,
+    created_by: null,
+    is_custom: false,
+    created_at: "2025-01-01T00:00:00Z",
+  }));
+}
 
 // ── Helpers ──────────────────────────────────────────────────────────────────
 function stdSets(count: number, reps: number, weight: number): ExerciseSet[] {

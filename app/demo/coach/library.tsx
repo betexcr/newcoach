@@ -1,4 +1,4 @@
-import { useState, useCallback } from "react";
+import { useState, useCallback, useMemo } from "react";
 import { View, StyleSheet, ScrollView, Pressable, Animated, Image } from "react-native";
 import { Text, useTheme, Card, Chip } from "react-native-paper";
 import { MaterialCommunityIcons } from "@expo/vector-icons";
@@ -8,7 +8,7 @@ import type { AppTheme } from "@/lib/theme";
 import type { Exercise } from "@/types/database";
 import { useDemoFadeIn } from "../use-demo-fade";
 import { DemoPress } from "../DemoTooltip";
-import { demoExercises, demoTemplates, demoProgram, demoProgramWorkouts, demoExerciseVideos } from "../mock-data";
+import { getDemoExercises, demoTemplates, demoProgram, demoProgramWorkouts, demoExerciseVideos } from "../mock-data";
 
 const MUSCLE_GROUPS = ["All", "Chest", "Back", "Legs", "Shoulders", "Arms", "Core"] as const;
 
@@ -75,6 +75,7 @@ export default function DemoLibrary() {
   const router = useRouter();
   const { introOpacity, introTranslateY, contentOpacity } = useDemoFadeIn("coach-library");
   const [selectedGroup, setSelectedGroup] = useState("All");
+  const demoExercises = useMemo(() => getDemoExercises(t), [t]);
 
   const filteredExercises = selectedGroup === "All"
     ? demoExercises
