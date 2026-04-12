@@ -1,0 +1,207 @@
+NEWCOACH — PROSPECTO DE VENTA
+==============================
+
+DESCRIPCION DEL PRODUCTO
+
+NewCoach es una aplicacion multiplataforma de coaching fitness disenada para
+entrenadores personales y sus clientes. Ofrece un flujo de trabajo digital
+completo — desde la programacion de entrenamientos y seguimiento de progreso
+hasta mensajeria, nutricion, habitos, metricas corporales e insignias de logros.
+
+
+FUNCIONALIDADES PRINCIPALES
+
+Para Coaches:
+  - Dashboard con gestion de clientes e ingresos
+  - Biblioteca de ejercicios con videos demostrativos y ejercicios personalizados
+  - Constructor de entrenamientos, plantillas y programas
+  - Asignar entrenamientos y programas a clientes
+  - Mensajeria (incluyendo mensajes masivos)
+  - Seguimiento de progreso y cumplimiento del cliente
+  - Asignacion de habitos a clientes
+  - Facturacion y gestion de pagos
+
+Para Clientes:
+  - Vista diaria y calendario
+  - Ejecucion y registro de entrenamientos
+  - Seguimiento de progreso y records personales
+  - Fotos de progreso (frente, lado, espalda) para seguimiento de transformacion
+  - Metricas corporales: peso, grasa corporal, medidas (pecho, cintura, cadera, biceps, muslos)
+  - Seguimiento de nutricion y metas de macros
+  - Habitos e insignias/logros
+  - Mensajeria directa con el coach
+  - Flujo de invitacion para onboarding
+
+Destacados Adicionales:
+  - Bilingue: Completamente localizado en ingles y espanol
+  - Modo demo: Demo interactivo integrado para ambos roles (coach y cliente)
+  - CI/CD: Verificacion de tipos automatizada, despliegue web y builds para iOS/Android
+  - Tests end-to-end: Suite de pruebas con Playwright incluida
+
+
+STACK TECNOLOGICO
+
+  Framework de App ... Expo 55, React Native 0.83, React 19, TypeScript
+  Enrutamiento ....... Expo Router (basado en archivos)
+  UI ................. React Native Paper (Material Design 3)
+  Backend ............ Supabase (PostgreSQL, Auth, Realtime, Storage)
+  Estado ............. TanStack React Query, Zustand
+  Internacionalizacion i18next (Ingles + Espanol)
+  Notificaciones ..... Expo Notifications
+  Testing ............ Playwright (E2E)
+  Hosting ............ Vercel (web), EAS (builds nativos)
+  CI/CD .............. GitHub Actions
+
+
+COSTO ESTIMADO DE DESARROLLO DESDE CERO
+
+Construir este producto desde cero costaria aproximadamente $20,000-$30,000 USD,
+lo que representa 4-6 meses de trabajo de desarrollo. Esto incluye arquitectura,
+UI/UX, esquema de base de datos con seguridad a nivel de fila (RLS),
+autenticacion, localizacion, biblioteca de videos de ejercicios, sistema de
+facturacion, fotos de progreso, metricas corporales, pipelines de CI/CD y testing.
+
+
+GUIA DE PRECIOS
+
+Opcion A — Venta Unica (Codigo Fuente)
+
+  Venta a comprador estrategico (agencia, startup) .... $8,000-$12,000 USD
+  Con personalizacion, branding y despliegue incluido .. $12,000-$18,000 USD
+  Con usuarios activos o ingresos ...................... Significativamente mayor
+                                                        (3-5x ingresos anuales
+                                                        es el estandar para SaaS)
+
+  Costo de reconstruccion desde cero: $20,000-$30,000 USD
+
+Opcion B — Suscripcion Mensual para Gimnasios (SaaS)
+
+  STARTER
+    $200/mes  |  $2,000/ano (ahorra $400)
+    Hasta 2 coaches, 30 clientes, branding del gimnasio
+
+  PROFESIONAL
+    $400/mes  |  $4,000/ano (ahorra $800)
+    Hasta 10 coaches, 200 clientes, branding completo, soporte prioritario
+
+  ENTERPRISE
+    $700/mes  |  $7,000/ano (ahorra $1,400)
+    Coaches y clientes ilimitados, branding completo, soporte dedicado,
+    integraciones personalizadas
+
+Ventajas para el gimnasio:
+  - Sin inversion inicial grande — gasto operativo mensual manejable
+  - Hosting, actualizaciones y soporte tecnico incluidos
+  - App con la marca del gimnasio (white-label)
+  - Escalable segun crecimiento del negocio
+  - Descuento de 2 meses gratis al pagar anualmente
+
+Ventajas para el vendedor:
+  - Ingreso recurrente mensual (MRR)
+  - Retencion del codigo fuente y propiedad intelectual
+  - Escalable a multiples gimnasios simultaneamente
+  - Un gimnasio pagando $400/mes genera $4,800/ano — supera la venta unica en 2 anos
+  - Pagos anuales aseguran flujo de caja y reducen churn
+
+
+PERFILES DE COMPRADOR IDEAL
+
+Para Venta Unica (Opcion A):
+
+  Agencias de Desarrollo — Agencias de software que atienden clientes de fitness
+  o salud. El codigo sirve como base lista para personalizar y revender a
+  multiples clientes.
+
+  Startups — Emprendedores entrando al espacio fitness-tech que quieren un punto
+  de partida listo para produccion en vez de construir desde cero.
+
+Para Suscripcion SaaS (Opcion B):
+
+  Gimnasios y Centros de Fitness — Cadenas de gimnasios, estudios de
+  entrenamiento personal y centros de bienestar que quieren su propia app con
+  su marca sin invertir en desarrollo.
+
+  Coaches Independientes con Equipo — Coaches que manejan varios entrenadores
+  y necesitan una plataforma profesional a un costo mensual accesible.
+
+  Centros de Bienestar y CrossFit Boxes — Negocios de fitness especializados
+  que buscan diferenciarse con tecnologia propia.
+
+
+VENTAJA COMPETITIVA EN COSTA RICA
+
+  - Localizacion en espanol ya incluida — la mayoria de plataformas competidoras
+    (TrueCoach, Trainerize, etc.) son en ingles y cobran precios premium en USD
+  - Cultura fitness en crecimiento en Costa Rica, especialmente en el GAM,
+    Santa Ana, Escazu y las zonas turisticas de Guanacaste
+  - Muchos coaches actualmente dependen de WhatsApp y hojas de calculo — una
+    app dedicada es una mejora clara
+  - Alternativa accesible a plataformas SaaS internacionales que cobran
+    $20-$100+/mes POR COACH — NewCoach cobra POR GIMNASIO, lo cual es
+    significativamente mas economico
+  - Modelo de suscripcion elimina la barrera de entrada para gimnasios
+    pequenos y medianos
+
+
+QUE INCLUYE LA VENTA
+
+  - Codigo fuente completo (TypeScript/React Native)
+  - Esquema de base de datos Supabase y migraciones
+  - Datos semilla (biblioteca de ejercicios con videos)
+  - Sistema de facturacion y pagos integrado
+  - Modulo de fotos de progreso y metricas corporales
+  - Configuraciones de CI/CD (GitHub Actions)
+  - Configuraciones de build EAS (iOS + Android)
+  - Configuracion de despliegue en Vercel (web)
+  - Suite de tests end-to-end
+  - Documentacion (README)
+
+
+COMPLEMENTOS OPCIONALES (NEGOCIABLES)
+
+  - Soporte tecnico post-venta y onboarding
+  - Configuracion de pasarela de pago local (Sinpe Movil u otra)
+  - Branding personalizado y despliegue
+  - Contrato de mantenimiento continuo
+
+
+CONTACTO
+
+Para consultas, demos o discutir terminos, comuniquese directamente.
+
+Este documento es confidencial y esta dirigido unicamente a compradores potenciales.
+
+
+------------------------------------------------------------------------
+VERSION PARA INSTAGRAM / REDES SOCIALES
+------------------------------------------------------------------------
+
+App de Coaching Fitness — Tu Gimnasio, Tu App
+
+Aplicacion completa para entrenadores personales y sus clientes.
+
+Que hace:
+  - Crear y asignar entrenamientos y programas
+  - Biblioteca de ejercicios con videos demostrativos
+  - Seguimiento de progreso, nutricion y habitos
+  - Fotos de progreso y metricas corporales
+  - Facturacion y pagos integrados
+  - Mensajeria directa y masiva coach-clientes
+  - Insignias y logros para motivar clientes
+  - App con la marca de tu gimnasio
+
+Tecnologia:
+  - iOS, Android y Web
+  - Backend en la nube
+  - Bilingue: Espanol e Ingles
+  - Lista para App Store y Play Store
+
+2 opciones:
+
+  Suscripcion para gimnasios — Desde $200/mes
+  Tu propia app con tu marca. Sin inversion inicial.
+
+  Compra del codigo fuente — Desde $8,000 USD
+  Para agencias y startups (valor de desarrollo: $20,000-$30,000)
+
+DM para demo en vivo o mas informacion.
