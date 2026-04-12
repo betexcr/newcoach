@@ -26,15 +26,16 @@ import { useClientWorkouts } from "@/lib/queries/workouts";
 import { useClientResults } from "@/lib/queries/results";
 import { useClientHabits } from "@/lib/queries/habits";
 import { useNutritionLogs } from "@/lib/queries/nutrition";
+import { useBodyMetrics } from "@/lib/queries/body-metrics";
 import { useRemoveClient } from "@/lib/queries/clients";
 import { useWorkoutBuilderStore } from "@/stores/workout-builder-store";
 import { ErrorState } from "@/components/ErrorState";
 import type { AppTheme } from "@/lib/theme";
 import { computeStreak } from "@/lib/streak";
 import { formatDate } from "@/lib/date-utils";
-import type { AssignedWorkout, WorkoutResult, Habit, NutritionLog } from "@/types/database";
+import type { AssignedWorkout, WorkoutResult, Habit, NutritionLog, BodyMetric } from "@/types/database";
 
-type ProfileTab = "workouts" | "progress" | "habits" | "nutrition";
+type ProfileTab = "workouts" | "progress" | "habits" | "nutrition" | "metrics";
 
 export default function ClientProfileScreen() {
   const { t } = useTranslation();
@@ -62,6 +63,7 @@ export default function ClientProfileScreen() {
   const { data: results = [], isLoading: loadingResults, isError: resultsError, refetch: refetchResults } = useClientResults(clientId ?? "");
   const { data: habits = [], isLoading: loadingHabits, isError: habitsError, refetch: refetchHabits } = useClientHabits(clientId ?? "");
   const { data: nutritionEntries = [], isLoading: loadingNutrition, isError: nutritionError, refetch: refetchNutrition } = useNutritionLogs(clientId ?? "", today);
+  const { data: bodyMetrics = [], isLoading: loadingMetrics, isError: metricsError, refetch: refetchMetrics } = useBodyMetrics(clientId ?? "");
   const removeClient = useRemoveClient();
 
   const completedCount = useMemo(
@@ -158,15 +160,15 @@ export default function ClientProfileScreen() {
         ) : null}
       </View>
 
-      {workoutsError || resultsError || habitsError || nutritionError ? (
-        <ErrorState onRetry={() => { refetchWorkouts(); refetchResults(); refetchHabits(); refetchNutrition(); }} />
+      {workoutsError || resultsError || habitsError || nutritionError || metricsError ? (
+        <ErrorState onRetry={() => { refetchWorkouts(); refetchResults(); refetchHabits(); refetchNutrition(); refetchMetrics(); }} />
       ) : (
       <ScrollView
         contentContainerStyle={styles.content}
         refreshControl={
           <RefreshControl
             refreshing={isRefetching}
-            onRefresh={() => { refetchWorkouts(); refetchResults(); refetchHabits(); refetchNutrition(); }}
+            onRefresh={() => { refetchWorkouts(); refetchResults(); refetchHabits(); refetchNutrition(); refetchMetrics(); }}
           />
         }
       >
@@ -284,6 +286,7 @@ export default function ClientProfileScreen() {
             { value: "progress", label: t("clientProfile.tabProgress") },
             { value: "habits", label: t("clientProfile.tabHabits") },
             { value: "nutrition", label: t("clientProfile.tabNutrition") },
+            { value: "metrics", label: t("clientProfile.tabMetrics") },
           ]}
           style={styles.tabs}
         />
@@ -323,6 +326,14 @@ export default function ClientProfileScreen() {
           <NutritionTab
             entries={nutritionEntries}
             loading={loadingNutrition}
+            theme={theme}
+            t={t}
+          />
+        )}
+        {tab === "metrics" && (
+          <MetricsTab
+            metrics={bodyMetrics}
+            loading={loadingMetrics}
             theme={theme}
             t={t}
           />
@@ -668,6 +679,86 @@ function NutritionTab({
           ))}
         </>
       )}
+    </View>
+  );
+}
+
+function MetricsTab({
+  metrics,
+  loading,
+  theme,
+  t,
+}: {
+  metrics: BodyMetric[];
+  loading: boolean;
+  theme: AppTheme;
+  t: any;
+}) {
+  if (loading) {
+    return (
+      <View style={styles.loadingContainer}>
+        <ActivityIndicator size="large" color={theme.colors.primary} />
+      </View>
+    );
+  }
+
+  if (metrics.length === 0) {
+    return (
+      <View style={styles.emptyTab}>
+        <MaterialCommunityIcons name="scale-bathroom" size={40} color={theme.colors.onSurfaceVariant} />
+        <Text variant="bodyLarge" style={{ color: theme.colors.onSurfaceVariant, marginTop: 8 }}>
+          {t("bodyMetrics.noEntries")}
+        </Text>
+      </View>
+    );
+  }
+
+  const latest = metrics[0];
+
+  return (
+    <View>
+      <View style={{ flexDirection: "row", gap: 10, marginBottom: 12 }}>
+        <Card style={[styles.statCard, { flex: 1 }]}>
+          <Card.Content style={styles.statContent}>
+            <Text variant="headlineMedium" style={{ color: theme.colors.primary, fontWeight: "700" }}>
+              {latest.weight ?? "—"}
+            </Text>
+            <Text variant="labelSmall" style={{ color: theme.colors.onSurfaceVariant }}>
+              {t("bodyMetrics.weight")}
+            </Text>
+          </Card.Content>
+        </Card>
+        <Card style={[styles.statCard, { flex: 1 }]}>
+          <Card.Content style={styles.statContent}>
+            <Text variant="headlineMedium" style={{ color: theme.colors.primary, fontWeight: "700" }}>
+              {latest.body_fat != null ? `${latest.body_fat}%` : "—"}
+            </Text>
+            <Text variant="labelSmall" style={{ color: theme.colors.onSurfaceVariant }}>
+              {t("bodyMetrics.bodyFat")}
+            </Text>
+          </Card.Content>
+        </Card>
+      </View>
+
+      {metrics.slice(0, 10).map((m) => {
+        const dateStr = new Date(m.logged_date + "T12:00:00").toLocaleDateString(undefined, {
+          month: "short",
+          day: "numeric",
+        });
+        return (
+          <View key={m.id} style={[styles.statRow, { backgroundColor: theme.colors.surface }]}>
+            <View style={{ flex: 1 }}>
+              <Text variant="titleSmall" style={{ color: theme.colors.onSurface, fontWeight: "600" }}>
+                {dateStr}
+              </Text>
+              <Text variant="bodySmall" style={{ color: theme.colors.onSurfaceVariant }}>
+                {m.weight != null ? `${m.weight} lbs` : ""}
+                {m.body_fat != null ? ` · ${m.body_fat}%` : ""}
+              </Text>
+            </View>
+          </View>
+        );
+      })}
     </View>
   );
 }

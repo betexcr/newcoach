@@ -12,6 +12,7 @@ import {
   useCoachRecentWorkouts,
 } from "@/lib/queries/workouts";
 import { useConversations } from "@/lib/queries/messaging";
+import { useSubscription } from "@/lib/queries/billing";
 import { ErrorState } from "@/components/ErrorState";
 import { safeDateTimeString } from "@/lib/date-utils";
 import type { AppTheme } from "@/lib/theme";
@@ -139,6 +140,7 @@ export default function CoachDashboard() {
     refetch: refetchConvos,
     isRefetching: isRefetchingConvos,
   } = useConversations(userId);
+  const { data: subscription } = useSubscription(userId);
 
   const dashboardLoading =
     !userId ||
@@ -181,6 +183,12 @@ export default function CoachDashboard() {
       value: String(conversations.length),
       icon: "message",
       onPress: () => router.push("/(coach)/messages/index" as any),
+    },
+    {
+      label: t("billing.currentPlan"),
+      value: subscription ? t(`billing.${subscription.plan}`) : "—",
+      icon: "credit-card-outline",
+      onPress: () => router.push("/(coach)/settings" as any),
     },
   ];
 

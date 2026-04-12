@@ -9,6 +9,7 @@ import {
   TextInput as RNTextInput,
   Image,
   useWindowDimensions,
+  Linking,
 } from "react-native";
 import { Text, useTheme, Card, Button, ProgressBar, Chip, ActivityIndicator } from "react-native-paper";
 import { SafeAreaView } from "react-native-safe-area-context";
@@ -493,6 +494,19 @@ function ExerciseDetailCard({
             </Text>
           )}
 
+          {detail?.video_url && (
+            <Pressable
+              style={[styles.videoLinkRow, { backgroundColor: theme.colors.primaryContainer }]}
+              onPress={() => Linking.openURL(detail.video_url!)}
+              accessibilityRole="button"
+            >
+              <MaterialCommunityIcons name="play-circle" size={20} color={theme.colors.primary} />
+              <Text variant="labelLarge" style={{ color: theme.colors.primary, fontWeight: "700", marginLeft: 8 }}>
+                {t("library.watchVideo")}
+              </Text>
+            </Pressable>
+          )}
+
           {exercise.notes && (
             <View style={[styles.coachNote, { backgroundColor: theme.colors.primaryContainer }]}>
               <MaterialCommunityIcons
@@ -790,6 +804,18 @@ function ExecutionView({
                   >
                     {detail.description}
                   </Text>
+                  {detail.video_url && (
+                    <Pressable
+                      style={[styles.videoLinkRow, { backgroundColor: theme.colors.primaryContainer, marginTop: 12 }]}
+                      onPress={() => Linking.openURL(detail.video_url!)}
+                      accessibilityRole="button"
+                    >
+                      <MaterialCommunityIcons name="play-circle" size={20} color={theme.colors.primary} />
+                      <Text variant="labelLarge" style={{ color: theme.colors.primary, fontWeight: "700", marginLeft: 8 }}>
+                        {t("library.watchVideo")}
+                      </Text>
+                    </Pressable>
+                  )}
                 </Card.Content>
               </Card>
             )}
@@ -1288,6 +1314,14 @@ const styles = StyleSheet.create({
     borderRadius: 14,
     elevation: 0,
     marginTop: 16,
+    marginBottom: 12,
+  },
+  videoLinkRow: {
+    flexDirection: "row",
+    alignItems: "center",
+    paddingVertical: 10,
+    paddingHorizontal: 14,
+    borderRadius: 10,
     marginBottom: 12,
   },
   setsSection: {

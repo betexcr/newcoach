@@ -1,5 +1,5 @@
-import { View, StyleSheet, ScrollView, Pressable, Alert, Platform } from "react-native";
-import { Text, useTheme, Avatar, Divider, SegmentedButtons } from "react-native-paper";
+import { View, StyleSheet, ScrollView, Pressable, Alert, Platform, Linking } from "react-native";
+import { Text, useTheme, Avatar, Divider, SegmentedButtons, Card, ActivityIndicator } from "react-native-paper";
 import { SafeAreaView } from "react-native-safe-area-context";
 import { MaterialCommunityIcons } from "@expo/vector-icons";
 import { useRouter } from "expo-router";
@@ -10,19 +10,44 @@ import { useAuthStore } from "@/stores/auth-store";
 import { useWorkoutBuilderStore } from "@/stores/workout-builder-store";
 import { useChatNavStore } from "@/stores/chat-nav-store";
 import { useSettingsStore } from "@/stores/settings-store";
+import { useSubscription, useCreateCheckoutSession, useOpenCustomerPortal } from "@/lib/queries/billing";
 import type { ThemePreference, LanguagePreference } from "@/stores/settings-store";
+import type { AppTheme } from "@/lib/theme";
 
 export default function SettingsScreen() {
-  const theme = useTheme();
+  const theme = useTheme<AppTheme>();
   const router = useRouter();
   const { t } = useTranslation();
   const queryClient = useQueryClient();
   const profile = useAuthStore((s) => s.profile);
+  const userId = useAuthStore((s) => s.user?.id) ?? "";
   const reset = useAuthStore((s) => s.reset);
   const themePref = useSettingsStore((s) => s.theme);
   const languagePref = useSettingsStore((s) => s.language);
   const setThemePref = useSettingsStore((s) => s.setTheme);
   const setLanguagePref = useSettingsStore((s) => s.setLanguage);
+
+  const { data: subscription, isLoading: subLoading } = useSubscription(userId);
+  const createCheckout = useCreateCheckoutSession();
+  const openPortal = useOpenCustomerPortal();
+
+  async function handleManageSubscription() {
+    if (!subscription?.stripe_customer_id) {
+      try {
+        const url = await createCheckout.mutateAsync({ plan: "professional" });
+        if (url) Linking.openURL(url);
+      } catch {
+        Alert.alert(t("common.error"), t("common.errorGeneric"));
+      }
+      return;
+    }
+    try {
+      const url = await openPortal.mutateAsync({});
+      if (url) Linking.openURL(url);
+    } catch {
+      Alert.alert(t("common.error"), t("common.errorGeneric"));
+    }
+  }
 
   async function doLogout() {
     try {
@@ -153,6 +178,76 @@ export default function SettingsScreen() {
           ))}
         </View>
 
+        <Card style={[styles.billingCard, { backgroundColor: theme.colors.surface }]}>
+          <Card.Content>
+            <View style={{ flexDirection: "row", alignItems: "center", marginBottom: 12 }}>
+              <MaterialCommunityIcons name="credit-card-outline" size={22} color={theme.colors.primary} />
+              <Text variant="titleMedium" style={{ color: theme.colors.onSurface, fontWeight: "700", marginLeft: 8 }}>
+                {t("billing.title")}
+              </Text>
+            </View>
+
+            {subLoading ? (
+              <ActivityIndicator size="small" color={theme.colors.primary} />
+            ) : subscription ? (
+              <View>
+                <View style={styles.billingRow}>
+                  <Text variant="bodyMedium" style={{ color: theme.colors.onSurfaceVariant }}>{t("billing.currentPlan")}</Text>
+                  <Text variant="bodyMedium" style={{ color: theme.colors.primary, fontWeight: "700", textTransform: "capitalize" }}>
+                    {t(`billing.${subscription.plan}`)}
+                  </Text>
+                </View>
+                <View style={styles.billingRow}>
+                  <Text variant="bodyMedium" style={{ color: theme.colors.onSurfaceVariant }}>{t("billing.status")}</Text>
+                  <Text
+                    variant="bodyMedium"
+                    style={{
+                      color: subscription.status === "active" ? theme.custom.success : theme.colors.error,
+                      fontWeight: "600",
+                    }}
+                  >
+                    {t(`billing.${subscription.status === "past_due" ? "pastDue" : subscription.status}`)}
+                  </Text>
+                </View>
+                {subscription.current_period_end && (
+                  <View style={styles.billingRow}>
+                    <Text variant="bodyMedium" style={{ color: theme.colors.onSurfaceVariant }}>{t("billing.nextBilling")}</Text>
+                    <Text variant="bodyMedium" style={{ color: theme.colors.onSurface }}>
+                      {new Date(subscription.current_period_end).toLocaleDateString()}
+                    </Text>
+                  </View>
+                )}
+                <View style={{ flexDirection: "row", gap: 10, marginTop: 12 }}>
+                  <Pressable
+                    style={[styles.billingButton, { backgroundColor: theme.colors.primary }]}
+                    onPress={handleManageSubscription}
+                    disabled={openPortal.isPending}
+                  >
+                    <Text style={{ color: theme.colors.onPrimary, fontWeight: "600", fontSize: 13 }}>
+                      {t("billing.manageSubscription")}
+                    </Text>
+                  </Pressable>
+                </View>
+              </View>
+            ) : (
+              <View>
+                <Text variant="bodyMedium" style={{ color: theme.colors.onSurfaceVariant, marginBottom: 12 }}>
+                  {t("billing.noPlan")}
+                </Text>
+                <Pressable
+                  style={[styles.billingButton, { backgroundColor: theme.colors.primary }]}
+                  onPress={handleManageSubscription}
+                  disabled={createCheckout.isPending}
+                >
+                  <Text style={{ color: theme.colors.onPrimary, fontWeight: "700", fontSize: 13 }}>
+                    {t("billing.subscribe")}
+                  </Text>
+                </Pressable>
+              </View>
+            )}
+          </Card.Content>
+        </Card>
+
         <View style={[styles.settingsSection, { backgroundColor: theme.colors.surface }]}>
           <Text
             variant="titleSmall"
@@ -257,6 +352,24 @@ const styles = StyleSheet.create({
     alignItems: "center",
     paddingVertical: 14,
     paddingHorizontal: 16,
+  },
+  billingCard: {
+    borderRadius: 16,
+    elevation: 0,
+    marginBottom: 16,
+  },
+  billingRow: {
+    flexDirection: "row",
+    justifyContent: "space-between",
+    paddingVertical: 8,
+    borderBottomWidth: 0.5,
+    borderBottomColor: "#e0e0e0",
+  },
+  billingButton: {
+    flex: 1,
+    alignItems: "center",
+    paddingVertical: 12,
+    borderRadius: 10,
   },
   settingsSection: {
     borderRadius: 16,

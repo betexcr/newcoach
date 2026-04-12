@@ -68,6 +68,8 @@ export default function ClientSettingsScreen() {
     { icon: "chart-line", label: t("settings.progressStats"), route: "/(client)/progress" },
     { icon: "trophy-outline", label: t("settings.milestones"), route: "/(client)/milestones" },
     { icon: "food-apple-outline", label: t("settings.nutritionTracker"), route: "/(client)/nutrition" },
+    { icon: "scale-bathroom", label: t("settings.bodyMetrics"), route: "/(client)/body-metrics" },
+    { icon: "camera-outline", label: t("settings.progressPhotos"), route: "/(client)/progress-photos" },
   ];
 
   return (

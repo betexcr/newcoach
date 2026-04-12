@@ -1,6 +1,6 @@
 import { useState, useMemo } from "react";
 import { useTranslation } from "react-i18next";
-import { View, StyleSheet, FlatList, Pressable, Modal, ScrollView, Image, Alert, RefreshControl } from "react-native";
+import { View, StyleSheet, FlatList, Pressable, Modal, ScrollView, Image, Alert, RefreshControl, Linking } from "react-native";
 import {
   Text,
   useTheme,
@@ -107,6 +107,11 @@ function ExerciseCard({ exercise, onPress }: { exercise: Exercise; onPress: () =
             )}
           </View>
         </View>
+        {exercise.video_url && (
+          <View style={[styles.videoBadge, { backgroundColor: `${theme.colors.primary}15` }]}>
+            <MaterialCommunityIcons name="play-circle" size={18} color={theme.colors.primary} />
+          </View>
+        )}
         <MaterialCommunityIcons
           name="chevron-right"
           size={22}
@@ -173,6 +178,19 @@ function ExerciseDetailModal({
                 </Chip>
               )}
             </View>
+
+            {exercise.video_url && (
+              <Pressable
+                style={[styles.videoButton, { backgroundColor: theme.colors.primaryContainer }]}
+                onPress={() => Linking.openURL(exercise.video_url!)}
+                accessibilityRole="button"
+              >
+                <MaterialCommunityIcons name="play-circle" size={22} color={theme.colors.primary} />
+                <Text variant="labelLarge" style={{ color: theme.colors.primary, fontWeight: "700", marginLeft: 8 }}>
+                  {t("library.watchVideo")}
+                </Text>
+              </Pressable>
+            )}
 
             {exercise.description ? (
               <View style={{ marginTop: 16 }}>
@@ -599,5 +617,22 @@ const styles = StyleSheet.create({
   },
   detailChip: {
     borderRadius: 16,
+  },
+  videoBadge: {
+    width: 30,
+    height: 30,
+    borderRadius: 15,
+    justifyContent: "center",
+    alignItems: "center",
+    marginRight: 4,
+  },
+  videoButton: {
+    flexDirection: "row",
+    alignItems: "center",
+    justifyContent: "center",
+    paddingVertical: 12,
+    paddingHorizontal: 20,
+    borderRadius: 12,
+    marginTop: 12,
   },
 });

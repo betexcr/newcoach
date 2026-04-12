@@ -173,6 +173,41 @@ export interface NutritionLog {
   created_at: string;
 }
 
+export interface BodyMetric {
+  id: string;
+  client_id: string;
+  weight: number | null;
+  body_fat: number | null;
+  chest: number | null;
+  waist: number | null;
+  hips: number | null;
+  biceps: number | null;
+  thighs: number | null;
+  logged_date: string;
+  created_at: string;
+}
+
+export interface ProgressPhoto {
+  id: string;
+  client_id: string;
+  photo_url: string;
+  pose: "front" | "side" | "back";
+  logged_date: string;
+  created_at: string;
+}
+
+export interface Subscription {
+  id: string;
+  coach_id: string;
+  stripe_customer_id: string | null;
+  stripe_subscription_id: string | null;
+  plan: "starter" | "professional" | "enterprise";
+  status: "active" | "past_due" | "canceled" | "trialing";
+  current_period_end: string | null;
+  created_at: string;
+  updated_at: string;
+}
+
 export interface ConversationParticipant {
   conversation_id: string;
   user_id: string;
@@ -410,6 +445,64 @@ export type Database = {
           carbs?: number;
           fat?: number;
           meal?: string;
+        };
+        Relationships: [];
+      };
+      body_metrics: {
+        Row: BodyMetric;
+        Insert: {
+          client_id: string;
+          logged_date: string;
+          weight?: number | null;
+          body_fat?: number | null;
+          chest?: number | null;
+          waist?: number | null;
+          hips?: number | null;
+          biceps?: number | null;
+          thighs?: number | null;
+        };
+        Update: {
+          weight?: number | null;
+          body_fat?: number | null;
+          chest?: number | null;
+          waist?: number | null;
+          hips?: number | null;
+          biceps?: number | null;
+          thighs?: number | null;
+        };
+        Relationships: [];
+      };
+      progress_photos: {
+        Row: ProgressPhoto;
+        Insert: {
+          client_id: string;
+          photo_url: string;
+          pose: ProgressPhoto["pose"];
+          logged_date: string;
+        };
+        Update: {
+          photo_url?: string;
+          pose?: ProgressPhoto["pose"];
+        };
+        Relationships: [];
+      };
+      subscriptions: {
+        Row: Subscription;
+        Insert: {
+          coach_id: string;
+          stripe_customer_id?: string | null;
+          stripe_subscription_id?: string | null;
+          plan?: Subscription["plan"];
+          status?: Subscription["status"];
+          current_period_end?: string | null;
+        };
+        Update: {
+          stripe_customer_id?: string | null;
+          stripe_subscription_id?: string | null;
+          plan?: Subscription["plan"];
+          status?: Subscription["status"];
+          current_period_end?: string | null;
+          updated_at?: string;
         };
         Relationships: [];
       };
