@@ -151,8 +151,8 @@ Aplicación completa para entrenadores personales y sus clientes.
 - Startups de fitness
 - Agencias de desarrollo
 
+**Desde $8,000 USD**
 **Costo de desarrollo:** $15,000–$25,000 USD
-**Precio:** Consultar por DM
 
 DM para demo en vivo o más información.
 
