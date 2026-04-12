@@ -40,6 +40,10 @@ export default function DemoClientSettings() {
     { calories: 0, protein: 0, carbs: 0, fat: 0 }
   );
 
+  const weightMin = Math.min(...demoBodyMetrics.map((p) => p.weight));
+  const weightMax = Math.max(...demoBodyMetrics.map((p) => p.weight));
+  const weightRange = weightMax - weightMin || 1;
+
   return (
     <ScrollView style={{ flex: 1, backgroundColor: theme.colors.background }} contentContainerStyle={s.content}>
       <Animated.View style={{ opacity: introOpacity, transform: [{ translateY: introTranslateY }] }}>
@@ -179,13 +183,18 @@ export default function DemoClientSettings() {
           </View>
           <View style={s.chartContainer}>
             {demoBodyMetrics.map((point, i) => {
-              const minW = Math.min(...demoBodyMetrics.map((p) => p.weight));
-              const maxW = Math.max(...demoBodyMetrics.map((p) => p.weight));
-              const range = maxW - minW || 1;
-              const heightPct = ((point.weight - minW) / range) * 60 + 20;
+              const barHeight = 20 + ((point.weight - weightMin) / weightRange) * 80;
               return (
                 <View key={i} style={s.chartBarWrapper}>
-                  <View style={[s.chartBar, { height: `${heightPct}%`, backgroundColor: i === demoBodyMetrics.length - 1 ? theme.colors.secondary : `${theme.colors.secondary}40` }]} />
+                  <View
+                    style={[
+                      s.chartBar,
+                      {
+                        height: barHeight,
+                        backgroundColor: i === demoBodyMetrics.length - 1 ? theme.colors.secondary : `${theme.colors.secondary}40`,
+                      },
+                    ]}
+                  />
                   <Text variant="labelSmall" style={{ color: theme.colors.onSurfaceVariant, marginTop: 4, fontSize: 9 }}>
                     {point.weight}
                   </Text>
@@ -309,7 +318,7 @@ const s = StyleSheet.create({
   metricStatContent: { alignItems: "center", paddingVertical: 14 },
   weightTrendCard: { borderRadius: 16, elevation: 0, marginBottom: 12 },
   trendBadge: { flexDirection: "row", alignItems: "center", paddingHorizontal: 8, paddingVertical: 4, borderRadius: 8 },
-  chartContainer: { flexDirection: "row", justifyContent: "space-around", alignItems: "flex-end", height: 80 },
+  chartContainer: { flexDirection: "row", justifyContent: "space-around", alignItems: "flex-end", height: 120 },
   chartBarWrapper: { alignItems: "center", flex: 1 },
   chartBar: { width: 20, borderRadius: 6 },
   measurementsCard: { borderRadius: 16, elevation: 0 },

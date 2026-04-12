@@ -751,6 +751,8 @@ const en = {
     introNewProgram: "Create structured multi-week programs. Set the duration, add a description, then fill in workouts for each day.",
     introNewWorkout: "Build custom workouts from your exercise library. Add exercises, configure sets/reps/weight, then assign to a client or save as a template.",
     introWorkout: "Preview and start your workout. Tap each exercise to see details, then hit Start to begin logging your sets.",
+    exerciseDemoMedia:
+      "DEMO — Stock loop for preview only (not your coach’s exercise video).",
   },
 } as const;
 

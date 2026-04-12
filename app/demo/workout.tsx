@@ -9,6 +9,7 @@ import {
   TextInput as RNTextInput,
   useWindowDimensions,
   Animated,
+  Image,
 } from "react-native";
 import {
   Text,
@@ -422,8 +423,20 @@ function ExecutionView({
       </View>
 
       <ScrollView contentContainerStyle={styles.stepContent} keyboardShouldPersistTaps="handled">
-        <View style={[styles.exerciseHeroImage, styles.heroPlaceholder, { width: screenWidth, backgroundColor: theme.colors.surfaceVariant }]}>
-          <MaterialCommunityIcons name="dumbbell" size={64} color={theme.colors.onSurfaceVariant} />
+        <View style={[styles.exerciseHeroImage, { width: screenWidth, backgroundColor: theme.colors.surfaceVariant }]}>
+          <Image
+            source={require("@/assets/demo-exercise.gif")}
+            style={styles.heroGif}
+            resizeMode="cover"
+            accessibilityRole="image"
+            accessibilityLabel={t("demo.exerciseDemoMedia")}
+          />
+          <View style={styles.demoMediaBanner} pointerEvents="none">
+            <MaterialCommunityIcons name="filmstrip" size={18} color="#FFFFFF" />
+            <Text variant="labelSmall" style={styles.demoMediaBannerText} numberOfLines={3}>
+              {t("demo.exerciseDemoMedia")}
+            </Text>
+          </View>
         </View>
 
         <View style={styles.stepBody}>
@@ -654,8 +667,27 @@ const styles = StyleSheet.create({
   startButton: { borderRadius: 14 },
   execTopBar: { flexDirection: "row", alignItems: "center", paddingHorizontal: 16, paddingVertical: 10 },
   stepContent: { paddingBottom: 100 },
-  exerciseHeroImage: { height: 220 },
-  heroPlaceholder: { justifyContent: "center", alignItems: "center" },
+  exerciseHeroImage: { height: 220, overflow: "hidden", position: "relative" },
+  heroGif: { ...StyleSheet.absoluteFillObject, width: "100%", height: "100%" },
+  demoMediaBanner: {
+    position: "absolute",
+    top: 12,
+    left: 12,
+    right: 12,
+    flexDirection: "row",
+    alignItems: "center",
+    gap: 10,
+    paddingVertical: 10,
+    paddingHorizontal: 12,
+    borderRadius: 10,
+    backgroundColor: "rgba(0,0,0,0.78)",
+  },
+  demoMediaBannerText: {
+    flex: 1,
+    color: "#FFFFFF",
+    fontWeight: "700",
+    lineHeight: 18,
+  },
   stepBody: { padding: 16 },
   instructionCard: { borderRadius: 14, elevation: 0, marginTop: 16, marginBottom: 12 },
   setsSection: { marginTop: 16 },

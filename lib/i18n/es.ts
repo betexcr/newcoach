@@ -753,6 +753,8 @@ const es: TranslationKeys = {
     introNewProgram: "Crea programas estructurados de varias semanas. Establece la duración, añade una descripción y completa los entrenamientos de cada día.",
     introNewWorkout: "Crea entrenamientos personalizados desde tu biblioteca de ejercicios. Añade ejercicios, configura series/reps/peso y asígnalo a un cliente o guárdalo como plantilla.",
     introWorkout: "Previsualiza e inicia tu entrenamiento. Toca cada ejercicio para ver los detalles y pulsa Iniciar para registrar tus series.",
+    exerciseDemoMedia:
+      "DEMO — Clip de muestra solo para vista previa (no es el video del ejercicio de tu entrenador).",
   },
 } as const;
 
