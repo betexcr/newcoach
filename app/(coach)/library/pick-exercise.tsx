@@ -107,6 +107,7 @@ export default function PickExerciseScreen() {
               <Text
                 variant="titleMedium"
                 style={{ color: theme.colors.onSurface, fontWeight: "600" }}
+                numberOfLines={1}
               >
                 {item.name}
               </Text>

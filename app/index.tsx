@@ -41,7 +41,7 @@ export default function Index() {
   useEffect(() => {
     const timeout = setTimeout(() => {
       if (!useAuthStore.getState().isInitialized) {
-        console.warn("Auth init timed out — redirecting to login");
+        if (__DEV__) console.warn("Auth init timed out — redirecting to login");
         useAuthStore.getState().setLoading(false);
         useAuthStore.getState().setInitialized(true);
       }

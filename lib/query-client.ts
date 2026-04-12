@@ -9,7 +9,7 @@ export const queryClient = new QueryClient({
     mutations: {
       onError: (error: unknown) => {
         const message = error instanceof Error ? error.message : "Unknown mutation error";
-        console.warn("Unhandled mutation error:", message);
+        if (__DEV__) console.warn("Unhandled mutation error:", message);
       },
     },
   },

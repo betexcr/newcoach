@@ -85,7 +85,7 @@ export default function ProgramsScreen() {
                   <MaterialCommunityIcons name="clipboard-list" size={24} color={theme.colors.primary} />
                 </View>
                 <View style={{ flex: 1 }}>
-                  <Text variant="titleMedium" style={{ color: theme.colors.onSurface, fontWeight: "600" }}>
+                  <Text variant="titleMedium" style={{ color: theme.colors.onSurface, fontWeight: "600" }} numberOfLines={1}>
                     {item.name}
                   </Text>
                   <Text variant="bodySmall" style={{ color: theme.colors.onSurfaceVariant }}>
@@ -102,7 +102,7 @@ export default function ProgramsScreen() {
                     </Text>
                   )}
                 </View>
-                <Pressable onPress={() => handleDelete(item)} style={{ padding: 4 }}>
+                <Pressable onPress={() => handleDelete(item)} disabled={deleteProgram.isPending} style={{ padding: 4, opacity: deleteProgram.isPending ? 0.4 : 1 }}>
                   <MaterialCommunityIcons name="delete-outline" size={20} color={theme.colors.error} />
                 </Pressable>
               </Card.Content>

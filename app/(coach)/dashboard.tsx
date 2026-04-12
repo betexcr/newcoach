@@ -483,6 +483,7 @@ export default function CoachDashboard() {
                       {item.clientName && (
                         <Pressable
                           style={[styles.clientTag, { backgroundColor: theme.colors.primaryContainer }]}
+                          hitSlop={{ top: 8, bottom: 8, left: 8, right: 8 }}
                           accessibilityRole="button"
                           accessibilityLabel={item.clientName ?? t("dashboard.fallbackClient")}
                           onPress={(e) => {

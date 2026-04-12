@@ -668,7 +668,7 @@ function ExecutionView({
       </View>
 
       {isLastStep ? (
-        <ScrollView contentContainerStyle={styles.summaryContent}>
+        <ScrollView contentContainerStyle={styles.summaryContent} keyboardShouldPersistTaps="handled">
           <View
             style={[
               styles.finishIcon,
@@ -712,7 +712,7 @@ function ExecutionView({
           </AuthButton>
         </ScrollView>
       ) : (
-        <ScrollView contentContainerStyle={styles.stepContent}>
+        <ScrollView contentContainerStyle={styles.stepContent} keyboardShouldPersistTaps="handled">
           {detail?.thumbnail_url ? (
             <Image
               source={{ uri: detail.thumbnail_url }}

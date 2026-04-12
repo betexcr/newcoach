@@ -139,7 +139,7 @@ export function useSendMessage() {
         .eq("id", message.conversation_id);
 
       if (updateError) {
-        console.warn("Failed to update conversation timestamp:", updateError.message);
+        if (__DEV__) console.warn("Failed to update conversation timestamp:", updateError.message);
       }
 
       return data as Message;

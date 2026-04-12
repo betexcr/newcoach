@@ -31,7 +31,7 @@ export default function SettingsScreen() {
       }
       await supabase.auth.signOut();
     } catch (err: unknown) {
-      console.warn("Sign out failed:", err);
+      if (__DEV__) console.warn("Sign out failed:", err);
       Alert.alert(t("common.error"), t("common.errorGeneric"));
       return;
     }

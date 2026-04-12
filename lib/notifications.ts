@@ -17,7 +17,7 @@ export async function registerForPushNotifications(
   userId: string
 ): Promise<string | null> {
   if (!Device.isDevice) {
-    console.log("Push notifications require a physical device");
+    if (__DEV__) console.log("Push notifications require a physical device");
     return null;
   }
 

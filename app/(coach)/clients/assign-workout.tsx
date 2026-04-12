@@ -149,7 +149,7 @@ export default function AssignWorkoutScreen() {
                   key={`${ex.exercise_id}-${i}`}
                   style={[styles.summaryItem, { borderBottomColor: theme.colors.outline }]}
                 >
-                  <Text variant="bodyMedium" style={{ color: theme.colors.onSurface, flex: 1 }}>
+                  <Text variant="bodyMedium" style={{ color: theme.colors.onSurface, flex: 1 }} numberOfLines={1}>
                     {i + 1}. {ex.exercise_name}
                   </Text>
                   <Text

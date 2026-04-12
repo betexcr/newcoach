@@ -145,6 +145,7 @@ export default function ClientProfileScreen() {
             onPress={handleRemoveClient}
             disabled={removeClient.isPending}
             style={{ opacity: removeClient.isPending ? 0.5 : 1 }}
+            hitSlop={{ top: 10, bottom: 10, left: 10, right: 10 }}
             accessibilityRole="button"
             accessibilityLabel={t("clientProfile.removeClientLabel")}
           >
@@ -401,7 +402,7 @@ function WorkoutsTab({
           >
             <View style={[styles.workoutStatusDot, { backgroundColor: color }]} />
             <View style={{ flex: 1 }}>
-              <Text variant="titleSmall" style={{ color: theme.colors.onSurface, fontWeight: "600" }}>
+              <Text variant="titleSmall" style={{ color: theme.colors.onSurface, fontWeight: "600" }} numberOfLines={1}>
                 {w.name}
               </Text>
               <Text variant="bodySmall" style={{ color: theme.colors.onSurfaceVariant }}>

@@ -25,7 +25,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
           registerForPushNotifications(session.user.id).catch(() => {});
         }
       } catch (err) {
-        console.warn("Auth init failed:", err);
+        if (__DEV__) console.warn("Auth init failed:", err);
         setSession(null);
         setProfile(null);
         setProfileError(false);
@@ -65,7 +65,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
       .eq("id", userId)
       .single();
     if (error) {
-      console.warn("Failed to fetch profile:", error.message);
+      if (__DEV__) console.warn("Failed to fetch profile:", error.message);
       if (useAuthStore.getState().user?.id === userId) {
         setProfileError(true);
       }

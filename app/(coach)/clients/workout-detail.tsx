@@ -155,7 +155,7 @@ export default function CoachWorkoutDetailScreen() {
             {workout.scheduled_date}
           </Text>
           <Text variant="bodySmall" style={{ color: theme.colors.onSurfaceVariant }}>
-            {t("clients.exerciseCount", { count: workout.exercises.length })}
+            {t("clients.exerciseCount", { count: (workout.exercises ?? []).length })}
           </Text>
         </View>
 
@@ -198,7 +198,7 @@ export default function CoachWorkoutDetailScreen() {
           {t("clients.exercises")}
         </Text>
 
-        {workout.exercises.map((exercise, idx) => {
+        {(workout.exercises ?? []).map((exercise, idx) => {
           const detail = exerciseMap[exercise.exercise_id];
           const logged = loggedMap[exercise.exercise_id];
 

@@ -178,7 +178,7 @@ export default function NewChatScreen() {
                   labelStyle={{ color: theme.colors.primary }}
                 />
                 <View style={styles.clientInfo}>
-                  <Text variant="titleMedium" style={{ color: theme.colors.onSurface, fontWeight: "600" }}>
+                  <Text variant="titleMedium" style={{ color: theme.colors.onSurface, fontWeight: "600" }} numberOfLines={1}>
                     {name}
                   </Text>
                   <Text variant="bodySmall" style={{ color: theme.colors.onSurfaceVariant }}>

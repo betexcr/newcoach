@@ -289,6 +289,7 @@ export default function LibraryScreen() {
             router={router}
             isRefetching={templatesRefetching}
             onRefresh={refetchTemplates}
+            deleting={deleteTemplate.isPending}
             onDelete={(id) => {
               if (deleteTemplate.isPending) return;
               Alert.alert(t("common.delete"), t("library.deleteTemplateConfirm"), [
@@ -394,6 +395,7 @@ function TemplatesListView({
   isRefetching,
   onRefresh,
   onDelete,
+  deleting,
 }: {
   templates: WorkoutTemplate[];
   theme: AppTheme;
@@ -402,6 +404,7 @@ function TemplatesListView({
   isRefetching: boolean;
   onRefresh: () => void;
   onDelete: (id: string) => void;
+  deleting?: boolean;
 }) {
   if (templates.length === 0) {
     return (
@@ -432,7 +435,7 @@ function TemplatesListView({
             useWorkoutBuilderStore.getState().loadTemplate(
               item.name,
               item.description ?? "",
-              item.exercises
+              item.exercises ?? []
             );
             router.push("/(coach)/library/workout-builder");
           }}
@@ -441,7 +444,7 @@ function TemplatesListView({
             <MaterialCommunityIcons name="file-document" size={24} color={theme.colors.primary} />
           </View>
           <View style={{ flex: 1 }}>
-            <Text variant="titleMedium" style={{ color: theme.colors.onSurface, fontWeight: "600" }}>
+            <Text variant="titleMedium" style={{ color: theme.colors.onSurface, fontWeight: "600" }} numberOfLines={1}>
               {item.name}
             </Text>
             <Text variant="bodySmall" style={{ color: theme.colors.onSurfaceVariant }}>
@@ -454,7 +457,7 @@ function TemplatesListView({
               </Text>
             )}
           </View>
-          <Pressable onPress={() => onDelete(item.id)} style={{ padding: 8 }}>
+          <Pressable onPress={() => onDelete(item.id)} disabled={deleting} hitSlop={{ top: 10, bottom: 10, left: 10, right: 10 }} style={{ padding: 8, opacity: deleting ? 0.4 : 1 }}>
             <MaterialCommunityIcons name="delete-outline" size={20} color={theme.colors.error} />
           </Pressable>
         </Pressable>
