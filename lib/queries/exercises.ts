@@ -22,7 +22,7 @@ export function useExercises(filters?: ExerciseFilters) {
         .from("exercises")
         .select("*")
         .order("name", { ascending: true })
-        .limit(200);
+        .limit(500);
 
       if (filters?.search) {
         query = query.ilike("name", `%${filters.search}%`);

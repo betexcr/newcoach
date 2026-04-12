@@ -5,6 +5,7 @@ import {
   KeyboardAvoidingView,
   Platform,
   ScrollView,
+  Pressable,
 } from "react-native";
 import { Text, useTheme } from "react-native-paper";
 import { Link, useRouter } from "expo-router";
@@ -140,6 +141,25 @@ export default function LoginScreen() {
             </AuthButton>
           </Link>
         </View>
+
+        <Pressable
+          style={styles.demoLink}
+          onPress={() => router.push("/(demo)" as any)}
+          accessibilityRole="link"
+        >
+          <Text
+            variant="bodySmall"
+            style={{ color: theme.colors.onSurfaceVariant }}
+          >
+            Just browsing?{" "}
+          </Text>
+          <Text
+            variant="bodySmall"
+            style={{ color: theme.colors.primary, fontWeight: "600" }}
+          >
+            Try the demo
+          </Text>
+        </Pressable>
       </ScrollView>
     </KeyboardAvoidingView>
   );
@@ -178,5 +198,11 @@ const styles = StyleSheet.create({
     justifyContent: "center",
     alignItems: "center",
     marginTop: 32,
+  },
+  demoLink: {
+    flexDirection: "row",
+    justifyContent: "center",
+    alignItems: "center",
+    marginTop: 16,
   },
 });
