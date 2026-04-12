@@ -5,7 +5,8 @@ import { useTranslation } from "react-i18next";
 import { useRouter } from "expo-router";
 import type { AppTheme } from "@/lib/theme";
 import { useDemoFadeIn } from "../use-demo-fade";
-import { clientProfile, demoAssignedWorkouts, demoProgressStats, today } from "../mock-data";
+import { DemoPress } from "../DemoTooltip";
+import { clientProfile, demoAssignedWorkouts, demoProgressStats, demoPendingInvites, today } from "../mock-data";
 
 const statusColor = (status: string, theme: AppTheme) => {
   if (status === "completed") return theme.colors.secondary;
@@ -61,6 +62,30 @@ export default function DemoToday() {
           {t("today.greeting", { name: clientProfile.full_name?.split(" ")[0] ?? "" })}
         </Text>
       </View>
+
+      {demoPendingInvites.length > 0 && (
+        <Card style={[s.inviteCard, { backgroundColor: `${theme.colors.secondary}12` }]}>
+          <Card.Content style={s.inviteContent}>
+            <MaterialCommunityIcons name="email-open-outline" size={24} color={theme.colors.secondary} />
+            <View style={{ flex: 1, marginLeft: 12 }}>
+              <Text variant="bodyMedium" style={{ color: theme.colors.onSurface, fontWeight: "600" }}>
+                {demoPendingInvites[0].coach.full_name}
+              </Text>
+              <Text variant="bodySmall" style={{ color: theme.colors.onSurfaceVariant }}>
+                {t("demo.inviteBanner")}
+              </Text>
+            </View>
+            <View style={{ flexDirection: "row", gap: 8 }}>
+              <DemoPress style={[s.inviteBtn, { backgroundColor: theme.colors.secondary }]} accessibilityRole="button">
+                <Text variant="labelSmall" style={{ color: theme.colors.onSecondary, fontWeight: "700" }}>{t("demo.acceptInvite")}</Text>
+              </DemoPress>
+              <DemoPress style={[s.inviteBtn, { backgroundColor: theme.colors.surfaceVariant }]} accessibilityRole="button">
+                <Text variant="labelSmall" style={{ color: theme.colors.onSurfaceVariant, fontWeight: "600" }}>{t("demo.declineInvite")}</Text>
+              </DemoPress>
+            </View>
+          </Card.Content>
+        </Card>
+      )}
 
       {todayWorkouts.length > 0 ? (
         todayWorkouts.map((w) => (
@@ -147,4 +172,7 @@ const s = StyleSheet.create({
   statsRow: { flexDirection: "row", gap: 10, marginBottom: 16 },
   statCard: { flex: 1, borderRadius: 16, elevation: 0 },
   statContent: { alignItems: "center", paddingVertical: 14 },
+  inviteCard: { borderRadius: 16, elevation: 0, marginBottom: 12 },
+  inviteContent: { flexDirection: "row", alignItems: "center", flexWrap: "wrap" },
+  inviteBtn: { paddingHorizontal: 12, paddingVertical: 6, borderRadius: 8 },
 });

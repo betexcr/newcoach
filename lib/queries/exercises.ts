@@ -161,3 +161,22 @@ export const EQUIPMENT_OPTIONS = [
   "kettlebell",
   "other",
 ] as const;
+
+function extractYouTubeId(url: string): string | null {
+  const match = url.match(
+    /(?:youtu\.be\/|youtube\.com\/(?:watch\?.*v=|embed\/|shorts\/))([A-Za-z0-9_-]{11})/
+  );
+  return match?.[1] ?? null;
+}
+
+export function getExerciseThumbnail(
+  exercise: Pick<Exercise, "thumbnail_url" | "video_url"> | undefined | null
+): string | null {
+  if (!exercise) return null;
+  if (exercise.thumbnail_url) return exercise.thumbnail_url;
+  if (exercise.video_url) {
+    const ytId = extractYouTubeId(exercise.video_url);
+    if (ytId) return `https://img.youtube.com/vi/${ytId}/hqdefault.jpg`;
+  }
+  return null;
+}

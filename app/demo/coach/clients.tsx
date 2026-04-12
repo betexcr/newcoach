@@ -4,6 +4,7 @@ import { MaterialCommunityIcons } from "@expo/vector-icons";
 import { useTranslation } from "react-i18next";
 import type { AppTheme } from "@/lib/theme";
 import { useDemoFadeIn } from "../use-demo-fade";
+import { DemoPress } from "../DemoTooltip";
 import { demoClients, demoAssignedWorkouts } from "../mock-data";
 
 function initials(name: string | null): string {
@@ -54,7 +55,7 @@ export default function DemoClients() {
       </View>
 
       {demoClients.map((c) => (
-        <View key={c.id} style={[s.clientRow, { backgroundColor: theme.colors.surface }]}>
+        <DemoPress key={c.id} style={[s.clientRow, { backgroundColor: theme.colors.surface }]}>
           <Avatar.Text size={44} label={initials(c.profile?.full_name ?? null)} style={{ backgroundColor: theme.colors.primaryContainer }} labelStyle={{ color: theme.colors.primary, fontSize: 16 }} />
           <View style={{ flex: 1, marginLeft: 12 }}>
             <Text variant="titleMedium" style={{ color: theme.colors.onSurface, fontWeight: "600" }}>
@@ -76,7 +77,7 @@ export default function DemoClients() {
           >
             {c.status}
           </Chip>
-        </View>
+        </DemoPress>
       ))}
 
       <View style={{ height: 20 }} />
@@ -118,7 +119,7 @@ export default function DemoClients() {
         {t("demo.recentWorkouts")}
       </Text>
       {demoAssignedWorkouts.slice(0, 4).map((w) => (
-        <View key={w.id} style={[s.workoutRow, { backgroundColor: theme.colors.surface }]}>
+        <DemoPress key={w.id} style={[s.workoutRow, { backgroundColor: theme.colors.surface }]}>
           <View style={{ flex: 1 }}>
             <Text variant="bodyMedium" style={{ color: theme.colors.onSurface, fontWeight: "600" }}>{w.name}</Text>
             <Text variant="bodySmall" style={{ color: theme.colors.onSurfaceVariant }}>
@@ -128,7 +129,7 @@ export default function DemoClients() {
           <Text variant="labelSmall" style={{ color: statusColor(w.status, theme), fontWeight: "600", textTransform: "capitalize" }}>
             {w.status}
           </Text>
-        </View>
+        </DemoPress>
       ))}
       </Animated.View>
     </ScrollView>

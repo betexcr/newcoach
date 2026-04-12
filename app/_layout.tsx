@@ -10,7 +10,8 @@ import { MaterialCommunityIcons } from "@expo/vector-icons";
 import * as SplashScreen from "expo-splash-screen";
 import * as Notifications from "expo-notifications";
 import { AuthProvider } from "@/lib/auth-provider";
-import { lightTheme, darkTheme } from "@/lib/theme";
+import { lightTheme, darkTheme, buildTheme } from "@/lib/theme";
+import { useOrganization } from "@/lib/queries/organizations";
 import { useSettingsStore } from "@/stores/settings-store";
 import { useAuthStore } from "@/stores/auth-store";
 import { useChatNavStore } from "@/stores/chat-nav-store";
@@ -27,10 +28,47 @@ function onAppStateChange(status: AppStateStatus) {
   }
 }
 
-export default function RootLayout() {
+function RootLayoutInner() {
   const colorScheme = useColorScheme();
-  const router = useRouter();
   const themePref = useSettingsStore((s) => s.theme);
+  const profile = useAuthStore((s) => s.profile);
+  const orgId = profile?.organization_id ?? "";
+  const { data: org } = useOrganization(orgId);
+
+  const resolvedScheme =
+    themePref === "auto" ? colorScheme : themePref;
+
+  const orgThemes = org
+    ? buildTheme(org.primary_color, org.secondary_color)
+    : null;
+  const theme = resolvedScheme === "dark"
+    ? (orgThemes?.dark ?? darkTheme)
+    : (orgThemes?.light ?? lightTheme);
+
+  return (
+    <QueryClientProvider client={queryClient}>
+      <PaperProvider theme={theme}>
+        <ErrorBoundary>
+          <AuthProvider>
+            <StatusBar style={resolvedScheme === "dark" ? "light" : "dark"} />
+            <Stack screenOptions={{ headerShown: false }}>
+              <Stack.Screen name="index" />
+              <Stack.Screen name="(auth)" />
+              <Stack.Screen name="(coach)" />
+              <Stack.Screen name="(client)" />
+              <Stack.Screen name="demo" />
+              <Stack.Screen name="workout/[id]" />
+              <Stack.Screen name="coach/[slug]" options={{ headerShown: false }} />
+            </Stack>
+          </AuthProvider>
+        </ErrorBoundary>
+      </PaperProvider>
+    </QueryClientProvider>
+  );
+}
+
+export default function RootLayout() {
+  const router = useRouter();
   const initSettings = useSettingsStore((s) => s.initSettings);
   const [ready, setReady] = useState(false);
 
@@ -93,27 +131,5 @@ export default function RootLayout() {
 
   if (!ready) return null;
 
-  const resolvedScheme =
-    themePref === "auto" ? colorScheme : themePref;
-  const theme = resolvedScheme === "dark" ? darkTheme : lightTheme;
-
-  return (
-    <QueryClientProvider client={queryClient}>
-      <PaperProvider theme={theme}>
-        <ErrorBoundary>
-          <AuthProvider>
-            <StatusBar style={resolvedScheme === "dark" ? "light" : "dark"} />
-            <Stack screenOptions={{ headerShown: false }}>
-              <Stack.Screen name="index" />
-              <Stack.Screen name="(auth)" />
-              <Stack.Screen name="(coach)" />
-              <Stack.Screen name="(client)" />
-              <Stack.Screen name="demo" />
-              <Stack.Screen name="workout/[id]" />
-            </Stack>
-          </AuthProvider>
-        </ErrorBoundary>
-      </PaperProvider>
-    </QueryClientProvider>
-  );
+  return <RootLayoutInner />;
 }

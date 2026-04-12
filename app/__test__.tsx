@@ -14,6 +14,10 @@ const MOCK_COACH_PROFILE: Profile = {
   role: "coach",
   push_token: null,
   nutrition_goals: null,
+  public_slug: null,
+  bio: null,
+  specialties: null,
+  organization_id: null,
   created_at: new Date().toISOString(),
   updated_at: new Date().toISOString(),
 };
@@ -26,6 +30,10 @@ const MOCK_CLIENT_PROFILE: Profile = {
   role: "client",
   push_token: null,
   nutrition_goals: null,
+  public_slug: null,
+  bio: null,
+  specialties: null,
+  organization_id: null,
   created_at: new Date().toISOString(),
   updated_at: new Date().toISOString(),
 };
@@ -45,8 +53,12 @@ const routes = {
     { path: "/(coach)/library", label: "Exercise Library" },
     { path: "/(coach)/library/create-exercise", label: "Create Exercise" },
     { path: "/(coach)/library/workout-builder", label: "Workout Builder" },
+    { path: "/(coach)/library/documents", label: "Coach Documents" },
     { path: "/(coach)/messages", label: "Coach Messages" },
     { path: "/(coach)/settings", label: "Coach Settings" },
+  ],
+  public: [
+    { path: "/coach/test-slug", label: "Public Coach Profile" },
   ],
   client: [
     { path: "/(client)/today", label: "Today Screen" },
@@ -55,6 +67,7 @@ const routes = {
     { path: "/(client)/nutrition", label: "Nutrition" },
     { path: "/(client)/habits", label: "Habits" },
     { path: "/(client)/milestones", label: "Milestones" },
+    { path: "/(client)/documents", label: "Client Documents" },
     { path: "/(client)/messages", label: "Client Messages" },
     { path: "/(client)/settings", label: "Client Settings" },
   ],

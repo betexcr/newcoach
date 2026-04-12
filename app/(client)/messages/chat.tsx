@@ -19,7 +19,9 @@ import { useMessages, useSendMessage } from "@/lib/queries/messaging";
 import { useAuthStore } from "@/stores/auth-store";
 import { useChatNavStore } from "@/stores/chat-nav-store";
 import { MessageBubble } from "@/components/MessageBubble";
+import { VoiceRecorder } from "@/components/VoiceRecorder";
 import { ErrorState } from "@/components/ErrorState";
+import { supabase } from "@/lib/supabase";
 
 export default function ClientChatScreen() {
   const { t } = useTranslation();
@@ -70,6 +72,22 @@ export default function ClientChatScreen() {
     }
   }
 
+  async function handleVoiceRecorded(uri: string) {
+    if (!userId || !conversationId) return;
+    try {
+      const fileName = `${userId}/${Date.now()}.m4a`;
+      const response = await fetch(uri);
+      const blob = await response.blob();
+      const { error: uploadError } = await supabase.storage.from("voice-messages").upload(fileName, blob, { contentType: "audio/m4a" });
+      if (uploadError) throw uploadError;
+      const { data } = await supabase.storage.from("voice-messages").createSignedUrl(fileName, 60 * 60 * 24 * 365);
+      if (!data?.signedUrl) throw new Error("Failed to create voice URL");
+      await sendMessage.mutateAsync({ conversation_id: conversationId, sender_id: userId, voice_url: data.signedUrl });
+    } catch {
+      Alert.alert(t("common.error"), t("messages.voiceFailed"));
+    }
+  }
+
   return (
     <SafeAreaView
       style={[styles.container, { backgroundColor: theme.colors.background }]}
@@ -108,6 +126,7 @@ export default function ClientChatScreen() {
       <KeyboardAvoidingView
         style={{ flex: 1 }}
         behavior={Platform.OS === "ios" ? "padding" : "height"}
+        keyboardVerticalOffset={0}
       >
         <FlatList
           ref={flatListRef}
@@ -167,6 +186,7 @@ export default function ClientChatScreen() {
             multiline
             maxLength={2000}
           />
+          {!text.trim() && <VoiceRecorder onRecorded={handleVoiceRecorded} />}
           <IconButton
             icon="send"
             iconColor={text.trim() ? theme.colors.primary : theme.colors.onSurfaceVariant}

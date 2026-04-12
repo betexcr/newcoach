@@ -5,6 +5,7 @@ import { useTranslation } from "react-i18next";
 import { useRouter } from "expo-router";
 import type { AppTheme } from "@/lib/theme";
 import { useDemoFadeIn } from "../use-demo-fade";
+import { DemoPress } from "../DemoTooltip";
 import {
   coachProfile,
   demoClients,
@@ -104,7 +105,7 @@ export default function DemoDashboard() {
       </Text>
       <View style={s.activityList}>
         {demoActivityFeed.map((item, idx) => (
-          <View
+          <DemoPress
             key={item.id}
             style={[
               s.activityRow,
@@ -133,7 +134,7 @@ export default function DemoDashboard() {
               </View>
             </View>
             <MaterialCommunityIcons name="chevron-right" size={20} color={theme.colors.onSurfaceVariant} />
-          </View>
+          </DemoPress>
         ))}
       </View>
       </Animated.View>

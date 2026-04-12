@@ -65,6 +65,7 @@ export default function ClientSettingsScreen() {
 
   const menuItems = [
     { icon: "account-circle-outline", label: t("settings.editProfile"), route: "/(auth)/edit-profile" },
+    { icon: "file-document-outline", label: t("library.documents"), route: "/(client)/documents" },
     { icon: "chart-line", label: t("settings.progressStats"), route: "/(client)/progress" },
     { icon: "trophy-outline", label: t("settings.milestones"), route: "/(client)/milestones" },
     { icon: "food-apple-outline", label: t("settings.nutritionTracker"), route: "/(client)/nutrition" },

@@ -5,6 +5,7 @@ import { useTranslation } from "react-i18next";
 import { useRouter } from "expo-router";
 import type { AppTheme } from "@/lib/theme";
 import { useDemoFadeIn } from "../use-demo-fade";
+import { DemoPress } from "../DemoTooltip";
 import { demoAssignedWorkouts, today } from "../mock-data";
 
 const statusColor = (status: string, theme: AppTheme) => {
@@ -53,19 +54,19 @@ export default function DemoCalendar() {
       </Animated.View>
 
       <Animated.View style={{ opacity: contentOpacity }}>
-      <View style={s.calendarNav}>
+      <DemoPress style={s.calendarNav}>
         <MaterialCommunityIcons name="chevron-left" size={24} color={theme.colors.onSurfaceVariant} />
         <Text variant="titleMedium" style={{ color: theme.colors.primary, fontWeight: "600" }}>{t("demo.thisWeek")}</Text>
         <MaterialCommunityIcons name="chevron-right" size={24} color={theme.colors.onSurfaceVariant} />
-      </View>
+      </DemoPress>
 
       <View style={s.calendarRow}>
         {weekDays.map((d) => (
-          <Pressable key={d.dateStr} style={[s.calendarCell, { backgroundColor: d.isToday ? theme.colors.primary : theme.colors.surface }]}>
+          <DemoPress key={d.dateStr} style={[s.calendarCell, { backgroundColor: d.isToday ? theme.colors.primary : theme.colors.surface }]}>
             <Text variant="labelSmall" style={{ color: d.isToday ? theme.colors.onPrimary : theme.colors.onSurfaceVariant }}>{d.label}</Text>
             <Text variant="titleMedium" style={{ color: d.isToday ? theme.colors.onPrimary : theme.colors.onSurface, fontWeight: "700" }}>{d.date}</Text>
             {d.status && <View style={[s.calendarDot, { backgroundColor: d.isToday ? theme.colors.onPrimary : statusColor(d.status, theme) }]} />}
-          </Pressable>
+          </DemoPress>
         ))}
       </View>
 
@@ -76,7 +77,7 @@ export default function DemoCalendar() {
       )}
 
       {calendarWorkouts.map((w) => (
-        <View key={w.id} style={[s.calWorkoutCard, { backgroundColor: theme.colors.surface }]}>
+        <DemoPress key={w.id} style={[s.calWorkoutCard, { backgroundColor: theme.colors.surface }]}>
           <View style={{ flex: 1 }}>
             <Text variant="titleMedium" style={{ color: theme.colors.onSurface, fontWeight: "600" }}>{w.name}</Text>
             <Text variant="bodySmall" style={{ color: theme.colors.onSurfaceVariant }}>
@@ -86,7 +87,7 @@ export default function DemoCalendar() {
           <Chip mode="flat" style={{ backgroundColor: `${statusColor(w.status, theme)}15` }} textStyle={{ fontSize: 11, color: statusColor(w.status, theme), textTransform: "capitalize" }}>
             {w.status}
           </Chip>
-        </View>
+        </DemoPress>
       ))}
 
       {(() => {

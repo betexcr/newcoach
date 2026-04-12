@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { useTranslation } from "react-i18next";
 import {
   View,
@@ -13,25 +13,45 @@ import {
 import { Text, useTheme, TextInput } from "react-native-paper";
 import { SafeAreaView } from "react-native-safe-area-context";
 import { MaterialCommunityIcons } from "@expo/vector-icons";
-import { useRouter } from "expo-router";
-import { useCreateExercise, MUSCLE_GROUPS, EQUIPMENT_OPTIONS } from "@/lib/queries/exercises";
+import { useRouter, useLocalSearchParams } from "expo-router";
+import { useCreateExercise, useUpdateExercise, useExercise, MUSCLE_GROUPS, EQUIPMENT_OPTIONS } from "@/lib/queries/exercises";
 import { useAuthStore } from "@/stores/auth-store";
 import { AuthButton } from "@/components/AuthButton";
+import type { AppTheme } from "@/lib/theme";
 
 export default function CreateExerciseScreen() {
   const { t } = useTranslation();
-  const theme = useTheme();
+  const theme = useTheme<AppTheme>();
   const router = useRouter();
+  const { exerciseId } = useLocalSearchParams<{ exerciseId?: string }>();
   const userId = useAuthStore((s) => s.user?.id);
   const createExercise = useCreateExercise();
+  const updateExercise = useUpdateExercise();
+  const isEditMode = !!exerciseId;
+
+  const { data: existingExercise } = useExercise(exerciseId ?? "");
 
   const [name, setName] = useState("");
   const [description, setDescription] = useState("");
   const [muscleGroup, setMuscleGroup] = useState("");
   const [equipment, setEquipment] = useState("");
   const [videoUrl, setVideoUrl] = useState("");
+  const [thumbnailUrl, setThumbnailUrl] = useState("");
+  const [loaded, setLoaded] = useState(false);
 
-  async function handleCreate() {
+  useEffect(() => {
+    if (existingExercise && !loaded) {
+      setName(existingExercise.name);
+      setDescription(existingExercise.description ?? "");
+      setMuscleGroup(existingExercise.muscle_group);
+      setEquipment(existingExercise.equipment ?? "");
+      setVideoUrl(existingExercise.video_url ?? "");
+      setThumbnailUrl(existingExercise.thumbnail_url ?? "");
+      setLoaded(true);
+    }
+  }, [existingExercise, loaded]);
+
+  async function handleSubmit() {
     Keyboard.dismiss();
     if (!name.trim()) {
       Alert.alert(t("common.required"), t("library.enterExerciseName"));
@@ -47,20 +67,35 @@ export default function CreateExerciseScreen() {
     }
 
     try {
-      await createExercise.mutateAsync({
-        name: name.trim(),
-        description: description.trim() || undefined,
-        muscle_group: muscleGroup,
-        equipment: equipment || undefined,
-        video_url: videoUrl.trim() || undefined,
-        created_by: userId,
-        is_custom: true,
-      });
+      if (isEditMode) {
+        await updateExercise.mutateAsync({
+          id: exerciseId!,
+          name: name.trim(),
+          description: description.trim() || null,
+          muscle_group: muscleGroup,
+          equipment: equipment || null,
+          video_url: videoUrl.trim() || null,
+          thumbnail_url: thumbnailUrl.trim() || null,
+        });
+      } else {
+        await createExercise.mutateAsync({
+          name: name.trim(),
+          description: description.trim() || undefined,
+          muscle_group: muscleGroup,
+          equipment: equipment || undefined,
+          video_url: videoUrl.trim() || undefined,
+          thumbnail_url: thumbnailUrl.trim() || undefined,
+          created_by: userId,
+          is_custom: true,
+        });
+      }
       router.back();
     } catch (err: unknown) {
       Alert.alert(t("common.error"), err instanceof Error ? err.message : t("library.failedCreateExercise"));
     }
   }
+
+  const isPending = createExercise.isPending || updateExercise.isPending;
 
   const filteredMuscleGroups = MUSCLE_GROUPS.filter((g) => g !== "all");
   const filteredEquipment = EQUIPMENT_OPTIONS.filter((e) => e !== "all");
@@ -81,7 +116,7 @@ export default function CreateExerciseScreen() {
           variant="titleLarge"
           style={{ color: theme.colors.onSurface, fontWeight: "700" }}
         >
-          {t("library.createExercise")}
+          {isEditMode ? t("library.editExercise") : t("library.createExercise")}
         </Text>
         <View style={{ width: 24 }} />
       </View>
@@ -144,7 +179,7 @@ export default function CreateExerciseScreen() {
                   },
                 ]}
               >
-                {group}
+                {t(`muscleGroups.${group}`, group)}
               </Text>
             </Pressable>
           ))}
@@ -188,7 +223,7 @@ export default function CreateExerciseScreen() {
                   },
                 ]}
               >
-                {item}
+                {t(`equipment.${item}`, item)}
               </Text>
             </Pressable>
           ))}
@@ -205,13 +240,24 @@ export default function CreateExerciseScreen() {
           outlineStyle={styles.outline}
         />
 
+        <TextInput
+          mode="outlined"
+          label={t("library.thumbnailUrlLabel")}
+          value={thumbnailUrl}
+          onChangeText={setThumbnailUrl}
+          keyboardType="url"
+          autoCapitalize="none"
+          style={styles.input}
+          outlineStyle={styles.outline}
+        />
+
         <AuthButton
-          onPress={handleCreate}
-          loading={createExercise.isPending}
-          disabled={createExercise.isPending || !name.trim() || !muscleGroup}
+          onPress={handleSubmit}
+          loading={isPending}
+          disabled={isPending || !name.trim() || !muscleGroup}
           style={styles.createButton}
         >
-          {t("library.createExerciseButton")}
+          {isEditMode ? t("library.saveExercise") : t("library.createExerciseButton")}
         </AuthButton>
       </ScrollView>
       </KeyboardAvoidingView>

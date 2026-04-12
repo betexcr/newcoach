@@ -1,5 +1,10 @@
 import { Stack } from "expo-router";
+import { DemoTooltipProvider } from "./DemoTooltip";
 
 export default function DemoLayout() {
-  return <Stack screenOptions={{ headerShown: false }} />;
+  return (
+    <DemoTooltipProvider>
+      <Stack screenOptions={{ headerShown: false }} />
+    </DemoTooltipProvider>
+  );
 }

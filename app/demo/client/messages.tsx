@@ -4,6 +4,7 @@ import { MaterialCommunityIcons } from "@expo/vector-icons";
 import { useTranslation } from "react-i18next";
 import type { AppTheme } from "@/lib/theme";
 import { useDemoFadeIn } from "../use-demo-fade";
+import { DemoPress } from "../DemoTooltip";
 import { coachProfile, demoConversations, demoChatMessages, CLIENT_1_ID } from "../mock-data";
 
 export default function DemoClientMessages() {
@@ -25,14 +26,14 @@ export default function DemoClientMessages() {
       </Animated.View>
 
       <Animated.View style={{ opacity: contentOpacity }}>
-      <View style={[s.convRow, { backgroundColor: theme.colors.surface }]}>
+      <DemoPress style={[s.convRow, { backgroundColor: theme.colors.surface }]}>
         <Avatar.Icon size={44} icon="account" style={{ backgroundColor: theme.colors.primaryContainer }} color={theme.colors.primary} />
         <View style={{ flex: 1, marginLeft: 12 }}>
           <Text variant="bodyMedium" style={{ color: theme.colors.onSurface, fontWeight: "600" }}>{coachProfile.full_name}</Text>
           <Text variant="bodySmall" style={{ color: theme.colors.onSurfaceVariant }} numberOfLines={1}>{demoConversations[0].last_message?.body ?? ""}</Text>
         </View>
         <MaterialCommunityIcons name="chevron-right" size={20} color={theme.colors.onSurfaceVariant} />
-      </View>
+      </DemoPress>
 
       <Text variant="titleSmall" style={{ color: theme.colors.onSurfaceVariant, marginTop: 20, marginBottom: 8 }}>{t("demo.chatPreview")}</Text>
       <View style={[s.chatContainer, { backgroundColor: theme.colors.surfaceVariant }]}>
@@ -40,7 +41,21 @@ export default function DemoClientMessages() {
           const isOwn = msg.sender_id === CLIENT_1_ID;
           return (
             <View key={msg.id} style={[s.bubble, isOwn ? s.ownBubble : s.otherBubble, { backgroundColor: isOwn ? theme.colors.primary : theme.colors.surface }]}>
-              <Text variant="bodyMedium" style={{ color: isOwn ? theme.colors.onPrimary : theme.colors.onSurface, lineHeight: 20 }}>{msg.body}</Text>
+              {msg.voice_url ? (
+                <DemoPress style={s.voiceMessage} accessibilityRole="button" accessibilityLabel={t("demo.voiceMessageDemo")}>
+                  <MaterialCommunityIcons name="play-circle" size={20} color={isOwn ? theme.colors.onPrimary : theme.colors.primary} />
+                  <Text variant="bodySmall" style={{ color: isOwn ? theme.colors.onPrimary : theme.colors.onSurfaceVariant, marginLeft: 6, opacity: isOwn ? 0.8 : 1 }}>
+                    {t("messages.voiceMessage")}
+                  </Text>
+                  <View style={[s.waveform, { backgroundColor: isOwn ? `${theme.colors.onPrimary}30` : `${theme.colors.primary}20` }]}>
+                    {[3, 5, 8, 12, 10, 7, 4, 6, 9, 11, 8, 5, 3].map((h, i) => (
+                      <View key={i} style={[s.waveBar, { height: h, backgroundColor: isOwn ? theme.colors.onPrimary : theme.colors.primary }]} />
+                    ))}
+                  </View>
+                </DemoPress>
+              ) : (
+                <Text variant="bodyMedium" style={{ color: isOwn ? theme.colors.onPrimary : theme.colors.onSurface, lineHeight: 20 }}>{msg.body}</Text>
+              )}
               <Text variant="labelSmall" style={{ color: isOwn ? theme.colors.onPrimary : theme.colors.onSurfaceVariant, opacity: isOwn ? 0.6 : 1, marginTop: 4, alignSelf: isOwn ? "flex-end" : "flex-start" }}>
                 {new Date(msg.created_at).toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" })}
               </Text>
@@ -49,6 +64,9 @@ export default function DemoClientMessages() {
         })}
 
         <View style={[s.inputBar, { backgroundColor: theme.colors.surface, borderTopColor: theme.colors.outlineVariant }]}>
+          <DemoPress style={{ padding: 8 }} accessibilityLabel={t("demo.recordingDemo")}>
+            <MaterialCommunityIcons name="microphone" size={24} color={theme.colors.onSurfaceVariant} />
+          </DemoPress>
           <RNTextInput
             placeholder={t("messages.inputPlaceholder")}
             placeholderTextColor={theme.colors.onSurfaceVariant}
@@ -80,4 +98,7 @@ const s = StyleSheet.create({
   otherBubble: { alignSelf: "flex-start", borderBottomLeftRadius: 4 },
   inputBar: { flexDirection: "row", alignItems: "center", paddingHorizontal: 8, paddingVertical: 8, borderTopWidth: 0.5, marginTop: 8, borderRadius: 0, borderBottomLeftRadius: 16, borderBottomRightRadius: 16 },
   textInput: { flex: 1, borderRadius: 20, paddingHorizontal: 16, paddingVertical: 10, fontSize: 15 },
+  voiceMessage: { flexDirection: "row", alignItems: "center", marginBottom: 4 },
+  waveform: { flexDirection: "row", alignItems: "center", gap: 2, marginLeft: 8, paddingHorizontal: 6, paddingVertical: 4, borderRadius: 8 },
+  waveBar: { width: 2, borderRadius: 1 },
 });

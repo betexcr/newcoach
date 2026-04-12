@@ -15,8 +15,22 @@ export interface Profile {
   role: UserRole | null;
   push_token: string | null;
   nutrition_goals: MacroGoals | null;
+  public_slug: string | null;
+  bio: string | null;
+  specialties: string[] | null;
+  organization_id: string | null;
   created_at: string;
   updated_at: string;
+}
+
+export interface Organization {
+  id: string;
+  name: string;
+  slug: string;
+  logo_url: string | null;
+  primary_color: string;
+  secondary_color: string;
+  created_at: string;
 }
 
 export interface CoachClient {
@@ -208,10 +222,33 @@ export interface Subscription {
   updated_at: string;
 }
 
+export type WebhookEventType = 'workout.completed' | 'client.added' | 'client.removed' | 'message.sent';
+
+export interface Webhook {
+  id: string;
+  coach_id: string;
+  event_type: WebhookEventType;
+  url: string;
+  secret: string | null;
+  active: boolean;
+  created_at: string;
+}
+
 export interface ConversationParticipant {
   conversation_id: string;
   user_id: string;
   joined_at: string;
+}
+
+export interface Document {
+  id: string;
+  coach_id: string;
+  client_id: string | null;
+  title: string;
+  description: string | null;
+  file_url: string;
+  file_type: string;
+  created_at: string;
 }
 
 export type Database = {
@@ -227,6 +264,10 @@ export type Database = {
           role?: UserRole | null;
           push_token?: string | null;
           nutrition_goals?: MacroGoals | null;
+          public_slug?: string | null;
+          bio?: string | null;
+          specialties?: string[] | null;
+          organization_id?: string | null;
           created_at?: string;
           updated_at?: string;
         };
@@ -238,6 +279,10 @@ export type Database = {
           role?: UserRole | null;
           push_token?: string | null;
           nutrition_goals?: MacroGoals | null;
+          public_slug?: string | null;
+          bio?: string | null;
+          specialties?: string[] | null;
+          organization_id?: string | null;
           updated_at?: string;
         };
         Relationships: [];
@@ -395,6 +440,8 @@ export type Database = {
         };
         Update: {
           body?: string | null;
+          voice_url?: string | null;
+          image_url?: string | null;
         };
         Relationships: [];
       };
@@ -486,6 +533,25 @@ export type Database = {
         };
         Relationships: [];
       };
+      documents: {
+        Row: Document;
+        Insert: {
+          coach_id: string;
+          client_id?: string | null;
+          title: string;
+          description?: string | null;
+          file_url: string;
+          file_type?: string;
+        };
+        Update: {
+          client_id?: string | null;
+          title?: string;
+          description?: string | null;
+          file_url?: string;
+          file_type?: string;
+        };
+        Relationships: [];
+      };
       subscriptions: {
         Row: Subscription;
         Insert: {
@@ -503,6 +569,41 @@ export type Database = {
           status?: Subscription["status"];
           current_period_end?: string | null;
           updated_at?: string;
+        };
+        Relationships: [];
+      };
+      webhooks: {
+        Row: Webhook;
+        Insert: {
+          coach_id: string;
+          event_type: WebhookEventType;
+          url: string;
+          secret?: string | null;
+          active?: boolean;
+        };
+        Update: {
+          event_type?: WebhookEventType;
+          url?: string;
+          secret?: string | null;
+          active?: boolean;
+        };
+        Relationships: [];
+      };
+      organizations: {
+        Row: Organization;
+        Insert: {
+          name: string;
+          slug: string;
+          logo_url?: string | null;
+          primary_color?: string;
+          secondary_color?: string;
+        };
+        Update: {
+          name?: string;
+          slug?: string;
+          logo_url?: string | null;
+          primary_color?: string;
+          secondary_color?: string;
         };
         Relationships: [];
       };

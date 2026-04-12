@@ -9,7 +9,6 @@ import {
   TextInput as RNTextInput,
   Image,
   useWindowDimensions,
-  Linking,
 } from "react-native";
 import { Text, useTheme, Card, Button, ProgressBar, Chip, ActivityIndicator } from "react-native-paper";
 import { SafeAreaView } from "react-native-safe-area-context";
@@ -19,9 +18,10 @@ import { useAuthStore, selectIsAuthenticated } from "@/stores/auth-store";
 import { supabase } from "@/lib/supabase";
 import { useWorkoutById, useUpdateWorkoutStatus } from "@/lib/queries/workouts";
 import { useSaveResult, useWorkoutResult } from "@/lib/queries/results";
-import { useExercisesByIds } from "@/lib/queries/exercises";
+import { useExercisesByIds, getExerciseThumbnail } from "@/lib/queries/exercises";
 import { ErrorState } from "@/components/ErrorState";
 import { AuthButton } from "@/components/AuthButton";
+import { VideoPlayer } from "@/components/VideoPlayer";
 import type {
   LoggedExercise,
   LoggedSet,
@@ -392,6 +392,7 @@ function ExerciseDetailCard({
   t: (key: string, opts?: Record<string, unknown>) => string;
 }) {
   const [expanded, setExpanded] = useState(false);
+  const [showVideo, setShowVideo] = useState(false);
 
   return (
     <Card
@@ -399,27 +400,30 @@ function ExerciseDetailCard({
       onPress={() => setExpanded(!expanded)}
     >
       <View style={styles.exerciseCardRow}>
-        {detail?.thumbnail_url ? (
-          <Image
-            source={{ uri: detail.thumbnail_url }}
-            style={styles.exerciseThumbnail}
-            resizeMode="cover"
-          />
-        ) : (
-          <View
-            style={[
-              styles.exerciseThumbnail,
-              styles.placeholderThumb,
-              { backgroundColor: theme.colors.primaryContainer },
-            ]}
-          >
-            <MaterialCommunityIcons
-              name="dumbbell"
-              size={24}
-              color={theme.colors.primary}
+        {(() => {
+          const thumb = getExerciseThumbnail(detail);
+          return thumb ? (
+            <Image
+              source={{ uri: thumb }}
+              style={styles.exerciseThumbnail}
+              resizeMode="cover"
             />
-          </View>
-        )}
+          ) : (
+            <View
+              style={[
+                styles.exerciseThumbnail,
+                styles.placeholderThumb,
+                { backgroundColor: theme.colors.primaryContainer },
+              ]}
+            >
+              <MaterialCommunityIcons
+                name="dumbbell"
+                size={24}
+                color={theme.colors.primary}
+              />
+            </View>
+          );
+        })()}
 
         <View style={styles.exerciseInfo}>
           <View style={styles.exerciseNameRow}>
@@ -497,7 +501,7 @@ function ExerciseDetailCard({
           {detail?.video_url && (
             <Pressable
               style={[styles.videoLinkRow, { backgroundColor: theme.colors.primaryContainer }]}
-              onPress={() => Linking.openURL(detail.video_url!)}
+              onPress={() => setShowVideo(true)}
               accessibilityRole="button"
             >
               <MaterialCommunityIcons name="play-circle" size={20} color={theme.colors.primary} />
@@ -564,6 +568,14 @@ function ExerciseDetailCard({
           </View>
         </View>
       )}
+
+      {detail?.video_url && (
+        <VideoPlayer
+          url={detail.video_url}
+          visible={showVideo}
+          onClose={() => setShowVideo(false)}
+        />
+      )}
     </Card>
   );
 }
@@ -613,6 +625,7 @@ function ExecutionView({
   const detail = exercise ? exerciseMap[exercise.exercise_id] : undefined;
   const sets = exercise ? getExerciseSets(exercise) : [];
   const completedSets = sets.filter((s) => s.completed).length;
+  const [showVideo, setShowVideo] = useState(false);
 
   const denom = Math.max(sets.length, 1);
   const progress = total > 0
@@ -727,27 +740,30 @@ function ExecutionView({
         </ScrollView>
       ) : (
         <ScrollView contentContainerStyle={styles.stepContent} keyboardShouldPersistTaps="handled">
-          {detail?.thumbnail_url ? (
-            <Image
-              source={{ uri: detail.thumbnail_url }}
-              style={[styles.exerciseHeroImage, { width: screenWidth }]}
-              resizeMode="cover"
-            />
-          ) : (
-            <View
-              style={[
-                styles.exerciseHeroImage,
-                styles.heroPlaceholder,
-                { width: screenWidth, backgroundColor: theme.colors.surfaceVariant },
-              ]}
-            >
-              <MaterialCommunityIcons
-                name="dumbbell"
-                size={64}
-                color={theme.colors.onSurfaceVariant}
+          {(() => {
+            const thumb = getExerciseThumbnail(detail);
+            return thumb ? (
+              <Image
+                source={{ uri: thumb }}
+                style={[styles.exerciseHeroImage, { width: screenWidth }]}
+                resizeMode="cover"
               />
-            </View>
-          )}
+            ) : (
+              <View
+                style={[
+                  styles.exerciseHeroImage,
+                  styles.heroPlaceholder,
+                  { width: screenWidth, backgroundColor: theme.colors.surfaceVariant },
+                ]}
+              >
+                <MaterialCommunityIcons
+                  name="dumbbell"
+                  size={64}
+                  color={theme.colors.onSurfaceVariant}
+                />
+              </View>
+            );
+          })()}
 
           <View style={styles.stepBody}>
             <View style={styles.exerciseNameRow}>
@@ -804,20 +820,21 @@ function ExecutionView({
                   >
                     {detail.description}
                   </Text>
-                  {detail.video_url && (
-                    <Pressable
-                      style={[styles.videoLinkRow, { backgroundColor: theme.colors.primaryContainer, marginTop: 12 }]}
-                      onPress={() => Linking.openURL(detail.video_url!)}
-                      accessibilityRole="button"
-                    >
-                      <MaterialCommunityIcons name="play-circle" size={20} color={theme.colors.primary} />
-                      <Text variant="labelLarge" style={{ color: theme.colors.primary, fontWeight: "700", marginLeft: 8 }}>
-                        {t("library.watchVideo")}
-                      </Text>
-                    </Pressable>
-                  )}
                 </Card.Content>
               </Card>
+            )}
+
+            {detail?.video_url && (
+              <Pressable
+                style={[styles.videoLinkRow, { backgroundColor: theme.colors.primaryContainer }]}
+                onPress={() => setShowVideo(true)}
+                accessibilityRole="button"
+              >
+                <MaterialCommunityIcons name="play-circle" size={20} color={theme.colors.primary} />
+                <Text variant="labelLarge" style={{ color: theme.colors.primary, fontWeight: "700", marginLeft: 8 }}>
+                  {t("library.watchVideo")}
+                </Text>
+              </Pressable>
             )}
 
             {exercise.notes && (
@@ -867,7 +884,15 @@ function ExecutionView({
                 <Text
                   style={[
                     styles.setHeaderLabel,
-                    { color: theme.colors.onSurfaceVariant, width: 40, textAlign: "center" },
+                    { color: theme.colors.onSurfaceVariant, width: 48, textAlign: "center" },
+                  ]}
+                >
+                  {t("workout.rpe")}
+                </Text>
+                <Text
+                  style={[
+                    styles.setHeaderLabel,
+                    { color: theme.colors.onSurfaceVariant, width: 32, textAlign: "center" },
                   ]}
                 >
                   ✓
@@ -928,6 +953,32 @@ function ExecutionView({
                     keyboardType="decimal-pad"
                     style={[
                       styles.logInput,
+                      {
+                        color: theme.colors.onSurface,
+                        borderColor: set.completed
+                          ? theme.colors.primary
+                          : theme.colors.outline,
+                        backgroundColor: theme.colors.surface,
+                      },
+                    ]}
+                    placeholder="—"
+                    placeholderTextColor={theme.colors.onSurfaceVariant}
+                  />
+                  <RNTextInput
+                    value={set.rpe?.toString() ?? ""}
+                    onChangeText={(v) => {
+                      const n = parseInt(v, 10);
+                      updateSetLog(
+                        exercise.exercise_id,
+                        sIdx,
+                        { rpe: v ? (Number.isNaN(n) ? null : Math.min(10, Math.max(1, n))) : null },
+                        exercise
+                      );
+                    }}
+                    keyboardType="numeric"
+                    maxLength={2}
+                    style={[
+                      styles.rpeInput,
                       {
                         color: theme.colors.onSurface,
                         borderColor: set.completed
@@ -1011,6 +1062,14 @@ function ExecutionView({
             />
           </Pressable>
         </View>
+      )}
+
+      {detail?.video_url && (
+        <VideoPlayer
+          url={detail.video_url}
+          visible={showVideo}
+          onClose={() => setShowVideo(false)}
+        />
       )}
     </SafeAreaView>
   );
@@ -1097,6 +1156,7 @@ function ResultsView({
                     <Text style={[styles.setCol, { color: theme.colors.onSurfaceVariant }]}>{t("workout.set")}</Text>
                     <Text style={[styles.setColWide, { color: theme.colors.onSurfaceVariant }]}>{t("workout.reps")}</Text>
                     <Text style={[styles.setColWide, { color: theme.colors.onSurfaceVariant }]}>{t("workout.weight")}</Text>
+                    <Text style={[{ width: 36, textAlign: "center", fontSize: 11 }, { color: theme.colors.onSurfaceVariant }]}>{t("workout.rpe")}</Text>
                     <Text style={[{ width: 32, textAlign: "center", fontSize: 11 }, { color: theme.colors.onSurfaceVariant }]}>✓</Text>
                   </View>
                   {(ex.sets ?? []).map((set, sIdx) => (
@@ -1120,6 +1180,9 @@ function ResultsView({
                         {set.weight
                           ? `${set.weight} ${t("workout.lbs")}`
                           : t("common.dash")}
+                      </Text>
+                      <Text style={[{ width: 36, textAlign: "center", fontSize: 11, fontWeight: "600" }, { color: theme.colors.onSurface }]}>
+                        {set.rpe ?? t("common.dash")}
                       </Text>
                       <View style={{ width: 32, alignItems: "center" }}>
                         <MaterialCommunityIcons
@@ -1331,6 +1394,7 @@ const styles = StyleSheet.create({
     flexDirection: "row",
     alignItems: "center",
     paddingBottom: 6,
+    paddingHorizontal: 4,
     gap: 6,
   },
   setHeaderLabel: { fontSize: 11, fontWeight: "600", width: 32, textAlign: "center" },
@@ -1357,6 +1421,16 @@ const styles = StyleSheet.create({
     paddingHorizontal: 10,
     paddingVertical: 10,
     fontSize: 16,
+    textAlign: "center",
+    fontWeight: "600",
+  },
+  rpeInput: {
+    width: 48,
+    borderWidth: 1.5,
+    borderRadius: 10,
+    paddingHorizontal: 4,
+    paddingVertical: 10,
+    fontSize: 14,
     textAlign: "center",
     fontWeight: "600",
   },

@@ -1,10 +1,13 @@
-import { View, StyleSheet, ScrollView, Pressable, Animated } from "react-native";
+import { useState } from "react";
+import { View, StyleSheet, ScrollView, Pressable, Animated, Alert } from "react-native";
 import { Text, useTheme, Card, Chip } from "react-native-paper";
 import { MaterialCommunityIcons } from "@expo/vector-icons";
 import { useTranslation } from "react-i18next";
 import { useRouter } from "expo-router";
 import type { AppTheme } from "@/lib/theme";
+import { VideoPlayer } from "@/components/VideoPlayer";
 import { useDemoFadeIn } from "../use-demo-fade";
+import { DemoPress } from "../DemoTooltip";
 import { demoExercises, demoTemplates, demoProgram, demoProgramWorkouts, demoExerciseVideos } from "../mock-data";
 
 export default function DemoLibrary() {
@@ -12,6 +15,15 @@ export default function DemoLibrary() {
   const { t } = useTranslation();
   const router = useRouter();
   const { introOpacity, introTranslateY, contentOpacity } = useDemoFadeIn("coach-library");
+  const [videoUrl, setVideoUrl] = useState<string | null>(null);
+
+  function handlePlayVideo() {
+    Alert.alert(
+      t("demo.watchDemo"),
+      t("demo.exerciseDemoMedia"),
+      [{ text: t("common.ok") }]
+    );
+  }
 
   return (
     <ScrollView style={{ flex: 1, backgroundColor: theme.colors.background }} contentContainerStyle={s.content}>
@@ -42,7 +54,7 @@ export default function DemoLibrary() {
       </View>
 
       {demoExercises.slice(0, 8).map((ex) => (
-        <View key={ex.id} style={[s.exerciseRow, { backgroundColor: theme.colors.surface }]}>
+        <DemoPress key={ex.id} style={[s.exerciseRow, { backgroundColor: theme.colors.surface }]}>
           <View style={{ flex: 1 }}>
             <Text variant="titleMedium" style={{ color: theme.colors.onSurface, fontWeight: "600" }}>{ex.name}</Text>
             <Text variant="bodySmall" style={{ color: theme.colors.onSurfaceVariant, textTransform: "capitalize", marginTop: 2 }}>
@@ -55,7 +67,7 @@ export default function DemoLibrary() {
             </View>
           )}
           <MaterialCommunityIcons name="chevron-right" size={20} color={theme.colors.onSurfaceVariant} />
-        </View>
+        </DemoPress>
       ))}
 
       <Card style={[s.detailCard, { backgroundColor: theme.colors.surface }]}>
@@ -68,7 +80,7 @@ export default function DemoLibrary() {
           <Text variant="bodyMedium" style={{ color: theme.colors.onSurfaceVariant, marginTop: 12, lineHeight: 20 }}>
             Lie on bench, grip bar slightly wider than shoulders, lower to chest, press up. Keep feet flat on floor and maintain a slight arch in your lower back.
           </Text>
-          <Pressable style={[s.videoPreview, { backgroundColor: theme.colors.surfaceVariant }]} accessibilityRole="button">
+          <Pressable style={[s.videoPreview, { backgroundColor: theme.colors.surfaceVariant }]} accessibilityRole="button" onPress={handlePlayVideo}>
             <View style={[s.videoPlayBtn, { backgroundColor: `${theme.colors.primary}DD` }]}>
               <MaterialCommunityIcons name="play" size={28} color="#fff" />
             </View>
@@ -77,8 +89,8 @@ export default function DemoLibrary() {
         </Card.Content>
       </Card>
 
-      <Card style={[s.videoLibraryCard, { backgroundColor: `${theme.colors.primary}08` }]}>
-        <Card.Content style={s.videoLibraryContent}>
+      <DemoPress style={[s.videoLibraryCard, { backgroundColor: `${theme.colors.primary}08` }]}>
+        <View style={s.videoLibraryContent}>
           <View style={[s.videoLibraryIcon, { backgroundColor: `${theme.colors.primary}15` }]}>
             <MaterialCommunityIcons name="play-box-multiple" size={28} color={theme.colors.primary} />
           </View>
@@ -89,8 +101,8 @@ export default function DemoLibrary() {
             </Text>
           </View>
           <MaterialCommunityIcons name="chevron-right" size={22} color={theme.colors.onSurfaceVariant} />
-        </Card.Content>
-      </Card>
+        </View>
+      </DemoPress>
 
       <View style={{ height: 24 }} />
       <Pressable onPress={() => router.push({ pathname: "/demo/new-workout" } as any)} accessibilityRole="button">
@@ -140,6 +152,25 @@ export default function DemoLibrary() {
       <Pressable style={[s.addExerciseBtn, { borderColor: theme.colors.outline }]} onPress={() => router.push({ pathname: "/demo/new-workout" } as any)} accessibilityRole="button">
         <MaterialCommunityIcons name="plus" size={20} color={theme.colors.primary} />
         <Text variant="labelLarge" style={{ color: theme.colors.primary, marginLeft: 6 }}>{t("demo.addExercise")}</Text>
+      </Pressable>
+
+      <Pressable
+        onPress={() => router.push({ pathname: "/demo/coach/documents" } as any)}
+        style={[s.docsBanner, { backgroundColor: `${theme.colors.primary}08` }]}
+        accessibilityRole="button"
+      >
+        <View style={s.docsBannerContent}>
+          <View style={[s.docsBannerIcon, { backgroundColor: `${theme.colors.primary}15` }]}>
+            <MaterialCommunityIcons name="file-document-multiple" size={28} color={theme.colors.primary} />
+          </View>
+          <View style={{ flex: 1, marginLeft: 14 }}>
+            <Text variant="titleMedium" style={{ color: theme.colors.onSurface, fontWeight: "700" }}>{t("demo.documentsSection")}</Text>
+            <Text variant="bodySmall" style={{ color: theme.colors.onSurfaceVariant, marginTop: 2 }}>
+              {t("demo.introDocuments")}
+            </Text>
+          </View>
+          <MaterialCommunityIcons name="chevron-right" size={22} color={theme.colors.onSurfaceVariant} />
+        </View>
       </Pressable>
 
       <View style={{ height: 24 }} />
@@ -203,4 +234,7 @@ const s = StyleSheet.create({
   videoLibraryCard: { borderRadius: 16, elevation: 0, marginTop: 12 },
   videoLibraryContent: { flexDirection: "row", alignItems: "center" },
   videoLibraryIcon: { width: 48, height: 48, borderRadius: 14, justifyContent: "center", alignItems: "center" },
+  docsBanner: { borderRadius: 16, elevation: 0, marginTop: 16, padding: 16 },
+  docsBannerContent: { flexDirection: "row", alignItems: "center" },
+  docsBannerIcon: { width: 48, height: 48, borderRadius: 14, justifyContent: "center", alignItems: "center" },
 });

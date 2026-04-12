@@ -28,6 +28,7 @@ const hiddenScreens = [
   "library/create-program",
   "library/programs",
   "library/program-detail",
+  "library/documents",
   "messages/chat",
   "messages/broadcast",
   "messages/new-chat",

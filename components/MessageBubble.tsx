@@ -1,8 +1,62 @@
+import { useState, useRef, useEffect } from "react";
 import { useTranslation } from "react-i18next";
-import { View, StyleSheet, Image } from "react-native";
+import { View, StyleSheet, Image, Pressable, Alert } from "react-native";
 import { Text, useTheme } from "react-native-paper";
+import type { AppTheme } from "@/lib/theme";
 import { MaterialCommunityIcons } from "@expo/vector-icons";
+import { Audio } from "expo-av";
 import type { Message } from "@/types/database";
+
+function VoicePlayback({ url, tintColor, textColor, isOwn }: { url: string; tintColor: string; textColor: string; isOwn: boolean }) {
+  const { t } = useTranslation();
+  const [playing, setPlaying] = useState(false);
+  const sound = useRef<Audio.Sound | null>(null);
+
+  useEffect(() => {
+    return () => {
+      if (sound.current) {
+        sound.current.stopAsync().catch(() => {});
+        sound.current.unloadAsync().catch(() => {});
+        sound.current = null;
+      }
+    };
+  }, []);
+
+  async function toggle() {
+    if (playing && sound.current) {
+      await sound.current.stopAsync();
+      await sound.current.unloadAsync();
+      sound.current = null;
+      setPlaying(false);
+      return;
+    }
+    try {
+      const { sound: s } = await Audio.Sound.createAsync({ uri: url });
+      sound.current = s;
+      setPlaying(true);
+      s.setOnPlaybackStatusUpdate((status) => {
+        if (status.isLoaded && status.didJustFinish) {
+          s.unloadAsync();
+          sound.current = null;
+          setPlaying(false);
+        }
+      });
+      await s.playAsync();
+    } catch {
+      setPlaying(false);
+      Alert.alert(t("common.error"), t("common.errorGeneric"));
+    }
+  }
+
+  return (
+    <Pressable onPress={toggle} style={styles.voiceMessage} accessibilityRole="button" accessibilityLabel={t("messages.tapToPlay")}>
+      <MaterialCommunityIcons name={playing ? "stop-circle" : "play-circle"} size={20} color={tintColor} />
+      <Text variant="bodySmall" style={{ color: textColor, marginLeft: 6, opacity: isOwn ? 0.8 : 1 }}>
+        {playing ? t("messages.playing") : t("messages.voiceMessage")}
+      </Text>
+    </Pressable>
+  );
+}
 
 export function MessageBubble({
   message,
@@ -12,7 +66,7 @@ export function MessageBubble({
   isOwn: boolean;
 }) {
   const { t } = useTranslation();
-  const theme = useTheme();
+  const theme = useTheme<AppTheme>();
 
   if (!message.body && !message.image_url && !message.voice_url) {
     return null;
@@ -38,19 +92,12 @@ export function MessageBubble({
         />
       ) : null}
       {message.voice_url ? (
-        <View style={styles.voiceMessage}>
-          <MaterialCommunityIcons
-            name="microphone"
-            size={20}
-            color={isOwn ? theme.colors.onPrimary : theme.colors.primary}
-          />
-          <Text
-            variant="bodySmall"
-            style={{ color: isOwn ? theme.colors.onPrimary : theme.colors.onSurfaceVariant, marginLeft: 6, opacity: isOwn ? 0.8 : 1 }}
-          >
-            {t("messages.voiceMessage")}
-          </Text>
-        </View>
+        <VoicePlayback
+          url={message.voice_url}
+          tintColor={isOwn ? theme.colors.onPrimary : theme.colors.primary}
+          textColor={isOwn ? theme.colors.onPrimary : theme.colors.onSurfaceVariant}
+          isOwn={isOwn}
+        />
       ) : null}
       {message.body ? (
         <Text

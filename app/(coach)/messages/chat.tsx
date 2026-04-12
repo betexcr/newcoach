@@ -19,7 +19,9 @@ import { useMessages, useSendMessage } from "@/lib/queries/messaging";
 import { useAuthStore } from "@/stores/auth-store";
 import { useChatNavStore } from "@/stores/chat-nav-store";
 import { MessageBubble } from "@/components/MessageBubble";
+import { VoiceRecorder } from "@/components/VoiceRecorder";
 import { ErrorState } from "@/components/ErrorState";
+import { supabase } from "@/lib/supabase";
 
 export default function ChatScreen() {
   const { t } = useTranslation();
@@ -64,7 +66,23 @@ export default function ChatScreen() {
       });
     } catch (err: unknown) {
       setText(body);
-      Alert.alert(t("common.error"), err instanceof Error ? err.message : t("common.errorGeneric"));
+      Alert.alert(t("common.error"), err instanceof Error ? err.message : t("messages.sendFailed"));
+    }
+  }
+
+  async function handleVoiceRecorded(uri: string) {
+    if (!userId || !conversationId) return;
+    try {
+      const fileName = `${userId}/${Date.now()}.m4a`;
+      const response = await fetch(uri);
+      const blob = await response.blob();
+      const { error: uploadError } = await supabase.storage.from("voice-messages").upload(fileName, blob, { contentType: "audio/m4a" });
+      if (uploadError) throw uploadError;
+      const { data } = await supabase.storage.from("voice-messages").createSignedUrl(fileName, 60 * 60 * 24 * 365);
+      if (!data?.signedUrl) throw new Error("Failed to create voice URL");
+      await sendMessage.mutateAsync({ conversation_id: conversationId, sender_id: userId, voice_url: data.signedUrl });
+    } catch {
+      Alert.alert(t("common.error"), t("messages.voiceFailed"));
     }
   }
 
@@ -169,6 +187,7 @@ export default function ChatScreen() {
             multiline
             maxLength={2000}
           />
+          {!text.trim() && <VoiceRecorder onRecorded={handleVoiceRecorded} />}
           <IconButton
             icon="send"
             iconColor={text.trim() ? theme.colors.primary : theme.colors.onSurfaceVariant}

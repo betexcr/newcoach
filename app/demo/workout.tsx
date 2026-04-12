@@ -88,7 +88,10 @@ export default function DemoWorkoutScreen() {
     });
   }
 
+  const [completed, setCompleted] = useState(false);
+
   function handleFinish() {
+    setCompleted(true);
     Alert.alert(t("workout.completeTitle"), t("workout.completeMessage"), [
       { text: t("common.ok"), onPress: goBack },
     ]);
@@ -270,9 +273,11 @@ function ExerciseDetailCard({
       onPress={() => setExpanded(!expanded)}
     >
       <View style={styles.exerciseCardRow}>
-        <View style={[styles.exerciseThumbnail, styles.placeholderThumb, { backgroundColor: theme.colors.primaryContainer }]}>
-          <MaterialCommunityIcons name="dumbbell" size={24} color={theme.colors.primary} />
-        </View>
+        <Image
+          source={require("@/assets/demo-exercise.gif")}
+          style={styles.exerciseThumbnail}
+          resizeMode="cover"
+        />
 
         <View style={styles.exerciseInfo}>
           <View style={styles.exerciseNameRow}>
@@ -491,6 +496,7 @@ function ExecutionView({
               <Text style={[styles.setHeaderLabel, { color: theme.colors.onSurfaceVariant }]}>{t("workout.set")}</Text>
               <Text style={[styles.setHeaderLabel, { color: theme.colors.onSurfaceVariant, flex: 1, textAlign: "center" }]}>{t("workout.reps")}</Text>
               <Text style={[styles.setHeaderLabel, { color: theme.colors.onSurfaceVariant, flex: 1, textAlign: "center" }]}>{t("workout.weight")}</Text>
+              <Text style={[styles.setHeaderLabel, { color: theme.colors.onSurfaceVariant, width: 48, textAlign: "center" }]}>{t("workout.rpe")}</Text>
               <Text style={[styles.setHeaderLabel, { color: theme.colors.onSurfaceVariant, width: 40, textAlign: "center" }]}>✓</Text>
             </View>
 
@@ -516,6 +522,18 @@ function ExecutionView({
                   }
                   keyboardType="decimal-pad"
                   style={[styles.logInput, { color: theme.colors.onSurface, borderColor: set.completed ? theme.colors.primary : theme.colors.outline, backgroundColor: theme.colors.surface }]}
+                  placeholder="—"
+                  placeholderTextColor={theme.colors.onSurfaceVariant}
+                />
+                <RNTextInput
+                  value={set.rpe?.toString() ?? ""}
+                  onChangeText={(v) => {
+                    const n = parseInt(v, 10);
+                    updateSetLog(exercise.exercise_id, sIdx, { rpe: v ? (Number.isNaN(n) ? null : Math.min(10, Math.max(1, n))) : null }, exercise);
+                  }}
+                  keyboardType="numeric"
+                  maxLength={2}
+                  style={[styles.rpeInput, { color: theme.colors.onSurface, borderColor: set.completed ? theme.colors.primary : theme.colors.outline, backgroundColor: theme.colors.surface }]}
                   placeholder="—"
                   placeholderTextColor={theme.colors.onSurfaceVariant}
                 />
@@ -696,6 +714,7 @@ const styles = StyleSheet.create({
   setRow: { flexDirection: "row", alignItems: "center", gap: 6, marginBottom: 6, paddingVertical: 4, paddingHorizontal: 4, borderRadius: 10 },
   setNum: { width: 32, height: 32, borderRadius: 16, justifyContent: "center", alignItems: "center" },
   logInput: { flex: 1, borderWidth: 1.5, borderRadius: 10, paddingHorizontal: 10, paddingVertical: 10, fontSize: 16, textAlign: "center", fontWeight: "600" },
+  rpeInput: { width: 48, borderWidth: 1.5, borderRadius: 10, paddingHorizontal: 4, paddingVertical: 10, fontSize: 14, textAlign: "center", fontWeight: "600" },
   checkBox: { width: 32, height: 32, borderRadius: 8, borderWidth: 2, justifyContent: "center", alignItems: "center" },
   navBar: { position: "absolute", bottom: 0, left: 0, right: 0, flexDirection: "row", padding: 16, paddingBottom: 32, gap: 12 },
   navButton: { flex: 1, flexDirection: "row", justifyContent: "center", alignItems: "center", paddingVertical: 14, borderRadius: 14, gap: 4 },

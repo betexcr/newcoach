@@ -1,12 +1,14 @@
-import { View, StyleSheet, ScrollView, Pressable, Animated } from "react-native";
+import { useState, useCallback } from "react";
+import { View, StyleSheet, ScrollView, Pressable, Animated, Modal } from "react-native";
 import { Text, useTheme, Card, Avatar, SegmentedButtons, ProgressBar } from "react-native-paper";
 import { MaterialCommunityIcons } from "@expo/vector-icons";
 import { useTranslation } from "react-i18next";
 import { useRouter } from "expo-router";
 import type { AppTheme } from "@/lib/theme";
 import { useDemoFadeIn } from "../use-demo-fade";
+import { DemoPress } from "../DemoTooltip";
 import { useSettingsStore, type ThemePreference, type LanguagePreference } from "@/stores/settings-store";
-import { clientProfile, demoProgressStats, demoMilestones, demoNutritionLogs, demoMacroGoals, demoBodyMetrics, demoMeasurements, demoProgressPhotos } from "../mock-data";
+import { clientProfile, demoProgressStats, demoMilestones, demoNutritionLogs, demoMacroGoals, demoBodyMetrics, demoMeasurements, demoProgressPhotos, type DemoMilestone } from "../mock-data";
 
 function initials(name: string | null): string {
   if (!name) return "?";
@@ -34,6 +36,10 @@ export default function DemoClientSettings() {
   const setTheme = useSettingsStore((s) => s.setTheme);
   const setLanguage = useSettingsStore((s) => s.setLanguage);
 
+  const [selectedMilestone, setSelectedMilestone] = useState<DemoMilestone | null>(null);
+  const openMilestone = useCallback((m: DemoMilestone) => setSelectedMilestone(m), []);
+  const closeMilestone = useCallback(() => setSelectedMilestone(null), []);
+
   const earnedMilestones = demoMilestones.filter((m) => m.earned);
   const totals = demoNutritionLogs.reduce(
     (acc, m) => ({ calories: acc.calories + m.calories, protein: acc.protein + m.protein, carbs: acc.carbs + m.carbs, fat: acc.fat + m.fat }),
@@ -45,6 +51,7 @@ export default function DemoClientSettings() {
   const weightRange = weightMax - weightMin || 1;
 
   return (
+    <>
     <ScrollView style={{ flex: 1, backgroundColor: theme.colors.background }} contentContainerStyle={s.content}>
       <Animated.View style={{ opacity: introOpacity, transform: [{ translateY: introTranslateY }] }}>
         <Card style={[s.introCard, { backgroundColor: `${theme.colors.secondary}10` }]} mode="contained">
@@ -68,6 +75,19 @@ export default function DemoClientSettings() {
           </View>
         </View>
       </View>
+
+      {/* Documents link */}
+      <Pressable
+        onPress={() => router.push({ pathname: "/demo/client/documents" } as any)}
+        style={[s.docsLink, { backgroundColor: theme.colors.surface }]}
+        accessibilityRole="button"
+      >
+        <MaterialCommunityIcons name="file-document-outline" size={24} color={theme.colors.secondary} />
+        <Text variant="bodyLarge" style={{ color: theme.colors.onSurface, flex: 1, marginLeft: 16, fontWeight: "600" }}>
+          {t("library.documents")}
+        </Text>
+        <MaterialCommunityIcons name="chevron-right" size={22} color={theme.colors.onSurfaceVariant} />
+      </Pressable>
 
       {/* Progress preview */}
       <Text variant="titleMedium" style={{ color: theme.colors.onSurface, fontWeight: "700", marginTop: 20, marginBottom: 12 }}>
@@ -106,7 +126,7 @@ export default function DemoClientSettings() {
       </Text>
       <View style={s.badgeGrid}>
         {demoMilestones.map((m) => (
-          <View key={m.id} style={[s.badge, { backgroundColor: theme.colors.surface, opacity: m.earned ? 1 : 0.5 }]}>
+          <Pressable key={m.id} onPress={() => openMilestone(m)} style={({ pressed }) => [s.badge, { backgroundColor: theme.colors.surface, opacity: pressed ? 0.7 : m.earned ? 1 : 0.5 }]}>
             <View style={[s.badgeIcon, { backgroundColor: m.earned ? `${theme.colors.secondary}15` : theme.colors.surfaceVariant }]}>
               <MaterialCommunityIcons name={m.icon as any} size={28} color={m.earned ? theme.colors.secondary : theme.colors.onSurfaceVariant} />
             </View>
@@ -116,7 +136,7 @@ export default function DemoClientSettings() {
                 <MaterialCommunityIcons name="check" size={10} color={theme.colors.onSecondary} />
               </View>
             )}
-          </View>
+          </Pressable>
         ))}
       </View>
 
@@ -143,10 +163,10 @@ export default function DemoClientSettings() {
               </View>
             </View>
           ))}
-          <Pressable style={[s.addPhotoBtn, { borderColor: theme.colors.outline }]} accessibilityRole="button">
+          <DemoPress style={[s.addPhotoBtn, { borderColor: theme.colors.outline }]} accessibilityRole="button">
             <MaterialCommunityIcons name="camera-plus" size={20} color={theme.colors.secondary} />
             <Text variant="labelLarge" style={{ color: theme.colors.secondary, marginLeft: 6 }}>{t("demo.addPhoto")}</Text>
-          </Pressable>
+          </DemoPress>
         </Card.Content>
       </Card>
 
@@ -289,6 +309,33 @@ export default function DemoClientSettings() {
       <Text variant="bodySmall" style={{ color: theme.colors.onSurfaceVariant, textAlign: "center", marginTop: 24 }}>{t("common.version")}</Text>
       </Animated.View>
     </ScrollView>
+
+    <Modal visible={selectedMilestone !== null} transparent animationType="fade" onRequestClose={closeMilestone}>
+      <Pressable style={s.tooltipOverlay} onPress={closeMilestone}>
+        <Pressable style={[s.tooltipCard, { backgroundColor: theme.colors.surface }]} onPress={(e) => e.stopPropagation()}>
+          {selectedMilestone && (
+            <>
+              <View style={[s.tooltipIcon, { backgroundColor: selectedMilestone.earned ? `${theme.colors.secondary}15` : theme.colors.surfaceVariant }]}>
+                <MaterialCommunityIcons name={selectedMilestone.icon as any} size={40} color={selectedMilestone.earned ? theme.colors.secondary : theme.colors.onSurfaceVariant} />
+              </View>
+              <Text variant="titleLarge" style={{ color: theme.colors.onSurface, fontWeight: "800", textAlign: "center", marginTop: 12 }}>{selectedMilestone.title}</Text>
+              <Text variant="bodyMedium" style={{ color: theme.colors.secondary, fontStyle: "italic", textAlign: "center", marginTop: 8, lineHeight: 20, paddingHorizontal: 8 }}>"{selectedMilestone.flavor}"</Text>
+              <View style={[s.tooltipHowTo, { backgroundColor: theme.colors.surfaceVariant }]}>
+                <Text variant="labelSmall" style={{ color: theme.colors.onSurfaceVariant, fontWeight: "700", textTransform: "uppercase", letterSpacing: 0.5 }}>{t("milestones.howToEarn")}</Text>
+                <Text variant="bodyMedium" style={{ color: theme.colors.onSurface, marginTop: 4, lineHeight: 20 }}>{selectedMilestone.howTo}</Text>
+              </View>
+              {selectedMilestone.earned && (
+                <View style={s.tooltipUnlocked}>
+                  <MaterialCommunityIcons name="check-circle" size={20} color={theme.custom.success} />
+                  <Text variant="labelLarge" style={{ color: theme.custom.success, fontWeight: "700", marginLeft: 6 }}>{t("milestones.unlocked")}</Text>
+                </View>
+              )}
+            </>
+          )}
+        </Pressable>
+      </Pressable>
+    </Modal>
+    </>
   );
 }
 
@@ -324,4 +371,10 @@ const s = StyleSheet.create({
   measurementsCard: { borderRadius: 16, elevation: 0 },
   measurementRow: { flexDirection: "row", alignItems: "center", paddingVertical: 8, borderBottomWidth: 0.5, borderBottomColor: "rgba(0,0,0,0.06)" },
   signOutRow: { flexDirection: "row", alignItems: "center", padding: 16, borderRadius: 16, marginTop: 16 },
+  docsLink: { flexDirection: "row", alignItems: "center", padding: 16, borderRadius: 16, marginTop: 16 },
+  tooltipOverlay: { flex: 1, backgroundColor: "rgba(0,0,0,0.5)", justifyContent: "center", alignItems: "center", padding: 32 },
+  tooltipCard: { width: "100%", maxWidth: 320, borderRadius: 24, padding: 24, alignItems: "center", elevation: 8, shadowColor: "#000", shadowOffset: { width: 0, height: 4 }, shadowOpacity: 0.3, shadowRadius: 12 },
+  tooltipIcon: { width: 72, height: 72, borderRadius: 36, justifyContent: "center", alignItems: "center" },
+  tooltipHowTo: { width: "100%", borderRadius: 12, padding: 12, marginTop: 16 },
+  tooltipUnlocked: { flexDirection: "row", alignItems: "center", marginTop: 16 },
 });

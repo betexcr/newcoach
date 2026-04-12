@@ -45,6 +45,10 @@ export const coachProfile: Profile = {
   role: "coach",
   push_token: null,
   nutrition_goals: null,
+  public_slug: "alex-coach",
+  bio: "Certified personal trainer specializing in strength & conditioning",
+  specialties: ["Strength Training", "Weight Loss", "Mobility"],
+  organization_id: null,
   created_at: "2025-06-01T10:00:00Z",
   updated_at: "2026-04-01T10:00:00Z",
 };
@@ -57,6 +61,10 @@ export const clientProfile: Profile = {
   role: "client",
   push_token: null,
   nutrition_goals: { calories: 2400, protein: 180, carbs: 280, fat: 65 },
+  public_slug: null,
+  bio: null,
+  specialties: null,
+  organization_id: null,
   created_at: "2025-08-15T10:00:00Z",
   updated_at: "2026-04-10T10:00:00Z",
 };
@@ -69,6 +77,10 @@ const client2Profile: Profile = {
   role: "client",
   push_token: null,
   nutrition_goals: null,
+  public_slug: null,
+  bio: null,
+  specialties: null,
+  organization_id: null,
   created_at: "2026-01-10T10:00:00Z",
   updated_at: "2026-04-08T10:00:00Z",
 };
@@ -81,6 +93,10 @@ const client3Profile: Profile = {
   role: "client",
   push_token: null,
   nutrition_goals: null,
+  public_slug: null,
+  bio: null,
+  specialties: null,
+  organization_id: null,
   created_at: "2026-03-20T10:00:00Z",
   updated_at: "2026-04-05T10:00:00Z",
 };
@@ -93,6 +109,10 @@ const client4Profile: Profile = {
   role: "client",
   push_token: null,
   nutrition_goals: null,
+  public_slug: null,
+  bio: null,
+  specialties: null,
+  organization_id: null,
   created_at: "2026-04-01T10:00:00Z",
   updated_at: "2026-04-11T10:00:00Z",
 };
@@ -224,7 +244,7 @@ export const demoProgramWorkouts: ProgramWorkout[] = [
 
 // ── Conversations & Messages ─────────────────────────────────────────────────
 export const demoConversations: (Conversation & { last_message?: Message })[] = [
-  { id: "conv-001", type: "direct", name: null, created_by: COACH_ID, created_at: isoAgo(72), updated_at: isoAgo(1), last_message: { id: "msg-005", conversation_id: "conv-001", sender_id: COACH_ID, body: "I saw the log — nice work! Today is lower body, take your time warming up.", voice_url: null, image_url: null, created_at: isoAgo(1) } },
+  { id: "conv-001", type: "direct", name: null, created_by: COACH_ID, created_at: isoAgo(72), updated_at: isoAgo(1), last_message: { id: "msg-006", conversation_id: "conv-001", sender_id: COACH_ID, body: "I saw the log — nice work! Today is lower body, take your time warming up.", voice_url: null, image_url: null, created_at: isoAgo(1) } },
   { id: "conv-002", type: "direct", name: null, created_by: COACH_ID, created_at: isoAgo(48), updated_at: isoAgo(3), last_message: { id: "msg-010", conversation_id: "conv-002", sender_id: CLIENT_2_ID, body: "Thanks for the new program! Starting Monday.", voice_url: null, image_url: null, created_at: isoAgo(3) } },
   { id: "conv-003", type: "broadcast", name: "Weekly Motivation", created_by: COACH_ID, created_at: isoAgo(24), updated_at: isoAgo(24), last_message: { id: "msg-011", conversation_id: "conv-003", sender_id: COACH_ID, body: "Crushing it this week team! Keep pushing through your workouts.", voice_url: null, image_url: null, created_at: isoAgo(24) } },
 ];
@@ -234,7 +254,8 @@ export const demoChatMessages: Message[] = [
   { id: "msg-002", conversation_id: "conv-001", sender_id: CLIENT_1_ID, body: "Thanks Coach! Just checked the plan — looks great. Should I use a belt for squats?", voice_url: null, image_url: null, created_at: isoAgo(48) },
   { id: "msg-003", conversation_id: "conv-001", sender_id: COACH_ID, body: "Great question. Train without a belt until you're comfortable with 1.5x bodyweight. Focus on bracing your core.", voice_url: null, image_url: null, created_at: isoAgo(36) },
   { id: "msg-004", conversation_id: "conv-001", sender_id: CLIENT_1_ID, body: "Got it, will do. Crushed the upper body session yesterday!", voice_url: null, image_url: null, created_at: isoAgo(4) },
-  { id: "msg-005", conversation_id: "conv-001", sender_id: COACH_ID, body: "I saw the log — nice work! Today is lower body, take your time warming up.", voice_url: null, image_url: null, created_at: isoAgo(1) },
+  { id: "msg-005", conversation_id: "conv-001", sender_id: COACH_ID, body: null, voice_url: "https://example.com/voice-demo.m4a", image_url: null, created_at: isoAgo(2) },
+  { id: "msg-006", conversation_id: "conv-001", sender_id: COACH_ID, body: "I saw the log — nice work! Today is lower body, take your time warming up.", voice_url: null, image_url: null, created_at: isoAgo(1) },
 ];
 
 // ── Habits ────────────────────────────────────────────────────────────────────
@@ -268,22 +289,24 @@ export interface DemoMilestone {
   id: string;
   title: string;
   description: string;
+  flavor: string;
+  howTo: string;
   icon: string;
   earned: boolean;
 }
 
 export const demoMilestones: DemoMilestone[] = [
-  { id: "first-workout", title: "First Steps", description: "Complete your first workout", icon: "shoe-print", earned: true },
-  { id: "five-workouts", title: "Getting Started", description: "Complete 5 workouts", icon: "star-outline", earned: true },
-  { id: "ten-workouts", title: "Dedicated", description: "Complete 10 workouts", icon: "star-half-full", earned: true },
-  { id: "twentyfive-workouts", title: "Committed", description: "Complete 25 workouts", icon: "star", earned: false },
-  { id: "fifty-workouts", title: "Unstoppable", description: "Complete 50 workouts", icon: "trophy", earned: false },
-  { id: "hundred-workouts", title: "Century Club", description: "Complete 100 workouts", icon: "medal", earned: false },
-  { id: "seven-day-streak", title: "Week Warrior", description: "7-day workout streak", icon: "fire", earned: true },
-  { id: "thirty-day-streak", title: "Month of Iron", description: "30-day workout streak", icon: "lightning-bolt", earned: false },
-  { id: "pr-100", title: "Heavy Hitter", description: "Lift 100 kg in a single set", icon: "weight-lifter", earned: true },
-  { id: "pr-200", title: "Beast Mode", description: "Lift 200 kg in a single set", icon: "arm-flex", earned: true },
-  { id: "pr-300", title: "Elite Lifter", description: "Lift 300 kg in a single set", icon: "shield-star", earned: false },
+  { id: "first-workout", title: "First Steps", description: "Complete your first workout", flavor: "Every legend starts somewhere. You just took that first step!", howTo: "Complete any scheduled workout and mark it as done.", icon: "shoe-print", earned: true },
+  { id: "five-workouts", title: "Getting Started", description: "Complete 5 workouts", flavor: "Five down, a lifetime to go. You're building a habit!", howTo: "Complete 5 workouts total — any type counts.", icon: "star-outline", earned: true },
+  { id: "ten-workouts", title: "Dedicated", description: "Complete 10 workouts", flavor: "Double digits! Your consistency is showing.", howTo: "Complete 10 workouts total to prove your dedication.", icon: "star-half-full", earned: true },
+  { id: "twentyfive-workouts", title: "Committed", description: "Complete 25 workouts", flavor: "Quarter-century of sessions. This isn't a phase — it's a lifestyle.", howTo: "Complete 25 workouts total. Keep showing up!", icon: "star", earned: false },
+  { id: "fifty-workouts", title: "Unstoppable", description: "Complete 50 workouts", flavor: "Half a hundred! Nothing can slow you down now.", howTo: "Complete 50 workouts total. You're a force of nature.", icon: "trophy", earned: false },
+  { id: "hundred-workouts", title: "Century Club", description: "Complete 100 workouts", flavor: "Welcome to the triple-digit club. Elite status, earned.", howTo: "Complete 100 workouts total — a true milestone.", icon: "medal", earned: false },
+  { id: "seven-day-streak", title: "Week Warrior", description: "7-day workout streak", flavor: "Seven days, zero excuses. That's warrior mentality.", howTo: "Work out every day for 7 consecutive days.", icon: "fire", earned: true },
+  { id: "thirty-day-streak", title: "Month of Iron", description: "30-day workout streak", flavor: "A full month of iron discipline. Forged in the gym.", howTo: "Maintain a workout streak for 30 consecutive days.", icon: "lightning-bolt", earned: false },
+  { id: "pr-100", title: "Heavy Hitter", description: "Lift 100+ lbs in a single set", flavor: "Triple digits on the bar! You're moving serious weight.", howTo: "Log a set with 100 lbs or more on any exercise.", icon: "weight-lifter", earned: true },
+  { id: "pr-200", title: "Beast Mode", description: "Lift 200+ lbs in a single set", flavor: "200+ lbs?! The plates are trembling. Absolute beast.", howTo: "Log a set with 200 lbs or more on any exercise.", icon: "arm-flex", earned: true },
+  { id: "pr-300", title: "Elite Lifter", description: "Lift 300+ lbs in a single set", flavor: "300+ club. You don't just lift — you dominate.", howTo: "Log a set with 300 lbs or more on any exercise.", icon: "shield-star", earned: false },
 ];
 
 // ── Activity Feed (Coach Dashboard) ──────────────────────────────────────────
@@ -387,5 +410,55 @@ export const demoExerciseVideos: Record<string, boolean> = {
   "ex-011": false,
   "ex-012": true,
 };
+
+// ── Documents ────────────────────────────────────────────────────────────────
+export interface DemoDocument {
+  id: string;
+  coach_id: string;
+  title: string;
+  description: string | null;
+  file_url: string;
+  file_type: string;
+  created_at: string;
+}
+
+export const demoDocuments: DemoDocument[] = [
+  { id: "doc-001", coach_id: COACH_ID, title: "Training Agreement", description: "Liability waiver and training terms", file_url: "documents/training-agreement.pdf", file_type: "pdf", created_at: isoAgo(720) },
+  { id: "doc-002", coach_id: COACH_ID, title: "Nutrition Guide", description: "Macronutrient basics and meal planning tips", file_url: "documents/nutrition-guide.pdf", file_type: "pdf", created_at: isoAgo(480) },
+  { id: "doc-003", coach_id: COACH_ID, title: "Progress Tracking Sheet", description: "Weekly check-in spreadsheet template", file_url: "documents/tracking-sheet.xlsx", file_type: "xlsx", created_at: isoAgo(240) },
+  { id: "doc-004", coach_id: COACH_ID, title: "Mobility Routine", description: null, file_url: "documents/mobility-routine.pdf", file_type: "pdf", created_at: isoAgo(120) },
+];
+
+export const demoClientDocuments: DemoDocument[] = [
+  demoDocuments[0],
+  demoDocuments[1],
+];
+
+// ── Webhooks ─────────────────────────────────────────────────────────────────
+export interface DemoWebhook {
+  id: string;
+  coach_id: string;
+  url: string;
+  event_type: string;
+  active: boolean;
+  created_at: string;
+}
+
+export const demoWebhooks: DemoWebhook[] = [
+  { id: "wh-001", coach_id: COACH_ID, url: "https://hooks.zapier.com/hooks/catch/12345/abcde", event_type: "workout.completed", active: true, created_at: isoAgo(720) },
+  { id: "wh-002", coach_id: COACH_ID, url: "https://api.myapp.com/webhooks/newcoach", event_type: "client.added", active: true, created_at: isoAgo(360) },
+  { id: "wh-003", coach_id: COACH_ID, url: "https://n8n.example.com/webhook/fitness", event_type: "message.sent", active: false, created_at: isoAgo(72) },
+];
+
+// ── Invites (pending coach invitations for client view) ──────────────────────
+export interface DemoInvite {
+  id: string;
+  coach: { full_name: string; avatar_url: string | null };
+  created_at: string;
+}
+
+export const demoPendingInvites: DemoInvite[] = [
+  { id: "inv-001", coach: { full_name: "Sarah Trainer", avatar_url: null }, created_at: isoAgo(24) },
+];
 
 export { COACH_ID, CLIENT_1_ID, today };

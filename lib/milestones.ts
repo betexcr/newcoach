@@ -6,6 +6,8 @@ export interface Milestone {
   id: string;
   title: string;
   description: string;
+  flavor: string;
+  howTo: string;
   icon: string;
   earned: boolean;
   earnedDate?: string;
@@ -39,6 +41,8 @@ export function computeMilestones(
       id: "first-workout",
       title: t("milestones.firstSteps.title"),
       description: t("milestones.firstSteps.description"),
+      flavor: t("milestones.firstSteps.flavor"),
+      howTo: t("milestones.firstSteps.howTo"),
       icon: "shoe-print",
       earned: completedCount >= 1,
       earnedDate: completedWorkouts.length > 0
@@ -49,6 +53,8 @@ export function computeMilestones(
       id: "five-workouts",
       title: t("milestones.gettingStarted.title"),
       description: t("milestones.gettingStarted.description"),
+      flavor: t("milestones.gettingStarted.flavor"),
+      howTo: t("milestones.gettingStarted.howTo"),
       icon: "star-outline",
       earned: completedCount >= 5,
     },
@@ -56,6 +62,8 @@ export function computeMilestones(
       id: "ten-workouts",
       title: t("milestones.dedicated.title"),
       description: t("milestones.dedicated.description"),
+      flavor: t("milestones.dedicated.flavor"),
+      howTo: t("milestones.dedicated.howTo"),
       icon: "star-half-full",
       earned: completedCount >= 10,
     },
@@ -63,6 +71,8 @@ export function computeMilestones(
       id: "twentyfive-workouts",
       title: t("milestones.committed.title"),
       description: t("milestones.committed.description"),
+      flavor: t("milestones.committed.flavor"),
+      howTo: t("milestones.committed.howTo"),
       icon: "star",
       earned: completedCount >= 25,
     },
@@ -70,6 +80,8 @@ export function computeMilestones(
       id: "fifty-workouts",
       title: t("milestones.unstoppable.title"),
       description: t("milestones.unstoppable.description"),
+      flavor: t("milestones.unstoppable.flavor"),
+      howTo: t("milestones.unstoppable.howTo"),
       icon: "trophy",
       earned: completedCount >= 50,
     },
@@ -77,6 +89,8 @@ export function computeMilestones(
       id: "hundred-workouts",
       title: t("milestones.centuryClub.title"),
       description: t("milestones.centuryClub.description"),
+      flavor: t("milestones.centuryClub.flavor"),
+      howTo: t("milestones.centuryClub.howTo"),
       icon: "medal",
       earned: completedCount >= 100,
     },
@@ -84,6 +98,8 @@ export function computeMilestones(
       id: "seven-day-streak",
       title: t("milestones.weekWarrior.title"),
       description: t("milestones.weekWarrior.description"),
+      flavor: t("milestones.weekWarrior.flavor"),
+      howTo: t("milestones.weekWarrior.howTo"),
       icon: "fire",
       earned: maxStreak >= 7,
     },
@@ -91,6 +107,8 @@ export function computeMilestones(
       id: "thirty-day-streak",
       title: t("milestones.monthOfIron.title"),
       description: t("milestones.monthOfIron.description"),
+      flavor: t("milestones.monthOfIron.flavor"),
+      howTo: t("milestones.monthOfIron.howTo"),
       icon: "lightning-bolt",
       earned: maxStreak >= 30,
     },
@@ -98,6 +116,8 @@ export function computeMilestones(
       id: "pr-100",
       title: t("milestones.heavyHitter.title"),
       description: t("milestones.heavyHitter.description"),
+      flavor: t("milestones.heavyHitter.flavor"),
+      howTo: t("milestones.heavyHitter.howTo"),
       icon: "weight-lifter",
       earned: maxWeight >= 100,
     },
@@ -105,6 +125,8 @@ export function computeMilestones(
       id: "pr-200",
       title: t("milestones.beastMode.title"),
       description: t("milestones.beastMode.description"),
+      flavor: t("milestones.beastMode.flavor"),
+      howTo: t("milestones.beastMode.howTo"),
       icon: "arm-flex",
       earned: maxWeight >= 200,
     },
@@ -112,6 +134,8 @@ export function computeMilestones(
       id: "pr-300",
       title: t("milestones.eliteLifter.title"),
       description: t("milestones.eliteLifter.description"),
+      flavor: t("milestones.eliteLifter.flavor"),
+      howTo: t("milestones.eliteLifter.howTo"),
       icon: "shield-star",
       earned: maxWeight >= 300,
     },

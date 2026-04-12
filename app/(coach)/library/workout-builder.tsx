@@ -1,14 +1,14 @@
-import { useState } from "react";
+import { useState, useCallback } from "react";
 import { useTranslation } from "react-i18next";
 import {
   View,
   StyleSheet,
-  ScrollView,
   Pressable,
   Alert,
   TextInput as RNTextInput,
   Modal,
   FlatList,
+  Platform,
 } from "react-native";
 import {
   Text,
@@ -21,6 +21,7 @@ import {
 import { SafeAreaView } from "react-native-safe-area-context";
 import { MaterialCommunityIcons } from "@expo/vector-icons";
 import { useRouter } from "expo-router";
+import DraggableFlatList, { ScaleDecorator, type RenderItemParams } from "react-native-draggable-flatlist";
 import { useWorkoutBuilderStore } from "@/stores/workout-builder-store";
 import { useCreateTemplate, useAssignWorkout } from "@/lib/queries/workouts";
 import { useCoachClients } from "@/lib/queries/clients";
@@ -147,13 +148,12 @@ function SetRow({
   );
 }
 
-function ExerciseBlock({ exerciseIndex }: { exerciseIndex: number }) {
+function ExerciseBlock({ exerciseIndex, drag }: { exerciseIndex: number; drag?: () => void }) {
   const theme = useTheme();
   const { t } = useTranslation();
   const exercise = useWorkoutBuilderStore((s) => s.exercises[exerciseIndex]);
-  const { removeExercise, addSet, updateExerciseNotes, moveExercise } =
+  const { removeExercise, addSet, updateExerciseNotes } =
     useWorkoutBuilderStore();
-  const totalExercises = useWorkoutBuilderStore((s) => s.exercises.length);
 
   if (!exercise) return null;
 
@@ -164,6 +164,11 @@ function ExerciseBlock({ exerciseIndex }: { exerciseIndex: number }) {
       <Card.Content>
         <View style={styles.exerciseHeader}>
           <View style={styles.exerciseTitleRow}>
+            {drag && (
+              <Pressable onLongPress={drag} delayLongPress={100} style={styles.dragHandle}>
+                <MaterialCommunityIcons name="drag" size={22} color={theme.colors.onSurfaceVariant} />
+              </Pressable>
+            )}
             <View
               style={[
                 styles.orderBadge,
@@ -183,20 +188,6 @@ function ExerciseBlock({ exerciseIndex }: { exerciseIndex: number }) {
             </Text>
           </View>
           <View style={styles.exerciseActions}>
-            {exerciseIndex > 0 && (
-              <IconButton
-                icon="arrow-up"
-                size={18}
-                onPress={() => moveExercise(exerciseIndex, exerciseIndex - 1)}
-              />
-            )}
-            {exerciseIndex < totalExercises - 1 && (
-              <IconButton
-                icon="arrow-down"
-                size={18}
-                onPress={() => moveExercise(exerciseIndex, exerciseIndex + 1)}
-              />
-            )}
             <IconButton
               icon="delete-outline"
               size={18}
@@ -363,108 +354,124 @@ export default function WorkoutBuilderScreen() {
         <View style={{ width: 24 }} />
       </View>
 
-      <ScrollView contentContainerStyle={styles.content} keyboardShouldPersistTaps="handled">
-        <TextInput
-          mode="outlined"
-          label={t("library.workoutNameLabel")}
-          value={name}
-          onChangeText={setName}
-          style={styles.input}
-          outlineStyle={styles.outline}
-        />
+      <DraggableFlatList
+        data={exercises.map((ex, i) => ({ ...ex, _index: i }))}
+        keyExtractor={(item, index) => `${item.exercise_id}-${index}`}
+        onDragEnd={({ from, to }) => {
+          if (from !== to) useWorkoutBuilderStore.getState().moveExercise(from, to);
+        }}
+        contentContainerStyle={styles.content}
+        keyboardShouldPersistTaps="handled"
+        ListHeaderComponent={
+          <View>
+            <TextInput
+              mode="outlined"
+              label={t("library.workoutNameLabel")}
+              value={name}
+              onChangeText={setName}
+              style={styles.input}
+              outlineStyle={styles.outline}
+            />
 
-        <TextInput
-          mode="outlined"
-          label={t("library.descriptionLabel")}
-          value={description}
-          onChangeText={setDescription}
-          multiline
-          style={styles.input}
-          outlineStyle={styles.outline}
-        />
+            <TextInput
+              mode="outlined"
+              label={t("library.descriptionLabel")}
+              value={description}
+              onChangeText={setDescription}
+              multiline
+              style={styles.input}
+              outlineStyle={styles.outline}
+            />
 
-        <View style={styles.exercisesHeader}>
-          <Text
-            variant="titleLarge"
-            style={{ color: theme.colors.onSurface, fontWeight: "700" }}
-          >
-            {t("library.exercisesLabel")} ({exercises.length})
-          </Text>
-        </View>
+            <View style={styles.exercisesHeader}>
+              <Text
+                variant="titleLarge"
+                style={{ color: theme.colors.onSurface, fontWeight: "700" }}
+              >
+                {t("library.exercisesLabel")} ({exercises.length})
+              </Text>
+            </View>
 
-        {exercises.length === 0 ? (
-          <Text
-            variant="bodyMedium"
-            style={{ color: theme.colors.onSurfaceVariant, textAlign: "center", marginVertical: 16 }}
-          >
-            {t("clients.noExercisesAdded")}
-          </Text>
-        ) : (
-          exercises.map((ex, index) => (
-            <ExerciseBlock key={`${ex.exercise_id}-${index}`} exerciseIndex={index} />
-          ))
+            {exercises.length === 0 && (
+              <Text
+                variant="bodyMedium"
+                style={{ color: theme.colors.onSurfaceVariant, textAlign: "center", marginVertical: 16 }}
+              >
+                {t("clients.noExercisesAdded")}
+              </Text>
+            )}
+          </View>
+        }
+        renderItem={({ item, drag: dragFn, isActive }: RenderItemParams<typeof exercises[number] & { _index: number }>) => (
+          <ScaleDecorator>
+            <ExerciseBlock exerciseIndex={item._index} drag={dragFn} />
+          </ScaleDecorator>
         )}
 
-        <Pressable
-          style={[
-            styles.addExerciseButton,
-            {
-              borderColor: theme.colors.primary,
-              backgroundColor: `${theme.colors.primary}08`,
-            },
-          ]}
-          onPress={() => router.push("/(coach)/library/pick-exercise")}
-        >
-          <MaterialCommunityIcons
-            name="plus-circle"
-            size={24}
-            color={theme.colors.primary}
-          />
-          <Text
-            variant="titleMedium"
-            style={{ color: theme.colors.primary, marginLeft: 8, fontWeight: "600" }}
-          >
-            {t("library.addExercise")}
-          </Text>
-        </Pressable>
+        ListFooterComponent={
+          <View>
+            <Pressable
+              style={[
+                styles.addExerciseButton,
+                {
+                  borderColor: theme.colors.primary,
+                  backgroundColor: `${theme.colors.primary}08`,
+                },
+              ]}
+              onPress={() => router.push("/(coach)/library/pick-exercise")}
+            >
+              <MaterialCommunityIcons
+                name="plus-circle"
+                size={24}
+                color={theme.colors.primary}
+              />
+              <Text
+                variant="titleMedium"
+                style={{ color: theme.colors.primary, marginLeft: 8, fontWeight: "600" }}
+              >
+                {t("library.addExercise")}
+              </Text>
+            </Pressable>
 
-        <View style={styles.actions}>
-          <AuthButton
-            onPress={() => {
-              if (!name.trim()) {
-                Alert.alert(t("common.required"), t("library.enterWorkoutName"));
-                return;
-              }
-              if (exercises.length === 0) {
-                Alert.alert(t("common.required"), t("library.addAtLeastOneExercise"));
-                return;
-              }
-              if (clientsError) {
-                refetchClients();
-                Alert.alert(t("common.error"), t("common.errorGeneric"));
-                return;
-              }
-              if (!clientsLoading && clients.length === 0) {
-                Alert.alert(t("library.noClientsTitle"), t("library.noClientsMessage"));
-                return;
-              }
-              setShowClientPicker(true);
-            }}
-            loading={assignWorkout.isPending || clientsLoading}
-            disabled={assignWorkout.isPending || clientsLoading}
-          >
-            {t("library.assignToClient")}
-          </AuthButton>
-          <AuthButton
-            variant="secondary"
-            onPress={handleSaveTemplate}
-            loading={createTemplate.isPending}
-            disabled={createTemplate.isPending}
-          >
-            {t("library.saveAsTemplate")}
-          </AuthButton>
-        </View>
-      </ScrollView>
+            <View style={styles.actions}>
+              <AuthButton
+                onPress={() => {
+                  if (!name.trim()) {
+                    Alert.alert(t("common.required"), t("library.enterWorkoutName"));
+                    return;
+                  }
+                  if (exercises.length === 0) {
+                    Alert.alert(t("common.required"), t("library.addAtLeastOneExercise"));
+                    return;
+                  }
+                  if (clientsError) {
+                    refetchClients();
+                    Alert.alert(t("common.error"), t("common.errorGeneric"));
+                    return;
+                  }
+                  if (!clientsLoading && clients.length === 0) {
+                    Alert.alert(t("library.noClientsTitle"), t("library.noClientsMessage"));
+                    return;
+                  }
+                  setShowClientPicker(true);
+                }}
+                loading={assignWorkout.isPending || clientsLoading}
+                disabled={assignWorkout.isPending || clientsLoading}
+              >
+                {t("library.assignToClient")}
+              </AuthButton>
+              <AuthButton
+                variant="secondary"
+                onPress={handleSaveTemplate}
+                loading={createTemplate.isPending}
+                disabled={createTemplate.isPending}
+              >
+                {t("library.saveAsTemplate")}
+              </AuthButton>
+            </View>
+          </View>
+        }
+      />
 
       <Modal
         visible={showClientPicker}
@@ -565,6 +572,11 @@ const styles = StyleSheet.create({
     justifyContent: "space-between",
     alignItems: "center",
     marginBottom: 8,
+  },
+  dragHandle: {
+    paddingHorizontal: 4,
+    paddingVertical: 8,
+    marginRight: 4,
   },
   exerciseTitleRow: {
     flexDirection: "row",
