@@ -17,23 +17,18 @@ import {
   TextInput,
   Card,
   IconButton,
-  Avatar,
 } from "react-native-paper";
 import { SafeAreaView } from "react-native-safe-area-context";
 import { MaterialCommunityIcons } from "@expo/vector-icons";
 import { useRouter } from "expo-router";
-import { demoExercises, demoClients } from "./mock-data";
+import { demoExercises } from "./mock-data";
 import type { AppTheme } from "@/lib/theme";
 import { useDemoFadeIn } from "./use-demo-fade";
+import { DemoPress } from "./DemoTooltip";
 import type { WorkoutExercise, ExerciseSet, Exercise } from "@/types/database";
 
 function createDefaultSet(setNumber: number): ExerciseSet {
   return { set_number: setNumber, set_type: "standard", reps: 10, weight: null, duration_seconds: null, rest_seconds: 60, rpe: null };
-}
-
-function initials(name: string | null): string {
-  if (!name) return "?";
-  return name.split(" ").map((w) => w[0]).join("").toUpperCase();
 }
 
 export default function DemoWorkoutBuilder() {
@@ -46,8 +41,6 @@ export default function DemoWorkoutBuilder() {
   const [description, setDescription] = useState("");
   const [exercises, setExercises] = useState<WorkoutExercise[]>([]);
   const [showExercisePicker, setShowExercisePicker] = useState(false);
-  const [showClientPicker, setShowClientPicker] = useState(false);
-
   function goBack() {
     if (router.canGoBack()) router.back();
     else router.replace("/demo/coach/library" as any);
@@ -86,20 +79,6 @@ export default function DemoWorkoutBuilder() {
     setExercises((prev) => prev.map((ex, i) => i === exerciseIndex ? { ...ex, sets: ex.sets.map((s, si) => si === setIndex ? { ...s, ...updates } : s) } : ex));
   }
 
-  function handleSaveTemplate() {
-    if (!name.trim()) { Alert.alert(t("common.required"), t("library.enterWorkoutName")); return; }
-    if (exercises.length === 0) { Alert.alert(t("common.required"), t("library.addAtLeastOneExercise")); return; }
-    Alert.alert(t("library.workoutBuilder"), t("demo.savedDemo"), [{ text: t("common.ok"), onPress: goBack }]);
-  }
-
-  function handleAssignToClient(clientName: string) {
-    if (!name.trim()) { Alert.alert(t("common.required"), t("library.enterWorkoutName")); return; }
-    if (exercises.length === 0) { Alert.alert(t("common.required"), t("library.addAtLeastOneExercise")); return; }
-    setShowClientPicker(false);
-    Alert.alert(t("library.assignedTitle"), t("library.assignedMessage", { name: clientName }), [{ text: t("common.ok"), onPress: goBack }]);
-  }
-
-  const activeClients = demoClients.filter((c) => c.status === "active");
 
   return (
     <SafeAreaView style={[styles.container, { backgroundColor: theme.colors.background }]}>
@@ -199,12 +178,12 @@ export default function DemoWorkoutBuilder() {
         </Pressable>
 
         <View style={styles.actions}>
-          <Pressable style={[styles.primaryBtn, { backgroundColor: theme.colors.primary }]} onPress={() => { if (!name.trim()) { Alert.alert(t("common.required"), t("library.enterWorkoutName")); return; } if (exercises.length === 0) { Alert.alert(t("common.required"), t("library.addAtLeastOneExercise")); return; } setShowClientPicker(true); }}>
+          <DemoPress style={[styles.primaryBtn, { backgroundColor: theme.colors.primary }]} accessibilityRole="button">
             <Text variant="labelLarge" style={{ color: theme.colors.onPrimary, fontWeight: "700" }}>{t("library.assignToClient")}</Text>
-          </Pressable>
-          <Pressable style={[styles.secondaryBtn, { borderColor: theme.colors.primary }]} onPress={handleSaveTemplate}>
+          </DemoPress>
+          <DemoPress style={[styles.secondaryBtn, { borderColor: theme.colors.primary }]} accessibilityRole="button">
             <Text variant="labelLarge" style={{ color: theme.colors.primary, fontWeight: "700" }}>{t("library.saveAsTemplate")}</Text>
-          </Pressable>
+          </DemoPress>
         </View>
         </Animated.View>
       </ScrollView>
@@ -237,31 +216,6 @@ export default function DemoWorkoutBuilder() {
         </View>
       </Modal>
 
-      {/* Client Picker Modal */}
-      <Modal visible={showClientPicker} animationType="slide" transparent onRequestClose={() => setShowClientPicker(false)}>
-        <View style={[styles.modalOverlay, { backgroundColor: theme.custom.scrim }]}>
-          <View style={[styles.modalContent, { backgroundColor: theme.colors.surface }]}>
-            <View style={styles.modalHeader}>
-              <Text variant="titleLarge" style={{ color: theme.colors.onSurface, fontWeight: "700" }}>{t("library.selectClient")}</Text>
-              <IconButton icon="close" size={24} onPress={() => setShowClientPicker(false)} />
-            </View>
-            <FlatList
-              data={activeClients}
-              keyExtractor={(item) => item.id}
-              renderItem={({ item }) => (
-                <Pressable style={[styles.pickerRow, { borderBottomColor: theme.colors.outline }]} onPress={() => handleAssignToClient(item.profile?.full_name ?? "Client")}>
-                  <Avatar.Text size={40} label={initials(item.profile?.full_name ?? null)} style={{ backgroundColor: theme.colors.primaryContainer }} labelStyle={{ color: theme.colors.primary }} />
-                  <View style={{ flex: 1, marginLeft: 12 }}>
-                    <Text variant="titleMedium" style={{ color: theme.colors.onSurface, fontWeight: "600" }}>{item.profile?.full_name}</Text>
-                    <Text variant="bodySmall" style={{ color: theme.colors.onSurfaceVariant }}>{item.profile?.email}</Text>
-                  </View>
-                  <MaterialCommunityIcons name="chevron-right" size={22} color={theme.colors.onSurfaceVariant} />
-                </Pressable>
-              )}
-            />
-          </View>
-        </View>
-      </Modal>
     </SafeAreaView>
   );
 }
