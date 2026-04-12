@@ -862,39 +862,19 @@ function ExecutionView({
               </Text>
 
               <View style={styles.setHeaders}>
-                <Text style={[styles.setHeaderLabel, { color: theme.colors.onSurfaceVariant }]}>
+                <Text style={[styles.setHeaderNum, { color: theme.colors.onSurfaceVariant }]}>
                   {t("workout.set")}
                 </Text>
-                <Text
-                  style={[
-                    styles.setHeaderLabel,
-                    { color: theme.colors.onSurfaceVariant, flex: 1, textAlign: "center" },
-                  ]}
-                >
+                <Text style={[styles.setHeaderFlex, { color: theme.colors.onSurfaceVariant }]}>
                   {t("workout.reps")}
                 </Text>
-                <Text
-                  style={[
-                    styles.setHeaderLabel,
-                    { color: theme.colors.onSurfaceVariant, flex: 1, textAlign: "center" },
-                  ]}
-                >
+                <Text style={[styles.setHeaderFlex, { color: theme.colors.onSurfaceVariant }]}>
                   {t("workout.weight")}
                 </Text>
-                <Text
-                  style={[
-                    styles.setHeaderLabel,
-                    { color: theme.colors.onSurfaceVariant, width: 48, textAlign: "center" },
-                  ]}
-                >
+                <Text style={[styles.setHeaderFixed, { color: theme.colors.onSurfaceVariant, width: 48 }]}>
                   {t("workout.rpe")}
                 </Text>
-                <Text
-                  style={[
-                    styles.setHeaderLabel,
-                    { color: theme.colors.onSurfaceVariant, width: 32, textAlign: "center" },
-                  ]}
-                >
+                <Text style={[styles.setHeaderFixed, { color: theme.colors.onSurfaceVariant, width: 32 }]}>
                   ✓
                 </Text>
               </View>
@@ -1397,7 +1377,9 @@ const styles = StyleSheet.create({
     paddingHorizontal: 4,
     gap: 6,
   },
-  setHeaderLabel: { fontSize: 11, fontWeight: "600", width: 32, textAlign: "center" },
+  setHeaderNum: { width: 32, fontSize: 11, fontWeight: "600", textAlign: "center" },
+  setHeaderFlex: { flex: 1, fontSize: 11, fontWeight: "600", textAlign: "center" },
+  setHeaderFixed: { fontSize: 11, fontWeight: "600", textAlign: "center" },
   setRow: {
     flexDirection: "row",
     alignItems: "center",
@@ -1418,9 +1400,9 @@ const styles = StyleSheet.create({
     flex: 1,
     borderWidth: 1.5,
     borderRadius: 10,
-    paddingHorizontal: 10,
+    paddingHorizontal: 6,
     paddingVertical: 10,
-    fontSize: 16,
+    fontSize: 15,
     textAlign: "center",
     fontWeight: "600",
   },
