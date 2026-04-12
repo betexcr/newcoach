@@ -151,13 +151,13 @@ export default function LoginScreen() {
             variant="bodySmall"
             style={{ color: theme.colors.onSurfaceVariant }}
           >
-            Just browsing?{" "}
+            {t("demo.tryDemo")}{" "}
           </Text>
           <Text
             variant="bodySmall"
             style={{ color: theme.colors.primary, fontWeight: "600" }}
           >
-            Try the demo
+            {t("demo.tryDemoLink")}
           </Text>
         </Pressable>
       </ScrollView>

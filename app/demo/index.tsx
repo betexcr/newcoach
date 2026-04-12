@@ -3,23 +3,25 @@ import { Text, useTheme } from "react-native-paper";
 import { SafeAreaView } from "react-native-safe-area-context";
 import { MaterialCommunityIcons } from "@expo/vector-icons";
 import { useRouter } from "expo-router";
+import { useTranslation } from "react-i18next";
 import type { AppTheme } from "@/lib/theme";
 
 export default function DemoIndex() {
   const theme = useTheme<AppTheme>();
   const router = useRouter();
+  const { t } = useTranslation();
 
   const options = [
     {
-      label: "Coach View",
-      description: "Dashboard, clients, workout builder, programs, exercise library, and messaging",
+      label: t("demo.coachView"),
+      description: t("demo.coachDescription"),
       icon: "clipboard-pulse" as const,
       color: theme.colors.primary,
       route: "/demo/coach" as const,
     },
     {
-      label: "Client View",
-      description: "Today's workout, calendar, progress, milestones, habits, nutrition, and messaging",
+      label: t("demo.clientView"),
+      description: t("demo.clientDescription"),
       icon: "account-heart" as const,
       color: theme.colors.secondary,
       route: "/demo/client" as const,
@@ -35,13 +37,13 @@ export default function DemoIndex() {
           variant="displaySmall"
           style={{ color: theme.colors.primary, fontWeight: "800" }}
         >
-          TrueCoach
+          {t("common.appName")}
         </Text>
         <Text
           variant="bodyLarge"
           style={{ color: theme.colors.onSurfaceVariant, marginTop: 4, textAlign: "center" }}
         >
-          Explore the app — pick a role to see all features in action
+          {t("demo.explore")}
         </Text>
       </View>
 
@@ -88,13 +90,13 @@ export default function DemoIndex() {
           variant="bodyMedium"
           style={{ color: theme.colors.onSurfaceVariant }}
         >
-          Have an account?{" "}
+          {t("demo.haveAccount")}{" "}
         </Text>
         <Text
           variant="bodyMedium"
           style={{ color: theme.colors.primary, fontWeight: "600" }}
         >
-          Sign in
+          {t("demo.signIn")}
         </Text>
       </Pressable>
     </SafeAreaView>

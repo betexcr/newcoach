@@ -9,10 +9,10 @@ export type SupportedLanguage = (typeof SUPPORTED_LANGUAGES)[number];
 
 function getDeviceLanguage(): SupportedLanguage {
   const locales = getLocales();
-  const deviceLang = locales[0]?.languageCode ?? "en";
+  const deviceLang = locales[0]?.languageCode ?? "es";
   return SUPPORTED_LANGUAGES.includes(deviceLang as SupportedLanguage)
     ? (deviceLang as SupportedLanguage)
-    : "en";
+    : "es";
 }
 
 export function resolveLanguage(preference: "auto" | SupportedLanguage): SupportedLanguage {
@@ -22,7 +22,7 @@ export function resolveLanguage(preference: "auto" | SupportedLanguage): Support
 i18n.use(initReactI18next).init({
   resources: { en: { translation: en }, es: { translation: es } },
   lng: getDeviceLanguage(),
-  fallbackLng: "en",
+  fallbackLng: "es",
   interpolation: { escapeValue: false },
   compatibilityJSON: "v4",
 });

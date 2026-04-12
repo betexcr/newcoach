@@ -12,6 +12,7 @@ import {
 import { SafeAreaView } from "react-native-safe-area-context";
 import { MaterialCommunityIcons } from "@expo/vector-icons";
 import { useRouter } from "expo-router";
+import { useTranslation } from "react-i18next";
 import type { AppTheme } from "@/lib/theme";
 import {
   coachProfile,
@@ -63,6 +64,7 @@ const statusColor = (status: string, theme: AppTheme) => {
 export default function CoachDemoScreen() {
   const theme = useTheme<AppTheme>();
   const router = useRouter();
+  const { t } = useTranslation();
 
   const activeClients = demoClients.filter((c) => c.status === "active");
   const todayWorkouts = demoAssignedWorkouts.filter((w) => {
@@ -78,24 +80,24 @@ export default function CoachDemoScreen() {
         <Pressable style={s.backRow} onPress={() => router.back()} accessibilityRole="button">
           <MaterialCommunityIcons name="arrow-left" size={20} color={theme.colors.primary} />
           <Text variant="labelLarge" style={{ color: theme.colors.primary, marginLeft: 6 }}>
-            Back to Demo
+            {t("demo.backToDemo")}
           </Text>
         </Pressable>
 
         <Text variant="displaySmall" style={{ color: theme.colors.primary, fontWeight: "800", marginBottom: 4 }}>
-          Coach View
+          {t("demo.coachHeadline")}
         </Text>
         <Text variant="bodyMedium" style={{ color: theme.colors.onSurfaceVariant, marginBottom: 24 }}>
-          Everything a trainer sees — dashboard, clients, workouts, and more
+          {t("demo.coachSubtitle")}
         </Text>
 
         {/* ──────────────── DASHBOARD ──────────────── */}
-        <SectionHeader icon="view-dashboard" title="Dashboard" theme={theme} />
+        <SectionHeader icon="view-dashboard" title={t("tabs.dashboard")} theme={theme} />
 
         <View style={s.greeting}>
           <View style={{ flex: 1 }}>
             <Text variant="titleMedium" style={{ color: theme.colors.onSurfaceVariant }}>
-              Welcome back,
+              {t("demo.welcomeBack")}
             </Text>
             <Text variant="headlineMedium" style={{ color: theme.colors.onSurface, fontWeight: "700" }}>
               {coachProfile.full_name}
@@ -106,9 +108,9 @@ export default function CoachDemoScreen() {
 
         <View style={s.statsRow}>
           {[
-            { label: "Active Clients", value: String(activeClients.length), icon: "account-group" },
-            { label: "Today's Workouts", value: String(todayWorkouts.length), icon: "dumbbell" },
-            { label: "Messages", value: String(demoConversations.length), icon: "message" },
+            { label: t("dashboard.activeClients"), value: String(activeClients.length), icon: "account-group" },
+            { label: t("dashboard.todaysWorkouts"), value: String(todayWorkouts.length), icon: "dumbbell" },
+            { label: t("dashboard.messages"), value: String(demoConversations.length), icon: "message" },
           ].map((st) => (
             <Card key={st.label} style={[s.statCard, { backgroundColor: theme.colors.surface }]}>
               <Card.Content style={s.statContent}>
@@ -126,14 +128,14 @@ export default function CoachDemoScreen() {
 
         {/* Quick Actions */}
         <Text variant="titleMedium" style={{ color: theme.colors.onSurface, fontWeight: "700", marginBottom: 12 }}>
-          Quick Actions
+          {t("demo.quickActions")}
         </Text>
         <View style={s.actionsGrid}>
           {[
-            { label: "New Workout", icon: "plus-circle", color: theme.colors.primary },
-            { label: "Add Client", icon: "account-plus", color: theme.colors.secondary },
-            { label: "New Program", icon: "clipboard-list", color: theme.custom.warning },
-            { label: "Broadcast", icon: "bullhorn", color: theme.custom.purple },
+            { label: t("demo.newWorkout"), icon: "plus-circle", color: theme.colors.primary },
+            { label: t("demo.addClient"), icon: "account-plus", color: theme.colors.secondary },
+            { label: t("demo.newProgram"), icon: "clipboard-list", color: theme.custom.warning },
+            { label: t("demo.broadcast"), icon: "bullhorn", color: theme.custom.purple },
           ].map((a) => (
             <View key={a.label} style={[s.actionCard, { backgroundColor: theme.colors.surface }]}>
               <View style={[s.actionIcon, { backgroundColor: `${a.color}15` }]}>
@@ -148,7 +150,7 @@ export default function CoachDemoScreen() {
 
         {/* Activity Feed */}
         <Text variant="titleMedium" style={{ color: theme.colors.onSurface, fontWeight: "700", marginTop: 20, marginBottom: 12 }}>
-          Recent Activity
+          {t("demo.recentActivity")}
         </Text>
         <View style={s.activityList}>
           {demoActivityFeed.map((item, idx) => (
@@ -188,12 +190,12 @@ export default function CoachDemoScreen() {
         <Divider style={s.divider} />
 
         {/* ──────────────── CLIENT LIST ──────────────── */}
-        <SectionHeader icon="account-group" title="Clients" theme={theme} />
+        <SectionHeader icon="account-group" title={t("demo.clients")} theme={theme} />
 
-        <Searchbar placeholder="Search clients..." value="" onChangeText={() => {}} style={[s.searchBar, { backgroundColor: theme.colors.surface }]} inputStyle={{ fontSize: 15 }} />
+        <Searchbar placeholder={t("demo.searchClients")} value="" onChangeText={() => {}} style={[s.searchBar, { backgroundColor: theme.colors.surface }]} inputStyle={{ fontSize: 15 }} />
 
         <View style={s.chipRow}>
-          {["All", "Active", "Pending", "Inactive"].map((label, i) => (
+          {[t("demo.all"), t("demo.active"), t("demo.pending"), t("demo.inactive")].map((label, i) => (
             <Chip
               key={label}
               mode={i === 0 ? "flat" : "outlined"}
@@ -235,7 +237,7 @@ export default function CoachDemoScreen() {
         <Divider style={s.divider} />
 
         {/* ──────────────── CLIENT PROFILE ──────────────── */}
-        <SectionHeader icon="account-details" title="Client Profile" theme={theme} />
+        <SectionHeader icon="account-details" title={t("demo.clientProfile")} theme={theme} />
 
         <View style={[s.profileHeader, { backgroundColor: theme.colors.surface }]}>
           <Avatar.Text size={56} label="JA" style={{ backgroundColor: theme.colors.secondaryContainer }} labelStyle={{ color: theme.colors.secondary }} />
@@ -254,9 +256,9 @@ export default function CoachDemoScreen() {
 
         <View style={s.statsRow}>
           {[
-            { label: "Completed", value: "16", icon: "check-circle" },
-            { label: "Compliance", value: "78%", icon: "percent" },
-            { label: "Streak", value: "8 days", icon: "fire" },
+            { label: t("demo.completed"), value: "16", icon: "check-circle" },
+            { label: t("demo.compliance"), value: "78%", icon: "percent" },
+            { label: t("demo.streak"), value: "8 days", icon: "fire" },
           ].map((st) => (
             <Card key={st.label} style={[s.statCard, { backgroundColor: theme.colors.surface }]}>
               <Card.Content style={s.statContent}>
@@ -274,7 +276,7 @@ export default function CoachDemoScreen() {
 
         {/* Recent workouts preview */}
         <Text variant="titleSmall" style={{ color: theme.colors.onSurfaceVariant, marginTop: 8, marginBottom: 8 }}>
-          Recent Workouts
+          {t("demo.recentWorkouts")}
         </Text>
         {demoAssignedWorkouts.slice(0, 4).map((w) => (
           <View key={w.id} style={[s.workoutRow, { backgroundColor: theme.colors.surface }]}>
@@ -283,7 +285,7 @@ export default function CoachDemoScreen() {
                 {w.name}
               </Text>
               <Text variant="bodySmall" style={{ color: theme.colors.onSurfaceVariant }}>
-                {w.scheduled_date} &middot; {w.exercises.length} exercises
+                {w.scheduled_date} &middot; {w.exercises.length} {t("demo.exercises")}
               </Text>
             </View>
             <Text
@@ -298,7 +300,7 @@ export default function CoachDemoScreen() {
         <Divider style={s.divider} />
 
         {/* ──────────────── EXERCISE LIBRARY ──────────────── */}
-        <SectionHeader icon="bookshelf" title="Exercise Library" theme={theme} />
+        <SectionHeader icon="bookshelf" title={t("demo.exerciseLibrary")} theme={theme} />
 
         <View style={s.chipRow}>
           {["All", "Chest", "Back", "Legs", "Shoulders", "Arms", "Core"].map((label, i) => (
@@ -347,16 +349,16 @@ export default function CoachDemoScreen() {
         <Divider style={s.divider} />
 
         {/* ──────────────── WORKOUT BUILDER ──────────────── */}
-        <SectionHeader icon="wrench" title="Workout Builder" theme={theme} />
+        <SectionHeader icon="wrench" title={t("demo.workoutBuilder")} theme={theme} />
 
         <Card style={[s.builderCard, { backgroundColor: theme.colors.surface }]}>
           <Card.Content>
-            <Text variant="labelLarge" style={{ color: theme.colors.onSurfaceVariant, marginBottom: 4 }}>Workout Name</Text>
+            <Text variant="labelLarge" style={{ color: theme.colors.onSurfaceVariant, marginBottom: 4 }}>{t("demo.workoutName")}</Text>
             <View style={[s.fakeInput, { borderColor: theme.colors.outline }]}>
               <Text variant="bodyLarge" style={{ color: theme.colors.onSurface }}>Upper Body Strength</Text>
             </View>
 
-            <Text variant="labelLarge" style={{ color: theme.colors.onSurfaceVariant, marginBottom: 4, marginTop: 12 }}>Description</Text>
+            <Text variant="labelLarge" style={{ color: theme.colors.onSurfaceVariant, marginBottom: 4, marginTop: 12 }}>{t("demo.description")}</Text>
             <View style={[s.fakeInput, { borderColor: theme.colors.outline }]}>
               <Text variant="bodyMedium" style={{ color: theme.colors.onSurface }}>Compound upper body focus</Text>
             </View>
@@ -377,10 +379,10 @@ export default function CoachDemoScreen() {
 
               {/* Set table */}
               <View style={[s.setHeader, { borderBottomColor: theme.colors.outline }]}>
-                <Text variant="labelSmall" style={[s.setCol, { color: theme.colors.onSurfaceVariant }]}>Set</Text>
-                <Text variant="labelSmall" style={[s.setCol, { color: theme.colors.onSurfaceVariant }]}>Reps</Text>
-                <Text variant="labelSmall" style={[s.setCol, { color: theme.colors.onSurfaceVariant }]}>Weight</Text>
-                <Text variant="labelSmall" style={[s.setCol, { color: theme.colors.onSurfaceVariant }]}>Rest</Text>
+                <Text variant="labelSmall" style={[s.setCol, { color: theme.colors.onSurfaceVariant }]}>{t("demo.set")}</Text>
+                <Text variant="labelSmall" style={[s.setCol, { color: theme.colors.onSurfaceVariant }]}>{t("demo.reps")}</Text>
+                <Text variant="labelSmall" style={[s.setCol, { color: theme.colors.onSurfaceVariant }]}>{t("demo.weight")}</Text>
+                <Text variant="labelSmall" style={[s.setCol, { color: theme.colors.onSurfaceVariant }]}>{t("demo.rest")}</Text>
               </View>
               {ex.sets.map((set) => (
                 <View key={set.set_number} style={s.setRow}>
@@ -397,14 +399,14 @@ export default function CoachDemoScreen() {
         <View style={[s.addExerciseBtn, { borderColor: theme.colors.outline }]}>
           <MaterialCommunityIcons name="plus" size={20} color={theme.colors.primary} />
           <Text variant="labelLarge" style={{ color: theme.colors.primary, marginLeft: 6 }}>
-            Add Exercise
+            {t("demo.addExercise")}
           </Text>
         </View>
 
         <Divider style={s.divider} />
 
         {/* ──────────────── PROGRAMS ──────────────── */}
-        <SectionHeader icon="clipboard-list" title="Programs" theme={theme} />
+        <SectionHeader icon="clipboard-list" title={t("demo.programs")} theme={theme} />
 
         <Card style={[s.programCard, { backgroundColor: theme.colors.surface }]}>
           <Card.Content>
@@ -415,13 +417,13 @@ export default function CoachDemoScreen() {
               {demoProgram.description}
             </Text>
             <Chip mode="flat" style={{ backgroundColor: theme.colors.primaryContainer, alignSelf: "flex-start", marginTop: 8 }} textStyle={{ fontSize: 11 }}>
-              {demoProgram.duration_weeks} weeks
+              {demoProgram.duration_weeks} {t("demo.weeks")}
             </Chip>
           </Card.Content>
         </Card>
 
         <Text variant="titleSmall" style={{ color: theme.colors.onSurfaceVariant, marginTop: 12, marginBottom: 8 }}>
-          Week 1
+          {t("demo.week1")}
         </Text>
         {demoProgramWorkouts.map((pw) => (
           <View key={pw.id} style={[s.workoutRow, { backgroundColor: theme.colors.surface }]}>
@@ -435,7 +437,7 @@ export default function CoachDemoScreen() {
                 {pw.name}
               </Text>
               <Text variant="bodySmall" style={{ color: theme.colors.onSurfaceVariant }}>
-                {pw.exercises.length} exercises
+                {pw.exercises.length} {t("demo.exercises")}
               </Text>
             </View>
           </View>
@@ -444,7 +446,7 @@ export default function CoachDemoScreen() {
         <Divider style={s.divider} />
 
         {/* ──────────────── MESSAGING ──────────────── */}
-        <SectionHeader icon="message" title="Messaging" theme={theme} />
+        <SectionHeader icon="message" title={t("demo.messaging")} theme={theme} />
 
         {demoConversations.map((conv) => (
           <View key={conv.id} style={[s.convRow, { backgroundColor: theme.colors.surface }]}>
@@ -467,7 +469,7 @@ export default function CoachDemoScreen() {
 
         {/* Chat preview */}
         <Text variant="titleSmall" style={{ color: theme.colors.onSurfaceVariant, marginTop: 16, marginBottom: 8 }}>
-          Chat Preview
+          {t("demo.chatPreview")}
         </Text>
         <View style={[s.chatContainer, { backgroundColor: theme.colors.surfaceVariant }]}>
           {demoChatMessages.map((msg) => {
