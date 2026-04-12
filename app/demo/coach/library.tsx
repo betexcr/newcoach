@@ -1,29 +1,84 @@
-import { useState } from "react";
-import { View, StyleSheet, ScrollView, Pressable, Animated, Alert } from "react-native";
+import { useState, useCallback } from "react";
+import { View, StyleSheet, ScrollView, Pressable, Animated, Image } from "react-native";
 import { Text, useTheme, Card, Chip } from "react-native-paper";
 import { MaterialCommunityIcons } from "@expo/vector-icons";
 import { useTranslation } from "react-i18next";
 import { useRouter } from "expo-router";
 import type { AppTheme } from "@/lib/theme";
-import { VideoPlayer } from "@/components/VideoPlayer";
+import type { Exercise } from "@/types/database";
 import { useDemoFadeIn } from "../use-demo-fade";
 import { DemoPress } from "../DemoTooltip";
 import { demoExercises, demoTemplates, demoProgram, demoProgramWorkouts, demoExerciseVideos } from "../mock-data";
+
+const MUSCLE_GROUPS = ["All", "Chest", "Back", "Legs", "Shoulders", "Arms", "Core"] as const;
+
+function ExerciseCard({ exercise, hasVideo, theme, t }: { exercise: Exercise; hasVideo: boolean; theme: AppTheme; t: (k: string) => string }) {
+  const [expanded, setExpanded] = useState(false);
+
+  return (
+    <Card
+      style={[s.exerciseCard, { backgroundColor: theme.colors.surface }]}
+      onPress={() => setExpanded(!expanded)}
+    >
+      <View style={s.exerciseRow}>
+        <View style={{ flex: 1 }}>
+          <Text variant="titleMedium" style={{ color: theme.colors.onSurface, fontWeight: "600" }}>{exercise.name}</Text>
+          <Text variant="bodySmall" style={{ color: theme.colors.onSurfaceVariant, textTransform: "capitalize", marginTop: 2 }}>
+            {exercise.muscle_group}{exercise.equipment ? ` \u00B7 ${exercise.equipment}` : ""}
+          </Text>
+        </View>
+        {hasVideo && (
+          <View style={[s.videoBadge, { backgroundColor: `${theme.colors.primary}15` }]}>
+            <MaterialCommunityIcons name="play-circle" size={18} color={theme.colors.primary} />
+          </View>
+        )}
+        <MaterialCommunityIcons name={expanded ? "chevron-up" : "chevron-down"} size={20} color={theme.colors.onSurfaceVariant} />
+      </View>
+
+      {expanded && (
+        <View style={[s.expandedContent, { borderTopColor: theme.colors.outlineVariant }]}>
+          <View style={{ flexDirection: "row", gap: 8, marginBottom: 10 }}>
+            <Chip mode="flat" compact style={{ backgroundColor: theme.colors.primaryContainer }} textStyle={{ fontSize: 11, textTransform: "capitalize" }}>{exercise.muscle_group}</Chip>
+            {exercise.equipment && (
+              <Chip mode="flat" compact style={{ backgroundColor: theme.colors.surfaceVariant }} textStyle={{ fontSize: 11, textTransform: "capitalize" }}>{exercise.equipment}</Chip>
+            )}
+          </View>
+          {exercise.description ? (
+            <Text variant="bodyMedium" style={{ color: theme.colors.onSurfaceVariant, lineHeight: 20 }}>
+              {exercise.description}
+            </Text>
+          ) : null}
+          {hasVideo && (
+            <View style={[s.videoPreview, { backgroundColor: theme.colors.surfaceVariant }]}>
+              <Image
+                source={require("@/assets/demo-exercise.gif")}
+                style={s.videoPreviewImage}
+                resizeMode="cover"
+              />
+              <View style={s.videoOverlay}>
+                <View style={[s.videoPlayBtn, { backgroundColor: `${theme.colors.primary}DD` }]}>
+                  <MaterialCommunityIcons name="play" size={28} color="#fff" />
+                </View>
+                <Text variant="labelMedium" style={{ color: "#fff", marginTop: 6 }}>{t("demo.watchDemo")}</Text>
+              </View>
+            </View>
+          )}
+        </View>
+      )}
+    </Card>
+  );
+}
 
 export default function DemoLibrary() {
   const theme = useTheme<AppTheme>();
   const { t } = useTranslation();
   const router = useRouter();
   const { introOpacity, introTranslateY, contentOpacity } = useDemoFadeIn("coach-library");
-  const [videoUrl, setVideoUrl] = useState<string | null>(null);
+  const [selectedGroup, setSelectedGroup] = useState("All");
 
-  function handlePlayVideo() {
-    Alert.alert(
-      t("demo.watchDemo"),
-      t("demo.exerciseDemoMedia"),
-      [{ text: t("common.ok") }]
-    );
-  }
+  const filteredExercises = selectedGroup === "All"
+    ? demoExercises
+    : demoExercises.filter((ex) => ex.muscle_group.toLowerCase() === selectedGroup.toLowerCase());
 
   return (
     <ScrollView style={{ flex: 1, backgroundColor: theme.colors.background }} contentContainerStyle={s.content}>
@@ -44,50 +99,32 @@ export default function DemoLibrary() {
       </Text>
 
       <View style={s.chipRow}>
-        {["All", "Chest", "Back", "Legs", "Shoulders", "Arms", "Core"].map((label, i) => (
-          <Chip key={label} mode={i === 0 ? "flat" : "outlined"} selected={i === 0}
-            style={[s.chip, i === 0 && { backgroundColor: theme.colors.primary }]}
-            textStyle={[{ textTransform: "capitalize", fontSize: 13 }, i === 0 && { color: theme.colors.onPrimary }]}>
-            {label}
-          </Chip>
-        ))}
+        {MUSCLE_GROUPS.map((label) => {
+          const active = label === selectedGroup;
+          return (
+            <Chip
+              key={label}
+              mode={active ? "flat" : "outlined"}
+              selected={active}
+              onPress={() => setSelectedGroup(label)}
+              style={[s.chip, active && { backgroundColor: theme.colors.primary }]}
+              textStyle={[{ textTransform: "capitalize", fontSize: 13 }, active && { color: theme.colors.onPrimary }]}
+            >
+              {label}
+            </Chip>
+          );
+        })}
       </View>
 
-      {demoExercises.slice(0, 8).map((ex) => (
-        <DemoPress key={ex.id} style={[s.exerciseRow, { backgroundColor: theme.colors.surface }]}>
-          <View style={{ flex: 1 }}>
-            <Text variant="titleMedium" style={{ color: theme.colors.onSurface, fontWeight: "600" }}>{ex.name}</Text>
-            <Text variant="bodySmall" style={{ color: theme.colors.onSurfaceVariant, textTransform: "capitalize", marginTop: 2 }}>
-              {ex.muscle_group}{ex.equipment ? ` \u00B7 ${ex.equipment}` : ""}
-            </Text>
-          </View>
-          {demoExerciseVideos[ex.id] && (
-            <View style={[s.videoBadge, { backgroundColor: `${theme.colors.primary}15` }]}>
-              <MaterialCommunityIcons name="play-circle" size={18} color={theme.colors.primary} />
-            </View>
-          )}
-          <MaterialCommunityIcons name="chevron-right" size={20} color={theme.colors.onSurfaceVariant} />
-        </DemoPress>
+      {filteredExercises.map((ex) => (
+        <ExerciseCard
+          key={ex.id}
+          exercise={ex}
+          hasVideo={!!demoExerciseVideos[ex.id]}
+          theme={theme}
+          t={t}
+        />
       ))}
-
-      <Card style={[s.detailCard, { backgroundColor: theme.colors.surface }]}>
-        <Card.Content>
-          <Text variant="titleLarge" style={{ color: theme.colors.onSurface, fontWeight: "700" }}>Barbell Bench Press</Text>
-          <View style={{ flexDirection: "row", gap: 8, marginTop: 8 }}>
-            <Chip mode="flat" style={{ backgroundColor: theme.colors.primaryContainer }} textStyle={{ fontSize: 11, textTransform: "capitalize" }}>chest</Chip>
-            <Chip mode="flat" style={{ backgroundColor: theme.colors.surfaceVariant }} textStyle={{ fontSize: 11, textTransform: "capitalize" }}>barbell</Chip>
-          </View>
-          <Text variant="bodyMedium" style={{ color: theme.colors.onSurfaceVariant, marginTop: 12, lineHeight: 20 }}>
-            Lie on bench, grip bar slightly wider than shoulders, lower to chest, press up. Keep feet flat on floor and maintain a slight arch in your lower back.
-          </Text>
-          <Pressable style={[s.videoPreview, { backgroundColor: theme.colors.surfaceVariant }]} accessibilityRole="button" onPress={handlePlayVideo}>
-            <View style={[s.videoPlayBtn, { backgroundColor: `${theme.colors.primary}DD` }]}>
-              <MaterialCommunityIcons name="play" size={28} color="#fff" />
-            </View>
-            <Text variant="labelMedium" style={{ color: theme.colors.onSurfaceVariant, marginTop: 8 }}>{t("demo.watchDemo")}</Text>
-          </Pressable>
-        </Card.Content>
-      </Card>
 
       <DemoPress style={[s.videoLibraryCard, { backgroundColor: `${theme.colors.primary}08` }]}>
         <View style={s.videoLibraryContent}>
@@ -216,8 +253,9 @@ const s = StyleSheet.create({
   introContent: { flexDirection: "row", alignItems: "center" },
   chipRow: { flexDirection: "row", flexWrap: "wrap", gap: 8, marginBottom: 14 },
   chip: { borderRadius: 20 },
-  exerciseRow: { flexDirection: "row", alignItems: "center", padding: 14, borderRadius: 14, marginBottom: 6 },
-  detailCard: { borderRadius: 16, marginTop: 12, elevation: 0 },
+  exerciseCard: { borderRadius: 16, elevation: 0, marginBottom: 6, overflow: "hidden" },
+  exerciseRow: { flexDirection: "row", alignItems: "center", padding: 14 },
+  expandedContent: { paddingHorizontal: 14, paddingBottom: 14, borderTopWidth: 0.5, paddingTop: 12 },
   builderCard: { borderRadius: 16, elevation: 0, marginBottom: 12 },
   fakeInput: { borderWidth: 1, borderRadius: 8, paddingHorizontal: 12, paddingVertical: 10, marginBottom: 4 },
   exerciseBlock: { borderRadius: 16, elevation: 0, marginBottom: 8 },
@@ -229,7 +267,9 @@ const s = StyleSheet.create({
   dayBadge: { width: 32, height: 32, borderRadius: 16, justifyContent: "center", alignItems: "center" },
   workoutRow: { flexDirection: "row", alignItems: "center", padding: 14, borderRadius: 14, marginBottom: 6 },
   videoBadge: { width: 32, height: 32, borderRadius: 16, justifyContent: "center", alignItems: "center", marginRight: 6 },
-  videoPreview: { height: 120, borderRadius: 12, justifyContent: "center", alignItems: "center", marginTop: 14 },
+  videoPreview: { height: 140, borderRadius: 12, overflow: "hidden", marginTop: 12, position: "relative" },
+  videoPreviewImage: { ...StyleSheet.absoluteFillObject, width: "100%", height: "100%" },
+  videoOverlay: { ...StyleSheet.absoluteFillObject, justifyContent: "center", alignItems: "center", backgroundColor: "rgba(0,0,0,0.35)" },
   videoPlayBtn: { width: 48, height: 48, borderRadius: 24, justifyContent: "center", alignItems: "center" },
   videoLibraryCard: { borderRadius: 16, elevation: 0, marginTop: 12 },
   videoLibraryContent: { flexDirection: "row", alignItems: "center" },
