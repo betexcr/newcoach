@@ -21,7 +21,7 @@ export function resolveLanguage(preference: "auto" | SupportedLanguage): Support
 
 i18n.use(initReactI18next).init({
   resources: { en: { translation: en }, es: { translation: es } },
-  lng: getDeviceLanguage(),
+  lng: "es",
   fallbackLng: "es",
   interpolation: { escapeValue: false },
   compatibilityJSON: "v4",
