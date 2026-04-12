@@ -20,14 +20,18 @@ export default function Root({ children }: PropsWithChildren) {
 
         {/* Open Graph */}
         <meta property="og:type" content="website" />
+        <meta property="og:url" content="https://newcoach.vercel.app" />
         <meta property="og:title" content="NewCoach — App de Coaching Fitness" />
         <meta
           property="og:description"
           content="Entrenamientos, nutrición, hábitos y mensajería coach-cliente. iOS, Android y Web."
         />
-        <meta property="og:image" content="/og-image.png" />
-        <meta property="og:image:width" content="1080" />
-        <meta property="og:image:height" content="1080" />
+        <meta
+          property="og:image"
+          content="https://newcoach.vercel.app/og-image.png"
+        />
+        <meta property="og:image:width" content="1376" />
+        <meta property="og:image:height" content="768" />
         <meta property="og:locale" content="es_MX" />
 
         {/* Twitter Card */}
@@ -37,7 +41,10 @@ export default function Root({ children }: PropsWithChildren) {
           name="twitter:description"
           content="Entrenamientos, nutrición, hábitos y mensajería coach-cliente. iOS, Android y Web."
         />
-        <meta name="twitter:image" content="/og-image.png" />
+        <meta
+          name="twitter:image"
+          content="https://newcoach.vercel.app/og-image.png"
+        />
 
         <ScrollViewStyleReset />
       </head>
