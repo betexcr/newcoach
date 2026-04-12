@@ -158,6 +158,7 @@ export default function ChatScreen() {
             onChangeText={setText}
             placeholder={t("messages.inputPlaceholder")}
             placeholderTextColor={theme.colors.onSurfaceVariant}
+            accessibilityLabel={t("messages.inputPlaceholder")}
             style={[
               styles.textInput,
               {
@@ -174,6 +175,7 @@ export default function ChatScreen() {
             size={24}
             onPress={handleSend}
             disabled={!text.trim() || sendMessage.isPending}
+            accessibilityLabel={t("messages.send")}
           />
         </View>
       </KeyboardAvoidingView>

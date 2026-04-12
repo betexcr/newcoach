@@ -1,6 +1,9 @@
 import React, { useEffect } from "react";
 import { supabase } from "./supabase";
 import { useAuthStore } from "@/stores/auth-store";
+import { useWorkoutBuilderStore } from "@/stores/workout-builder-store";
+import { useChatNavStore } from "@/stores/chat-nav-store";
+import { queryClient } from "@/lib/query-client";
 import { registerForPushNotifications } from "./notifications";
 
 export function AuthProvider({ children }: { children: React.ReactNode }) {
@@ -46,6 +49,9 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
       } else {
         setProfile(null);
         setProfileError(false);
+        queryClient.clear();
+        useWorkoutBuilderStore.getState().reset();
+        useChatNavStore.getState().clear();
       }
     });
 

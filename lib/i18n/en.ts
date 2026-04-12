@@ -268,6 +268,7 @@ const en = {
     voiceMessage: "Voice message",
     emptyChat: "No messages yet. Say hello!",
     inputPlaceholder: "Type a message...",
+    send: "Send",
     sendFailed: "Could not send the message.",
     conversationNotFound: "This conversation could not be found.",
     broadcastTitle: "Broadcast",

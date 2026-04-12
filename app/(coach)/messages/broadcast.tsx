@@ -92,7 +92,6 @@ function ClientRow({
       </View>
       <Checkbox
         status={selected ? "checked" : "unchecked"}
-        onPress={onToggle}
         color={theme.colors.primary}
       />
     </Pressable>

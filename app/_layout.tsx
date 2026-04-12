@@ -1,9 +1,9 @@
 import { useEffect, useState } from "react";
-import { useColorScheme, Platform, AppState, Alert } from "react-native";
+import { useColorScheme, Platform, AppState } from "react-native";
 import type { AppStateStatus } from "react-native";
 import { Stack, useRouter } from "expo-router";
 import { PaperProvider } from "react-native-paper";
-import { QueryClient, QueryClientProvider, focusManager } from "@tanstack/react-query";
+import { QueryClientProvider, focusManager } from "@tanstack/react-query";
 import { StatusBar } from "expo-status-bar";
 import { useFonts } from "expo-font";
 import { MaterialCommunityIcons } from "@expo/vector-icons";
@@ -15,24 +15,11 @@ import { useSettingsStore } from "@/stores/settings-store";
 import { useAuthStore } from "@/stores/auth-store";
 import { useChatNavStore } from "@/stores/chat-nav-store";
 import { ErrorBoundary } from "@/components/ErrorBoundary";
-import i18n from "@/lib/i18n";
+import { queryClient } from "@/lib/query-client";
+
 
 SplashScreen.preventAutoHideAsync();
 
-const queryClient = new QueryClient({
-  defaultOptions: {
-    queries: {
-      staleTime: 1000 * 60 * 5,
-      retry: 2,
-    },
-    mutations: {
-      onError: (error: unknown) => {
-        const message = error instanceof Error ? error.message : i18n.t("common.errorGeneric");
-        Alert.alert(i18n.t("common.error"), message);
-      },
-    },
-  },
-});
 
 function onAppStateChange(status: AppStateStatus) {
   if (Platform.OS !== "web") {

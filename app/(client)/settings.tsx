@@ -7,6 +7,8 @@ import { useTranslation } from "react-i18next";
 import { useQueryClient } from "@tanstack/react-query";
 import { supabase } from "@/lib/supabase";
 import { useAuthStore } from "@/stores/auth-store";
+import { useWorkoutBuilderStore } from "@/stores/workout-builder-store";
+import { useChatNavStore } from "@/stores/chat-nav-store";
 import { useSettingsStore } from "@/stores/settings-store";
 import type { ThemePreference, LanguagePreference } from "@/stores/settings-store";
 
@@ -34,6 +36,8 @@ export default function ClientSettingsScreen() {
       return;
     }
     queryClient.clear();
+    useWorkoutBuilderStore.getState().reset();
+    useChatNavStore.getState().clear();
     reset();
     router.replace("/(auth)/login");
   }

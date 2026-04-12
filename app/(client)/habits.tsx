@@ -40,6 +40,9 @@ function HabitItem({ habit }: { habit: Habit }) {
             },
           ]}
           disabled={toggleLog.isPending || logsError}
+          accessibilityRole="checkbox"
+          accessibilityState={{ checked: isCompleted, disabled: toggleLog.isPending || logsError }}
+          accessibilityLabel={habit.name}
           onPress={() =>
             toggleLog.mutate(
               { habitId: habit.id, date: today, completed: !isCompleted },
