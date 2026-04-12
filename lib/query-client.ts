@@ -1,4 +1,5 @@
 import { QueryClient } from "@tanstack/react-query";
+import { Alert } from "react-native";
 
 export const queryClient = new QueryClient({
   defaultOptions: {
@@ -8,8 +9,8 @@ export const queryClient = new QueryClient({
     },
     mutations: {
       onError: (error: unknown) => {
-        const message = error instanceof Error ? error.message : "Unknown mutation error";
-        if (__DEV__) console.warn("Unhandled mutation error:", message);
+        const message = error instanceof Error ? error.message : "Something went wrong. Please try again.";
+        Alert.alert("Error", message);
       },
     },
   },
