@@ -309,7 +309,8 @@ export default function DemoWorkoutBuilder() {
         renderItem={renderItem}
         ListHeaderComponent={header}
         ListFooterComponent={footer}
-        contentContainerStyle={styles.content}
+        contentContainerStyle={[styles.content, { backgroundColor: theme.colors.background }]}
+        containerStyle={{ flex: 1, backgroundColor: theme.colors.background }}
         keyboardShouldPersistTaps="handled"
       />
 
@@ -408,7 +409,7 @@ const styles = StyleSheet.create({
   addExerciseButton: { flexDirection: "row", alignItems: "center", justifyContent: "center", paddingVertical: 16, borderWidth: 2, borderStyle: "dashed", borderRadius: 16, marginBottom: 16 },
   actions: { gap: 8 },
   primaryBtn: { borderRadius: 12, paddingVertical: 14, alignItems: "center" },
-  secondaryBtn: { borderRadius: 12, paddingVertical: 14, alignItems: "center", borderWidth: 1.5 },
+  secondaryBtn: { borderRadius: 12, paddingVertical: 14, alignItems: "center", borderWidth: 1.5, backgroundColor: "transparent" },
   modalOverlay: { flex: 1, justifyContent: "flex-end" },
   modalContent: { maxHeight: "70%", borderTopLeftRadius: 20, borderTopRightRadius: 20, padding: 16 },
   modalHeader: { flexDirection: "row", justifyContent: "space-between", alignItems: "center", marginBottom: 8 },
