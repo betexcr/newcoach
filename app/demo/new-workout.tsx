@@ -283,33 +283,22 @@ export default function DemoWorkoutBuilder() {
           <MaterialCommunityIcons name="plus-circle" size={24} color={theme.colors.primary} />
           <Text variant="titleMedium" style={{ color: theme.colors.primary, marginLeft: 8, fontWeight: "600" }}>{t("library.addExercise")}</Text>
         </Pressable>
-
-        <View style={styles.actions}>
-          <Pressable
-            style={[styles.primaryBtn, { backgroundColor: theme.colors.primary }]}
-            accessibilityRole="button"
-            onPress={() => {
-              if (!name.trim()) {
-                Alert.alert(t("common.required"), t("library.enterWorkoutName"));
-                return;
-              }
-              if (exercises.length === 0) {
-                Alert.alert(t("common.required"), t("library.addAtLeastOneExercise"));
-                return;
-              }
-              setShowClientPicker(true);
-            }}
-          >
-            <Text variant="labelLarge" style={{ color: theme.colors.onPrimary, fontWeight: "700" }}>{t("library.assignToClient")}</Text>
-          </Pressable>
-          <DemoPress style={[styles.secondaryBtn, { borderColor: theme.colors.primary }]} accessibilityRole="button">
-            <Text variant="labelLarge" style={{ color: theme.colors.primary, fontWeight: "700" }}>{t("library.saveAsTemplate")}</Text>
-          </DemoPress>
-        </View>
       </Animated.View>
     ),
-    [contentOpacity, theme, t, name, exercises]
+    [contentOpacity, theme, t]
   );
+
+  const handleAssign = useCallback(() => {
+    if (!name.trim()) {
+      Alert.alert(t("common.required"), t("library.enterWorkoutName"));
+      return;
+    }
+    if (exercises.length === 0) {
+      Alert.alert(t("common.required"), t("library.addAtLeastOneExercise"));
+      return;
+    }
+    setShowClientPicker(true);
+  }, [name, exercises.length, t]);
 
   return (
     <SafeAreaView style={[styles.container, { backgroundColor: theme.colors.background }]}>
@@ -332,6 +321,19 @@ export default function DemoWorkoutBuilder() {
         containerStyle={{ flex: 1, backgroundColor: theme.colors.background }}
         keyboardShouldPersistTaps="handled"
       />
+
+      <View style={[styles.bottomActions, { backgroundColor: theme.colors.background }]}>
+        <Pressable
+          style={[styles.primaryBtn, { backgroundColor: theme.colors.primary }]}
+          accessibilityRole="button"
+          onPress={handleAssign}
+        >
+          <Text variant="labelLarge" style={{ color: theme.colors.onPrimary, fontWeight: "700" }}>{t("library.assignToClient")}</Text>
+        </Pressable>
+        <DemoPress style={[styles.secondaryBtn, { borderColor: theme.colors.primary }]} accessibilityRole="button">
+          <Text variant="labelLarge" style={{ color: theme.colors.primary, fontWeight: "700" }}>{t("library.saveAsTemplate")}</Text>
+        </DemoPress>
+      </View>
 
       <Modal visible={showExercisePicker} animationType="slide" transparent onRequestClose={() => { setShowExercisePicker(false); setExerciseSearch(""); setSelectedMuscle("all"); }}>
         <View style={[styles.modalOverlay, { backgroundColor: theme.custom.scrim }]}>
@@ -453,6 +455,7 @@ const styles = StyleSheet.create({
   addSetButton: { flexDirection: "row", alignItems: "center", justifyContent: "center", paddingVertical: 8, borderWidth: 1, borderStyle: "dashed", borderRadius: 10, marginTop: 10 },
   addExerciseButton: { flexDirection: "row", alignItems: "center", justifyContent: "center", paddingVertical: 16, borderWidth: 2, borderStyle: "dashed", borderRadius: 16, marginBottom: 16 },
   actions: { gap: 8 },
+  bottomActions: { paddingHorizontal: 20, paddingVertical: 12, gap: 8 },
   primaryBtn: { borderRadius: 12, paddingVertical: 14, alignItems: "center" },
   secondaryBtn: { borderRadius: 12, paddingVertical: 14, alignItems: "center", borderWidth: 1.5, backgroundColor: "transparent" },
   modalOverlay: { flex: 1, justifyContent: "flex-end" },
