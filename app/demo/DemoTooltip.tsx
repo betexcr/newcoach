@@ -7,6 +7,7 @@ import {
   type ReactNode,
 } from "react";
 import {
+  View,
   Pressable,
   Animated,
   StyleSheet,
@@ -62,34 +63,36 @@ export function DemoTooltipProvider({ children }: { children: ReactNode }) {
   return (
     <Ctx.Provider value={{ show }}>
       {children}
-      <Pressable onPress={hide} style={StyleSheet.absoluteFill} pointerEvents="box-none">
-        <Animated.View
-          style={[
-            s.toast,
-            {
-              backgroundColor: theme.colors.inverseSurface,
-              opacity,
-              transform: [{ translateY }],
-            },
-          ]}
-        >
-          <MaterialCommunityIcons
-            name="lock-outline"
-            size={16}
-            color={theme.colors.inverseOnSurface}
-          />
-          <Text
-            variant="bodySmall"
-            style={{
-              color: theme.colors.inverseOnSurface,
-              marginLeft: 8,
-              flex: 1,
-            }}
+      <View style={StyleSheet.absoluteFill} pointerEvents="box-none">
+        <Pressable onPress={hide} style={{ position: "absolute", bottom: 100, left: 24, right: 24 }}>
+          <Animated.View
+            style={[
+              s.toast,
+              {
+                backgroundColor: theme.colors.inverseSurface,
+                opacity,
+                transform: [{ translateY }],
+              },
+            ]}
           >
-            {t("demo.limitedFeature")}
-          </Text>
-        </Animated.View>
-      </Pressable>
+            <MaterialCommunityIcons
+              name="lock-outline"
+              size={16}
+              color={theme.colors.inverseOnSurface}
+            />
+            <Text
+              variant="bodySmall"
+              style={{
+                color: theme.colors.inverseOnSurface,
+                marginLeft: 8,
+                flex: 1,
+              }}
+            >
+              {t("demo.limitedFeature")}
+            </Text>
+          </Animated.View>
+        </Pressable>
+      </View>
     </Ctx.Provider>
   );
 }
@@ -113,10 +116,6 @@ export function DemoPress({
 
 const s = StyleSheet.create({
   toast: {
-    position: "absolute",
-    bottom: 100,
-    left: 24,
-    right: 24,
     flexDirection: "row",
     alignItems: "center",
     paddingHorizontal: 16,
