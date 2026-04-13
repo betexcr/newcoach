@@ -9,7 +9,6 @@ import {
   Modal,
   FlatList,
   Animated,
-  ScrollView,
 } from "react-native";
 import {
   Text,
@@ -346,22 +345,33 @@ export default function DemoWorkoutBuilder() {
               placeholder={t("pickExercise.searchPlaceholder")}
               value={exerciseSearch}
               onChangeText={setExerciseSearch}
-              style={{ marginHorizontal: 16, marginBottom: 8, borderRadius: 12, backgroundColor: theme.colors.surfaceVariant }}
-              inputStyle={{ fontSize: 14 }}
+              style={{ marginHorizontal: 16, borderRadius: 12, elevation: 0, backgroundColor: theme.colors.surfaceVariant }}
+              inputStyle={{ fontSize: 15 }}
             />
-            <ScrollView horizontal showsHorizontalScrollIndicator={false} style={{ maxHeight: 44, marginBottom: 8 }} contentContainerStyle={{ paddingHorizontal: 16, gap: 8 }}>
-              {muscleGroups.map((mg) => (
+            <FlatList
+              data={muscleGroups as unknown as string[]}
+              horizontal
+              showsHorizontalScrollIndicator={false}
+              contentContainerStyle={{ paddingHorizontal: 16, paddingVertical: 12, gap: 8 }}
+              keyExtractor={(item) => item}
+              renderItem={({ item: mg }) => (
                 <Chip
-                  key={mg}
+                  mode={selectedMuscle === mg ? "flat" : "outlined"}
                   selected={selectedMuscle === mg}
                   onPress={() => setSelectedMuscle(mg)}
-                  style={{ backgroundColor: selectedMuscle === mg ? theme.colors.primaryContainer : theme.colors.surfaceVariant }}
-                  textStyle={{ color: selectedMuscle === mg ? theme.colors.primary : theme.colors.onSurfaceVariant, textTransform: "capitalize" }}
+                  style={[
+                    { borderRadius: 20 },
+                    selectedMuscle === mg && { backgroundColor: theme.colors.primary },
+                  ]}
+                  textStyle={[
+                    { textTransform: "capitalize", fontSize: 13 },
+                    selectedMuscle === mg && { color: theme.colors.onPrimary },
+                  ]}
                 >
                   {mg === "all" ? t("pickExercise.all") : translateMuscle(mg, t)}
                 </Chip>
-              ))}
-            </ScrollView>
+              )}
+            />
             <FlatList
               data={filteredExercises}
               keyExtractor={(item) => item.id}
