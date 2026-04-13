@@ -24,7 +24,7 @@ export default function DemoDashboard() {
   const theme = useTheme<AppTheme>();
   const { t } = useTranslation();
   const router = useRouter();
-  const { introOpacity, introTranslateY, contentOpacity, dismissIntro } = useDemoFadeIn("coach-dashboard");
+  const { introOpacity, introTranslateY, contentOpacity, dismissIntro, introCollapsed } = useDemoFadeIn("coach-dashboard");
 
   const activeClients = demoClients.filter((c) => c.status === "active");
   const todayWorkouts = demoAssignedWorkouts.filter((w) => {
@@ -34,16 +34,18 @@ export default function DemoDashboard() {
 
   return (
     <ScrollView style={{ flex: 1, backgroundColor: theme.colors.background }} contentContainerStyle={s.content}>
-      <Animated.View style={{ opacity: introOpacity, transform: [{ translateY: introTranslateY }] }}>
-        <Card style={[s.introCard, { backgroundColor: `${theme.colors.primary}10` }]} mode="contained" onPress={dismissIntro}>
-          <Card.Content style={s.introContent}>
-            <MaterialCommunityIcons name="information-outline" size={20} color={theme.colors.primary} />
-            <Text variant="bodySmall" style={{ color: theme.colors.primary, flex: 1, marginLeft: 10, lineHeight: 18 }}>
-              {t("demo.introDashboard")}
-            </Text>
-          </Card.Content>
-        </Card>
-      </Animated.View>
+      {!introCollapsed && (
+        <Animated.View style={{ opacity: introOpacity, transform: [{ translateY: introTranslateY }] }}>
+          <Card style={[s.introCard, { backgroundColor: `${theme.colors.primary}10` }]} mode="contained" onPress={dismissIntro}>
+            <Card.Content style={s.introContent}>
+              <MaterialCommunityIcons name="information-outline" size={20} color={theme.colors.primary} />
+              <Text variant="bodySmall" style={{ color: theme.colors.primary, flex: 1, marginLeft: 10, lineHeight: 18 }}>
+                {t("demo.introDashboard")}
+              </Text>
+            </Card.Content>
+          </Card>
+        </Animated.View>
+      )}
 
       <Animated.View style={{ opacity: contentOpacity }}>
       <View style={s.greeting}>

@@ -10,7 +10,7 @@ import { demoHabits, demoHabitLogs } from "../mock-data";
 export default function DemoHabits() {
   const theme = useTheme<AppTheme>();
   const { t } = useTranslation();
-  const { introOpacity, introTranslateY, contentOpacity, dismissIntro } = useDemoFadeIn("client-habits");
+  const { introOpacity, introTranslateY, contentOpacity, dismissIntro, introCollapsed } = useDemoFadeIn("client-habits");
 
   const initialState = Object.fromEntries(
     demoHabits.map((h) => [h.id, demoHabitLogs.find((l) => l.habit_id === h.id)?.completed ?? false])
@@ -21,16 +21,18 @@ export default function DemoHabits() {
 
   return (
     <ScrollView style={{ flex: 1, backgroundColor: theme.colors.background }} contentContainerStyle={s.content}>
-      <Animated.View style={{ opacity: introOpacity, transform: [{ translateY: introTranslateY }] }}>
-        <Card style={[s.introCard, { backgroundColor: `${theme.colors.secondary}10` }]} mode="contained" onPress={dismissIntro}>
-          <Card.Content style={s.introContent}>
-            <MaterialCommunityIcons name="information-outline" size={20} color={theme.colors.secondary} />
-            <Text variant="bodySmall" style={{ color: theme.colors.secondary, flex: 1, marginLeft: 10, lineHeight: 18 }}>
-              {t("demo.introHabits")}
-            </Text>
-          </Card.Content>
-        </Card>
-      </Animated.View>
+      {!introCollapsed && (
+        <Animated.View style={{ opacity: introOpacity, transform: [{ translateY: introTranslateY }] }}>
+          <Card style={[s.introCard, { backgroundColor: `${theme.colors.secondary}10` }]} mode="contained" onPress={dismissIntro}>
+            <Card.Content style={s.introContent}>
+              <MaterialCommunityIcons name="information-outline" size={20} color={theme.colors.secondary} />
+              <Text variant="bodySmall" style={{ color: theme.colors.secondary, flex: 1, marginLeft: 10, lineHeight: 18 }}>
+                {t("demo.introHabits")}
+              </Text>
+            </Card.Content>
+          </Card>
+        </Animated.View>
+      )}
 
       <Animated.View style={{ opacity: contentOpacity }}>
       {demoHabits.map((habit) => {

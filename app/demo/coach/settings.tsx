@@ -18,7 +18,7 @@ export default function DemoSettings() {
   const theme = useTheme<AppTheme>();
   const { t } = useTranslation();
   const router = useRouter();
-  const { introOpacity, introTranslateY, contentOpacity, dismissIntro } = useDemoFadeIn("coach-settings");
+  const { introOpacity, introTranslateY, contentOpacity, dismissIntro, introCollapsed } = useDemoFadeIn("coach-settings");
   const themePref = useSettingsStore((s) => s.theme);
   const langPref = useSettingsStore((s) => s.language);
   const setTheme = useSettingsStore((s) => s.setTheme);
@@ -26,16 +26,18 @@ export default function DemoSettings() {
 
   return (
     <ScrollView style={{ flex: 1, backgroundColor: theme.colors.background }} contentContainerStyle={s.content}>
-      <Animated.View style={{ opacity: introOpacity, transform: [{ translateY: introTranslateY }] }}>
-        <Card style={[s.introCard, { backgroundColor: `${theme.colors.primary}10` }]} mode="contained" onPress={dismissIntro}>
-          <Card.Content style={s.introContent}>
-            <MaterialCommunityIcons name="information-outline" size={20} color={theme.colors.primary} />
-            <Text variant="bodySmall" style={{ color: theme.colors.primary, flex: 1, marginLeft: 10, lineHeight: 18 }}>
-              {t("demo.introSettings")}
-            </Text>
-          </Card.Content>
-        </Card>
-      </Animated.View>
+      {!introCollapsed && (
+        <Animated.View style={{ opacity: introOpacity, transform: [{ translateY: introTranslateY }] }}>
+          <Card style={[s.introCard, { backgroundColor: `${theme.colors.primary}10` }]} mode="contained" onPress={dismissIntro}>
+            <Card.Content style={s.introContent}>
+              <MaterialCommunityIcons name="information-outline" size={20} color={theme.colors.primary} />
+              <Text variant="bodySmall" style={{ color: theme.colors.primary, flex: 1, marginLeft: 10, lineHeight: 18 }}>
+                {t("demo.introSettings")}
+              </Text>
+            </Card.Content>
+          </Card>
+        </Animated.View>
+      )}
 
       <Animated.View style={{ opacity: contentOpacity }}>
       <View style={[s.profileCard, { backgroundColor: theme.colors.surface }]}>

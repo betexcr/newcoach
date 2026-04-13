@@ -10,20 +10,22 @@ import { coachProfile, demoConversations, demoChatMessages, CLIENT_1_ID } from "
 export default function DemoClientMessages() {
   const theme = useTheme<AppTheme>();
   const { t } = useTranslation();
-  const { introOpacity, introTranslateY, contentOpacity, dismissIntro } = useDemoFadeIn("client-messages");
+  const { introOpacity, introTranslateY, contentOpacity, dismissIntro, introCollapsed } = useDemoFadeIn("client-messages");
 
   return (
     <ScrollView style={{ flex: 1, backgroundColor: theme.colors.background }} contentContainerStyle={s.content}>
-      <Animated.View style={{ opacity: introOpacity, transform: [{ translateY: introTranslateY }] }}>
-        <Card style={[s.introCard, { backgroundColor: `${theme.colors.secondary}10` }]} mode="contained" onPress={dismissIntro}>
-          <Card.Content style={s.introContent}>
-            <MaterialCommunityIcons name="information-outline" size={20} color={theme.colors.secondary} />
-            <Text variant="bodySmall" style={{ color: theme.colors.secondary, flex: 1, marginLeft: 10, lineHeight: 18 }}>
-              {t("demo.introClientMessages")}
-            </Text>
-          </Card.Content>
-        </Card>
-      </Animated.View>
+      {!introCollapsed && (
+        <Animated.View style={{ opacity: introOpacity, transform: [{ translateY: introTranslateY }] }}>
+          <Card style={[s.introCard, { backgroundColor: `${theme.colors.secondary}10` }]} mode="contained" onPress={dismissIntro}>
+            <Card.Content style={s.introContent}>
+              <MaterialCommunityIcons name="information-outline" size={20} color={theme.colors.secondary} />
+              <Text variant="bodySmall" style={{ color: theme.colors.secondary, flex: 1, marginLeft: 10, lineHeight: 18 }}>
+                {t("demo.introClientMessages")}
+              </Text>
+            </Card.Content>
+          </Card>
+        </Animated.View>
+      )}
 
       <Animated.View style={{ opacity: contentOpacity }}>
       <DemoPress style={[s.convRow, { backgroundColor: theme.colors.surface }]}>

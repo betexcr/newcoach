@@ -12,7 +12,7 @@ export default function DemoPublicProfile() {
   const theme = useTheme<AppTheme>();
   const { t } = useTranslation();
   const router = useRouter();
-  const { introOpacity, introTranslateY, contentOpacity, dismissIntro } = useDemoFadeIn("public-profile");
+  const { introOpacity, introTranslateY, contentOpacity, dismissIntro, introCollapsed } = useDemoFadeIn("public-profile");
 
   const initials = coachProfile.full_name
     ? coachProfile.full_name.split(" ").map((w) => w[0]).join("").toUpperCase()
@@ -34,16 +34,18 @@ export default function DemoPublicProfile() {
         </Text>
       </View>
 
-      <Animated.View style={{ opacity: introOpacity, transform: [{ translateY: introTranslateY }] }}>
-        <Card style={[s.introCard, { backgroundColor: `${theme.colors.primary}10` }]} mode="contained" onPress={dismissIntro}>
-          <Card.Content style={s.introContent}>
-            <MaterialCommunityIcons name="information-outline" size={20} color={theme.colors.primary} />
-            <Text variant="bodySmall" style={{ color: theme.colors.primary, flex: 1, marginLeft: 10, lineHeight: 18 }}>
-              {t("demo.introPublicProfile")}
-            </Text>
-          </Card.Content>
-        </Card>
-      </Animated.View>
+      {!introCollapsed && (
+        <Animated.View style={{ opacity: introOpacity, transform: [{ translateY: introTranslateY }] }}>
+          <Card style={[s.introCard, { backgroundColor: `${theme.colors.primary}10` }]} mode="contained" onPress={dismissIntro}>
+            <Card.Content style={s.introContent}>
+              <MaterialCommunityIcons name="information-outline" size={20} color={theme.colors.primary} />
+              <Text variant="bodySmall" style={{ color: theme.colors.primary, flex: 1, marginLeft: 10, lineHeight: 18 }}>
+                {t("demo.introPublicProfile")}
+              </Text>
+            </Card.Content>
+          </Card>
+        </Animated.View>
+      )}
 
       <Animated.View style={{ opacity: contentOpacity }}>
         <View style={s.hero}>

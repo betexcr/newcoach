@@ -13,7 +13,7 @@ export default function DemoBroadcast() {
   const { t } = useTranslation();
   const theme = useTheme<AppTheme>();
   const router = useRouter();
-  const { introOpacity, introTranslateY, contentOpacity, dismissIntro } = useDemoFadeIn("broadcast");
+  const { introOpacity, introTranslateY, contentOpacity, dismissIntro, introCollapsed } = useDemoFadeIn("broadcast");
 
   function goBack() {
     router.navigate({ pathname: "/demo/coach/messages" } as any);
@@ -72,16 +72,18 @@ export default function DemoBroadcast() {
       </View>
 
       <ScrollView contentContainerStyle={styles.content} keyboardShouldPersistTaps="handled">
-        <Animated.View style={{ opacity: introOpacity, transform: [{ translateY: introTranslateY }] }}>
-          <Card style={[styles.introCard, { backgroundColor: `${theme.colors.primary}10` }]} mode="contained" onPress={dismissIntro}>
-            <Card.Content style={styles.introContent}>
-              <MaterialCommunityIcons name="information-outline" size={20} color={theme.colors.primary} />
-              <Text variant="bodySmall" style={{ color: theme.colors.primary, flex: 1, marginLeft: 10, lineHeight: 18 }}>
-                {t("demo.introBroadcast")}
-              </Text>
-            </Card.Content>
-          </Card>
-        </Animated.View>
+        {!introCollapsed && (
+          <Animated.View style={{ opacity: introOpacity, transform: [{ translateY: introTranslateY }] }}>
+            <Card style={[styles.introCard, { backgroundColor: `${theme.colors.primary}10` }]} mode="contained" onPress={dismissIntro}>
+              <Card.Content style={styles.introContent}>
+                <MaterialCommunityIcons name="information-outline" size={20} color={theme.colors.primary} />
+                <Text variant="bodySmall" style={{ color: theme.colors.primary, flex: 1, marginLeft: 10, lineHeight: 18 }}>
+                  {t("demo.introBroadcast")}
+                </Text>
+              </Card.Content>
+            </Card>
+          </Animated.View>
+        )}
 
         <Animated.View style={{ opacity: contentOpacity }}>
         <TextInput mode="outlined" label={t("messages.broadcastNameLabel")} value={broadcastName} onChangeText={setBroadcastName} style={styles.input} outlineStyle={styles.outline} />

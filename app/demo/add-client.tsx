@@ -17,7 +17,7 @@ export default function DemoAddClient() {
   }
 
   const [email, setEmail] = useState("");
-  const { introOpacity, introTranslateY, contentOpacity, dismissIntro } = useDemoFadeIn("add-client");
+  const { introOpacity, introTranslateY, contentOpacity, dismissIntro, introCollapsed } = useDemoFadeIn("add-client");
 
   function handleAdd() {
     Keyboard.dismiss();
@@ -42,16 +42,18 @@ export default function DemoAddClient() {
 
       <KeyboardAvoidingView style={{ flex: 1 }} behavior={Platform.OS === "ios" ? "padding" : undefined}>
         <View style={styles.content}>
-          <Animated.View style={{ opacity: introOpacity, transform: [{ translateY: introTranslateY }], width: "100%" }}>
-            <Card style={[styles.introCard, { backgroundColor: `${theme.colors.primary}10` }]} mode="contained" onPress={dismissIntro}>
-              <Card.Content style={styles.introContent}>
-                <MaterialCommunityIcons name="information-outline" size={20} color={theme.colors.primary} />
-                <Text variant="bodySmall" style={{ color: theme.colors.primary, flex: 1, marginLeft: 10, lineHeight: 18 }}>
-                  {t("demo.introAddClient")}
-                </Text>
-              </Card.Content>
-            </Card>
-          </Animated.View>
+          {!introCollapsed && (
+            <Animated.View style={{ opacity: introOpacity, transform: [{ translateY: introTranslateY }], width: "100%" }}>
+              <Card style={[styles.introCard, { backgroundColor: `${theme.colors.primary}10` }]} mode="contained" onPress={dismissIntro}>
+                <Card.Content style={styles.introContent}>
+                  <MaterialCommunityIcons name="information-outline" size={20} color={theme.colors.primary} />
+                  <Text variant="bodySmall" style={{ color: theme.colors.primary, flex: 1, marginLeft: 10, lineHeight: 18 }}>
+                    {t("demo.introAddClient")}
+                  </Text>
+                </Card.Content>
+              </Card>
+            </Animated.View>
+          )}
 
           <Animated.View style={{ opacity: contentOpacity, width: "100%", alignItems: "center" }}>
           <View style={[styles.iconContainer, { backgroundColor: `${theme.colors.secondary}15` }]}>

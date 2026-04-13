@@ -1,4 +1,4 @@
-import { useRef, useEffect, useCallback } from "react";
+import { useRef, useEffect, useCallback, useState } from "react";
 import { Animated, Platform } from "react-native";
 import { create } from "zustand";
 
@@ -103,6 +103,8 @@ export function useDemoFadeIn(pageKey: string) {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
+  const [introCollapsed, setIntroCollapsed] = useState(alreadyDismissed);
+
   const dismissIntro = useCallback(() => {
     Animated.parallel([
       Animated.timing(introOpacity, {
@@ -115,9 +117,9 @@ export function useDemoFadeIn(pageKey: string) {
         duration: 300,
         useNativeDriver: true,
       }),
-    ]).start();
+    ]).start(() => setIntroCollapsed(true));
     dismissStore(pageKey);
   }, [introOpacity, introTranslateY, dismissStore, pageKey]);
 
-  return { introOpacity, introTranslateY, contentOpacity, dismissIntro };
+  return { introOpacity, introTranslateY, contentOpacity, dismissIntro, introCollapsed };
 }

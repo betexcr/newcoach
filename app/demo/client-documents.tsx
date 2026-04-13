@@ -25,7 +25,7 @@ export default function DemoClientDocuments() {
   const theme = useTheme<AppTheme>();
   const { t } = useTranslation();
   const router = useRouter();
-  const { introOpacity, introTranslateY, contentOpacity, dismissIntro } = useDemoFadeIn("client-documents");
+  const { introOpacity, introTranslateY, contentOpacity, dismissIntro, introCollapsed } = useDemoFadeIn("client-documents");
 
   return (
     <View style={[s.container, { backgroundColor: theme.colors.background }]}>
@@ -48,16 +48,18 @@ export default function DemoClientDocuments() {
         keyExtractor={(item) => item.id}
         contentContainerStyle={s.list}
         ListHeaderComponent={
-          <Animated.View style={{ opacity: introOpacity, transform: [{ translateY: introTranslateY }] }}>
-            <Card style={[s.introCard, { backgroundColor: `${theme.colors.secondary}10` }]} mode="contained" onPress={dismissIntro}>
-              <Card.Content style={s.introContent}>
-                <MaterialCommunityIcons name="information-outline" size={20} color={theme.colors.secondary} />
-                <Text variant="bodySmall" style={{ color: theme.colors.secondary, flex: 1, marginLeft: 10, lineHeight: 18 }}>
-                  {t("demo.introClientDocuments")}
-                </Text>
-              </Card.Content>
-            </Card>
-          </Animated.View>
+          !introCollapsed ? (
+            <Animated.View style={{ opacity: introOpacity, transform: [{ translateY: introTranslateY }] }}>
+              <Card style={[s.introCard, { backgroundColor: `${theme.colors.secondary}10` }]} mode="contained" onPress={dismissIntro}>
+                <Card.Content style={s.introContent}>
+                  <MaterialCommunityIcons name="information-outline" size={20} color={theme.colors.secondary} />
+                  <Text variant="bodySmall" style={{ color: theme.colors.secondary, flex: 1, marginLeft: 10, lineHeight: 18 }}>
+                    {t("demo.introClientDocuments")}
+                  </Text>
+                </Card.Content>
+              </Card>
+            </Animated.View>
+          ) : null
         }
         renderItem={({ item }) => (
           <Animated.View style={{ opacity: contentOpacity }}>
