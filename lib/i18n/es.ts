@@ -242,6 +242,7 @@ const es: TranslationKeys = {
     weightLabel: "Peso",
     restLabel: "Descanso",
     addSet: "Agregar Serie",
+    dragToReorder: "Mantén y arrastra para reordenar",
     notesPlaceholder: "Agregar notas para este ejercicio...",
     enterWorkoutName: "Por favor ingresa un nombre de entrenamiento.",
     addAtLeastOneExercise: "Por favor agrega al menos un ejercicio.",

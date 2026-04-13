@@ -240,6 +240,7 @@ const en = {
     weightLabel: "Weight",
     restLabel: "Rest",
     addSet: "Add Set",
+    dragToReorder: "Hold & drag to reorder",
     notesPlaceholder: "Add notes for this exercise...",
     enterWorkoutName: "Please enter a workout name.",
     addAtLeastOneExercise: "Please add at least one exercise.",

@@ -1,9 +1,8 @@
-import { useState, useMemo } from "react";
+import { useState, useMemo, useCallback } from "react";
 import { useTranslation } from "react-i18next";
 import {
   View,
   StyleSheet,
-  ScrollView,
   Pressable,
   Alert,
   TextInput as RNTextInput,
@@ -21,6 +20,10 @@ import {
 import { SafeAreaView } from "react-native-safe-area-context";
 import { MaterialCommunityIcons } from "@expo/vector-icons";
 import { useRouter } from "expo-router";
+import DraggableFlatList, {
+  ScaleDecorator,
+  type RenderItemParams,
+} from "react-native-draggable-flatlist";
 import { getDemoExercises } from "./mock-data";
 import type { AppTheme } from "@/lib/theme";
 import { useDemoFadeIn } from "./use-demo-fade";
@@ -30,6 +33,100 @@ import type { WorkoutExercise, ExerciseSet, Exercise } from "@/types/database";
 
 function createDefaultSet(setNumber: number): ExerciseSet {
   return { set_number: setNumber, set_type: "standard", reps: 10, weight: null, duration_seconds: null, rest_seconds: 60, rpe: null };
+}
+
+type IndexedExercise = WorkoutExercise & { _index: number };
+
+function ExerciseBlock({
+  exercise,
+  exerciseIndex,
+  drag,
+  theme,
+  t,
+  onRemove,
+  onAddSet,
+  onRemoveSet,
+  onUpdateSet,
+}: {
+  exercise: WorkoutExercise;
+  exerciseIndex: number;
+  drag?: () => void;
+  theme: AppTheme;
+  t: (k: string) => string;
+  onRemove: () => void;
+  onAddSet: () => void;
+  onRemoveSet: (setIndex: number) => void;
+  onUpdateSet: (setIndex: number, updates: Partial<ExerciseSet>) => void;
+}) {
+  return (
+    <Card style={[styles.exerciseBlock, { backgroundColor: theme.colors.surface }]}>
+      <Card.Content>
+        <View style={styles.exerciseHeader}>
+          <View style={styles.exerciseTitleRow}>
+            {drag && (
+              <Pressable onLongPress={drag} delayLongPress={100} style={styles.dragHandle}>
+                <MaterialCommunityIcons name="drag" size={22} color={theme.colors.onSurfaceVariant} />
+              </Pressable>
+            )}
+            <View style={[styles.orderBadge, { backgroundColor: theme.colors.primary }]}>
+              <Text style={{ fontWeight: "700", fontSize: 13, color: theme.colors.onPrimary }}>{exerciseIndex + 1}</Text>
+            </View>
+            <Text variant="titleMedium" style={{ color: theme.colors.onSurface, fontWeight: "700", flex: 1 }} numberOfLines={1}>{exercise.exercise_name}</Text>
+          </View>
+          <IconButton icon="delete-outline" size={18} iconColor={theme.colors.error} onPress={onRemove} />
+        </View>
+
+        <View style={styles.setsContainer}>
+          {exercise.sets.map((set, setIndex) => (
+            <View key={setIndex} style={styles.setRow}>
+              <View style={[styles.setNumber, { backgroundColor: theme.colors.primaryContainer }]}>
+                <Text variant="labelMedium" style={{ color: theme.colors.primary, fontWeight: "700" }}>{set.set_number}</Text>
+              </View>
+              <View style={styles.setField}>
+                <Text variant="labelSmall" style={{ color: theme.colors.onSurfaceVariant }}>{t("library.repsLabel")}</Text>
+                <RNTextInput
+                  value={set.reps?.toString() ?? ""}
+                  onChangeText={(v) => onUpdateSet(setIndex, { reps: v === "" ? null : Number.isNaN(parseInt(v, 10)) ? set.reps : parseInt(v, 10) })}
+                  keyboardType="numeric"
+                  style={[styles.setInput, { color: theme.colors.onSurface, borderColor: theme.colors.outline, backgroundColor: theme.colors.background }]}
+                  placeholder="—"
+                  placeholderTextColor={theme.colors.onSurfaceVariant}
+                />
+              </View>
+              <View style={styles.setField}>
+                <Text variant="labelSmall" style={{ color: theme.colors.onSurfaceVariant }}>{t("library.weightLabel")}</Text>
+                <RNTextInput
+                  value={set.weight?.toString() ?? ""}
+                  onChangeText={(v) => onUpdateSet(setIndex, { weight: v === "" ? null : Number.isNaN(parseFloat(v)) ? set.weight : parseFloat(v) })}
+                  keyboardType="decimal-pad"
+                  style={[styles.setInput, { color: theme.colors.onSurface, borderColor: theme.colors.outline, backgroundColor: theme.colors.background }]}
+                  placeholder="—"
+                  placeholderTextColor={theme.colors.onSurfaceVariant}
+                />
+              </View>
+              <View style={styles.setField}>
+                <Text variant="labelSmall" style={{ color: theme.colors.onSurfaceVariant }}>{t("library.restLabel")}</Text>
+                <RNTextInput
+                  value={set.rest_seconds?.toString() ?? ""}
+                  onChangeText={(v) => onUpdateSet(setIndex, { rest_seconds: v === "" ? null : Number.isNaN(parseInt(v, 10)) ? set.rest_seconds : parseInt(v, 10) })}
+                  keyboardType="numeric"
+                  style={[styles.setInput, { color: theme.colors.onSurface, borderColor: theme.colors.outline, backgroundColor: theme.colors.background }]}
+                  placeholder="60"
+                  placeholderTextColor={theme.colors.onSurfaceVariant}
+                />
+              </View>
+              <IconButton icon="close" size={16} onPress={() => onRemoveSet(setIndex)} iconColor={theme.colors.error} />
+            </View>
+          ))}
+        </View>
+
+        <Pressable style={[styles.addSetButton, { borderColor: theme.colors.outline }]} onPress={onAddSet}>
+          <MaterialCommunityIcons name="plus" size={16} color={theme.colors.primary} />
+          <Text variant="labelMedium" style={{ color: theme.colors.primary, marginLeft: 4 }}>{t("library.addSet")}</Text>
+        </Pressable>
+      </Card.Content>
+    </Card>
+  );
 }
 
 export default function DemoWorkoutBuilder() {
@@ -43,6 +140,7 @@ export default function DemoWorkoutBuilder() {
   const [description, setDescription] = useState("");
   const [exercises, setExercises] = useState<WorkoutExercise[]>([]);
   const [showExercisePicker, setShowExercisePicker] = useState(false);
+
   function goBack() {
     router.navigate({ pathname: "/demo/coach/library" } as any);
   }
@@ -60,6 +158,7 @@ export default function DemoWorkoutBuilder() {
   }
 
   function moveExercise(from: number, to: number) {
+    if (from === to) return;
     setExercises((prev) => {
       const arr = [...prev];
       const [moved] = arr.splice(from, 1);
@@ -80,21 +179,33 @@ export default function DemoWorkoutBuilder() {
     setExercises((prev) => prev.map((ex, i) => i === exerciseIndex ? { ...ex, sets: ex.sets.map((s, si) => si === setIndex ? { ...s, ...updates } : s) } : ex));
   }
 
+  const indexedExercises = useMemo(
+    () => exercises.map((ex, i) => ({ ...ex, _index: i })),
+    [exercises]
+  );
 
-  return (
-    <SafeAreaView style={[styles.container, { backgroundColor: theme.colors.background }]}>
-      <View style={styles.topBar}>
-        <Pressable
-          onPress={goBack}
-          hitSlop={10} accessibilityRole="button"
-        >
-          <MaterialCommunityIcons name="arrow-left" size={24} color={theme.colors.onSurface} />
-        </Pressable>
-        <Text variant="titleLarge" style={{ color: theme.colors.onSurface, fontWeight: "700" }}>{t("library.workoutBuilder")}</Text>
-        <View style={{ width: 24 }} />
-      </View>
+  const renderItem = useCallback(
+    ({ item, drag: dragFn }: RenderItemParams<IndexedExercise>) => (
+      <ScaleDecorator>
+        <ExerciseBlock
+          exercise={item}
+          exerciseIndex={item._index}
+          drag={dragFn}
+          theme={theme}
+          t={t}
+          onRemove={() => removeExercise(item._index)}
+          onAddSet={() => addSet(item._index)}
+          onRemoveSet={(si) => removeSet(item._index, si)}
+          onUpdateSet={(si, u) => updateSet(item._index, si, u)}
+        />
+      </ScaleDecorator>
+    ),
+    [theme, t, exercises.length]
+  );
 
-      <ScrollView contentContainerStyle={styles.content} keyboardShouldPersistTaps="handled">
+  const header = useMemo(
+    () => (
+      <View>
         {!introCollapsed && (
           <Animated.View style={{ opacity: introOpacity, transform: [{ translateY: introTranslateY }] }}>
             <Card style={[styles.introCard, { backgroundColor: `${theme.colors.primary}10` }]} mode="contained" onPress={dismissIntro}>
@@ -109,65 +220,30 @@ export default function DemoWorkoutBuilder() {
         )}
 
         <Animated.View style={{ opacity: contentOpacity }}>
-        <TextInput mode="outlined" label={t("library.workoutNameLabel")} value={name} onChangeText={setName} style={styles.input} outlineStyle={styles.outline} />
-        <TextInput mode="outlined" label={t("library.descriptionLabel")} value={description} onChangeText={setDescription} multiline style={styles.input} outlineStyle={styles.outline} />
+          <TextInput mode="outlined" label={t("library.workoutNameLabel")} value={name} onChangeText={setName} style={styles.input} outlineStyle={styles.outline} />
+          <TextInput mode="outlined" label={t("library.descriptionLabel")} value={description} onChangeText={setDescription} multiline style={styles.input} outlineStyle={styles.outline} />
 
-        <View style={styles.exercisesHeader}>
-          <Text variant="titleLarge" style={{ color: theme.colors.onSurface, fontWeight: "700" }}>{t("library.exercisesLabel")} ({exercises.length})</Text>
-        </View>
+          <View style={styles.exercisesHeader}>
+            <Text variant="titleLarge" style={{ color: theme.colors.onSurface, fontWeight: "700" }}>{t("library.exercisesLabel")} ({exercises.length})</Text>
+            {exercises.length > 1 && (
+              <Text variant="bodySmall" style={{ color: theme.colors.onSurfaceVariant }}>
+                {t("library.dragToReorder")}
+              </Text>
+            )}
+          </View>
 
-        {exercises.length === 0 ? (
-          <Text variant="bodyMedium" style={{ color: theme.colors.onSurfaceVariant, textAlign: "center", marginVertical: 16 }}>{t("clients.noExercisesAdded")}</Text>
-        ) : (
-          exercises.map((exercise, exerciseIndex) => (
-            <Card key={`${exercise.exercise_id}-${exerciseIndex}`} style={[styles.exerciseBlock, { backgroundColor: theme.colors.surface }]}>
-              <Card.Content>
-                <View style={styles.exerciseHeader}>
-                  <View style={styles.exerciseTitleRow}>
-                    <View style={[styles.orderBadge, { backgroundColor: theme.colors.primary }]}>
-                      <Text style={{ fontWeight: "700", fontSize: 13, color: theme.colors.onPrimary }}>{exerciseIndex + 1}</Text>
-                    </View>
-                    <Text variant="titleMedium" style={{ color: theme.colors.onSurface, fontWeight: "700", flex: 1 }} numberOfLines={1}>{exercise.exercise_name}</Text>
-                  </View>
-                  <View style={styles.exerciseActions}>
-                    {exerciseIndex > 0 && <IconButton icon="arrow-up" size={18} onPress={() => moveExercise(exerciseIndex, exerciseIndex - 1)} />}
-                    {exerciseIndex < exercises.length - 1 && <IconButton icon="arrow-down" size={18} onPress={() => moveExercise(exerciseIndex, exerciseIndex + 1)} />}
-                    <IconButton icon="delete-outline" size={18} iconColor={theme.colors.error} onPress={() => removeExercise(exerciseIndex)} />
-                  </View>
-                </View>
+          {exercises.length === 0 && (
+            <Text variant="bodyMedium" style={{ color: theme.colors.onSurfaceVariant, textAlign: "center", marginVertical: 16 }}>{t("clients.noExercisesAdded")}</Text>
+          )}
+        </Animated.View>
+      </View>
+    ),
+    [introCollapsed, introOpacity, introTranslateY, contentOpacity, dismissIntro, name, description, exercises.length, theme, t]
+  );
 
-                <View style={styles.setsContainer}>
-                  {exercise.sets.map((set, setIndex) => (
-                    <View key={setIndex} style={styles.setRow}>
-                      <View style={[styles.setNumber, { backgroundColor: theme.colors.primaryContainer }]}>
-                        <Text variant="labelMedium" style={{ color: theme.colors.primary, fontWeight: "700" }}>{set.set_number}</Text>
-                      </View>
-                      <View style={styles.setField}>
-                        <Text variant="labelSmall" style={{ color: theme.colors.onSurfaceVariant }}>{t("library.repsLabel")}</Text>
-                        <RNTextInput value={set.reps?.toString() ?? ""} onChangeText={(v) => updateSet(exerciseIndex, setIndex, { reps: v === "" ? null : Number.isNaN(parseInt(v, 10)) ? set.reps : parseInt(v, 10) })} keyboardType="numeric" style={[styles.setInput, { color: theme.colors.onSurface, borderColor: theme.colors.outline, backgroundColor: theme.colors.background }]} placeholder="—" placeholderTextColor={theme.colors.onSurfaceVariant} />
-                      </View>
-                      <View style={styles.setField}>
-                        <Text variant="labelSmall" style={{ color: theme.colors.onSurfaceVariant }}>{t("library.weightLabel")}</Text>
-                        <RNTextInput value={set.weight?.toString() ?? ""} onChangeText={(v) => updateSet(exerciseIndex, setIndex, { weight: v === "" ? null : Number.isNaN(parseFloat(v)) ? set.weight : parseFloat(v) })} keyboardType="decimal-pad" style={[styles.setInput, { color: theme.colors.onSurface, borderColor: theme.colors.outline, backgroundColor: theme.colors.background }]} placeholder="—" placeholderTextColor={theme.colors.onSurfaceVariant} />
-                      </View>
-                      <View style={styles.setField}>
-                        <Text variant="labelSmall" style={{ color: theme.colors.onSurfaceVariant }}>{t("library.restLabel")}</Text>
-                        <RNTextInput value={set.rest_seconds?.toString() ?? ""} onChangeText={(v) => updateSet(exerciseIndex, setIndex, { rest_seconds: v === "" ? null : Number.isNaN(parseInt(v, 10)) ? set.rest_seconds : parseInt(v, 10) })} keyboardType="numeric" style={[styles.setInput, { color: theme.colors.onSurface, borderColor: theme.colors.outline, backgroundColor: theme.colors.background }]} placeholder="60" placeholderTextColor={theme.colors.onSurfaceVariant} />
-                      </View>
-                      <IconButton icon="close" size={16} onPress={() => removeSet(exerciseIndex, setIndex)} iconColor={theme.colors.error} />
-                    </View>
-                  ))}
-                </View>
-
-                <Pressable style={[styles.addSetButton, { borderColor: theme.colors.outline }]} onPress={() => addSet(exerciseIndex)}>
-                  <MaterialCommunityIcons name="plus" size={16} color={theme.colors.primary} />
-                  <Text variant="labelMedium" style={{ color: theme.colors.primary, marginLeft: 4 }}>{t("library.addSet")}</Text>
-                </Pressable>
-              </Card.Content>
-            </Card>
-          ))
-        )}
-
+  const footer = useMemo(
+    () => (
+      <Animated.View style={{ opacity: contentOpacity }}>
         <Pressable style={[styles.addExerciseButton, { borderColor: theme.colors.primary, backgroundColor: `${theme.colors.primary}08` }]} onPress={() => setShowExercisePicker(true)}>
           <MaterialCommunityIcons name="plus-circle" size={24} color={theme.colors.primary} />
           <Text variant="titleMedium" style={{ color: theme.colors.primary, marginLeft: 8, fontWeight: "600" }}>{t("library.addExercise")}</Text>
@@ -181,10 +257,32 @@ export default function DemoWorkoutBuilder() {
             <Text variant="labelLarge" style={{ color: theme.colors.primary, fontWeight: "700" }}>{t("library.saveAsTemplate")}</Text>
           </DemoPress>
         </View>
-        </Animated.View>
-      </ScrollView>
+      </Animated.View>
+    ),
+    [contentOpacity, theme, t]
+  );
 
-      {/* Exercise Picker Modal */}
+  return (
+    <SafeAreaView style={[styles.container, { backgroundColor: theme.colors.background }]}>
+      <View style={styles.topBar}>
+        <Pressable onPress={goBack} hitSlop={10} accessibilityRole="button">
+          <MaterialCommunityIcons name="arrow-left" size={24} color={theme.colors.onSurface} />
+        </Pressable>
+        <Text variant="titleLarge" style={{ color: theme.colors.onSurface, fontWeight: "700" }}>{t("library.workoutBuilder")}</Text>
+        <View style={{ width: 24 }} />
+      </View>
+
+      <DraggableFlatList
+        data={indexedExercises}
+        keyExtractor={(item, index) => `${item.exercise_id}-${index}`}
+        onDragEnd={({ from, to }) => moveExercise(from, to)}
+        renderItem={renderItem}
+        ListHeaderComponent={header}
+        ListFooterComponent={footer}
+        contentContainerStyle={styles.content}
+        keyboardShouldPersistTaps="handled"
+      />
+
       <Modal visible={showExercisePicker} animationType="slide" transparent onRequestClose={() => setShowExercisePicker(false)}>
         <View style={[styles.modalOverlay, { backgroundColor: theme.custom.scrim }]}>
           <View style={[styles.modalContent, { backgroundColor: theme.colors.surface }]}>
@@ -211,7 +309,6 @@ export default function DemoWorkoutBuilder() {
           </View>
         </View>
       </Modal>
-
     </SafeAreaView>
   );
 }
@@ -224,12 +321,12 @@ const styles = StyleSheet.create({
   content: { padding: 16, paddingBottom: 40 },
   input: { marginBottom: 12 },
   outline: { borderRadius: 12 },
-  exercisesHeader: { marginTop: 8, marginBottom: 12 },
+  exercisesHeader: { marginTop: 8, marginBottom: 12, flexDirection: "row", justifyContent: "space-between", alignItems: "center" },
   exerciseBlock: { borderRadius: 16, marginBottom: 12, elevation: 0 },
   exerciseHeader: { flexDirection: "row", justifyContent: "space-between", alignItems: "center", marginBottom: 8 },
   exerciseTitleRow: { flexDirection: "row", alignItems: "center", flex: 1 },
+  dragHandle: { paddingHorizontal: 4, paddingVertical: 8, marginRight: 4 },
   orderBadge: { width: 28, height: 28, borderRadius: 14, justifyContent: "center", alignItems: "center", marginRight: 10 },
-  exerciseActions: { flexDirection: "row", alignItems: "center" },
   setsContainer: { gap: 6 },
   setRow: { flexDirection: "row", alignItems: "flex-end", gap: 6 },
   setNumber: { width: 28, height: 28, borderRadius: 14, justifyContent: "center", alignItems: "center", marginBottom: 4 },
