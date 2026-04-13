@@ -173,7 +173,7 @@ const s = StyleSheet.create({
   statCard: { flex: 1, borderRadius: 16, elevation: 0 },
   statContent: { alignItems: "center", paddingVertical: 14 },
   actionsGrid: { flexDirection: "row", flexWrap: "wrap", gap: 12, marginBottom: 4 },
-  actionCard: { width: "47%", borderRadius: 16, padding: 20, alignItems: "center" },
+  actionCard: { flexBasis: "47%", flexGrow: 1, borderRadius: 16, padding: 20, alignItems: "center" },
   actionIcon: { width: 56, height: 56, borderRadius: 28, justifyContent: "center", alignItems: "center" },
   activityList: { gap: 1, marginBottom: 4 },
   activityRow: { flexDirection: "row", alignItems: "center", padding: 14 },
