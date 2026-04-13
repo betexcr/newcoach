@@ -4,7 +4,7 @@ import {
   View,
   StyleSheet,
   Pressable,
-  Alert,
+  Platform,
   TextInput as RNTextInput,
   Modal,
   FlatList,
@@ -166,12 +166,22 @@ export default function DemoWorkoutBuilder() {
     []
   );
 
+  function showAlert(title: string, message: string, onOk?: () => void) {
+    if (Platform.OS === "web") {
+      window.alert(`${title}\n${message}`);
+      onOk?.();
+    } else {
+      const { Alert } = require("react-native");
+      Alert.alert(title, message, [{ text: t("common.ok"), onPress: onOk }]);
+    }
+  }
+
   function handleAssignToClient(clientName: string) {
     setShowClientPicker(false);
-    Alert.alert(
+    showAlert(
       t("library.assignedTitle"),
       t("library.assignedMessage", { name: clientName }),
-      [{ text: t("common.ok"), onPress: goBack }]
+      goBack,
     );
   }
 
@@ -289,11 +299,11 @@ export default function DemoWorkoutBuilder() {
 
   const handleAssign = useCallback(() => {
     if (!name.trim()) {
-      Alert.alert(t("common.required"), t("library.enterWorkoutName"));
+      showAlert(t("common.required"), t("library.enterWorkoutName"));
       return;
     }
     if (exercises.length === 0) {
-      Alert.alert(t("common.required"), t("library.addAtLeastOneExercise"));
+      showAlert(t("common.required"), t("library.addAtLeastOneExercise"));
       return;
     }
     setShowClientPicker(true);
