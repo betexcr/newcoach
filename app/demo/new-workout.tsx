@@ -25,6 +25,7 @@ import { getDemoExercises } from "./mock-data";
 import type { AppTheme } from "@/lib/theme";
 import { useDemoFadeIn } from "./use-demo-fade";
 import { DemoPress } from "./DemoTooltip";
+import { translateMuscle, translateEquipment } from "@/lib/translate-exercise";
 import type { WorkoutExercise, ExerciseSet, Exercise } from "@/types/database";
 
 function createDefaultSet(setNumber: number): ExerciseSet {
@@ -201,7 +202,7 @@ export default function DemoWorkoutBuilder() {
                   </View>
                   <View style={{ flex: 1, marginLeft: 12 }}>
                     <Text variant="titleSmall" style={{ color: theme.colors.onSurface, fontWeight: "600" }}>{item.name}</Text>
-                    <Text variant="bodySmall" style={{ color: theme.colors.onSurfaceVariant, textTransform: "capitalize" }}>{item.muscle_group} · {item.equipment}</Text>
+                    <Text variant="bodySmall" style={{ color: theme.colors.onSurfaceVariant, textTransform: "capitalize" }}>{translateMuscle(item.muscle_group, t)} · {translateEquipment(item.equipment, t)}</Text>
                   </View>
                   <MaterialCommunityIcons name="plus" size={22} color={theme.colors.primary} />
                 </Pressable>

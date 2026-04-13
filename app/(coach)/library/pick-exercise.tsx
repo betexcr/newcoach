@@ -8,6 +8,7 @@ import { useRouter } from "expo-router";
 import { useExercises, MUSCLE_GROUPS, type ExerciseFilters } from "@/lib/queries/exercises";
 import { useWorkoutBuilderStore } from "@/stores/workout-builder-store";
 import { ErrorState } from "@/components/ErrorState";
+import { translateMuscle, translateEquipment } from "@/lib/translate-exercise";
 import type { Exercise } from "@/types/database";
 
 export default function PickExerciseScreen() {
@@ -85,7 +86,7 @@ export default function PickExerciseScreen() {
               selectedMuscle === item && { color: theme.colors.onPrimary },
             ]}
           >
-            {item === "all" ? t("pickExercise.all") : item}
+            {item === "all" ? t("pickExercise.all") : translateMuscle(item, t)}
           </Chip>
         )}
       />
@@ -119,8 +120,8 @@ export default function PickExerciseScreen() {
                   marginTop: 2,
                 }}
               >
-                {item.muscle_group}
-                {item.equipment ? ` · ${item.equipment}` : ""}
+                {translateMuscle(item.muscle_group, t)}
+                {item.equipment ? ` · ${translateEquipment(item.equipment, t)}` : ""}
               </Text>
             </View>
             <MaterialCommunityIcons

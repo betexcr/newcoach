@@ -10,6 +10,7 @@ import { useWorkoutResult } from "@/lib/queries/results";
 import { useExercisesByIds } from "@/lib/queries/exercises";
 import { ErrorState } from "@/components/ErrorState";
 import { safeDateTimeString } from "@/lib/date-utils";
+import { translateMuscle, translateEquipment } from "@/lib/translate-exercise";
 import type { AppTheme } from "@/lib/theme";
 import type { WorkoutExercise, LoggedExercise } from "@/types/database";
 
@@ -252,7 +253,7 @@ function ExerciseResultCard({
                 variant="bodySmall"
                 style={{ color: theme.colors.onSurfaceVariant, textTransform: "capitalize" }}
               >
-                {detail.muscle_group}{detail.equipment ? ` · ${detail.equipment}` : ""}
+                {translateMuscle(detail.muscle_group, t)}{detail.equipment ? ` · ${translateEquipment(detail.equipment, t)}` : ""}
               </Text>
             )}
           </View>

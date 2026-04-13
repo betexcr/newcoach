@@ -20,19 +20,7 @@ const MUSCLE_GROUPS = [
   { key: "core", labelKey: "muscleGroups.core" },
 ] as const;
 
-function translateMuscle(mg: string | null, t: (k: string) => string): string {
-  if (!mg) return "";
-  const key = `muscleGroups.${mg.toLowerCase()}` as const;
-  const v = t(key);
-  return v !== key ? v : mg;
-}
-
-function translateEquipment(eq: string | null | undefined, t: (k: string) => string): string {
-  if (!eq) return "";
-  const key = `equipment.${eq.toLowerCase()}` as const;
-  const v = t(key);
-  return v !== key ? v : eq;
-}
+import { translateMuscle, translateEquipment } from "@/lib/translate-exercise";
 
 function ExerciseCard({ exercise, hasVideo, theme, t }: { exercise: Exercise; hasVideo: boolean; theme: AppTheme; t: (k: string) => string }) {
   const [expanded, setExpanded] = useState(false);

@@ -27,6 +27,7 @@ import { useAuthStore } from "@/stores/auth-store";
 import { useWorkoutBuilderStore } from "@/stores/workout-builder-store";
 import { ErrorState } from "@/components/ErrorState";
 import { VideoPlayer } from "@/components/VideoPlayer";
+import { translateMuscle, translateEquipment } from "@/lib/translate-exercise";
 import type { Exercise, WorkoutTemplate } from "@/types/database";
 import type { AppTheme } from "@/lib/theme";
 
@@ -88,7 +89,7 @@ function ExerciseCard({ exercise, onPress }: { exercise: Exercise; onPress: () =
               variant="bodySmall"
               style={{ color: theme.colors.onSurfaceVariant, textTransform: "capitalize" }}
             >
-              {exercise.muscle_group}
+              {translateMuscle(exercise.muscle_group, t)}
             </Text>
             {exercise.equipment && (
               <>
@@ -102,7 +103,7 @@ function ExerciseCard({ exercise, onPress }: { exercise: Exercise; onPress: () =
                   variant="bodySmall"
                   style={{ color: theme.colors.onSurfaceVariant, textTransform: "capitalize" }}
                 >
-                  {exercise.equipment}
+                  {translateEquipment(exercise.equipment, t)}
                 </Text>
               </>
             )}
@@ -189,11 +190,11 @@ function ExerciseDetailModal({
 
             <View style={styles.detailChips}>
               <Chip style={styles.detailChip} textStyle={{ textTransform: "capitalize" }}>
-                {exercise.muscle_group}
+                {translateMuscle(exercise.muscle_group, t)}
               </Chip>
               {exercise.equipment && (
                 <Chip style={styles.detailChip} textStyle={{ textTransform: "capitalize" }}>
-                  {exercise.equipment}
+                  {translateEquipment(exercise.equipment, t)}
                 </Chip>
               )}
               {exercise.is_custom && (
@@ -441,7 +442,7 @@ export default function LibraryScreen() {
               selectedMuscle === item && { color: theme.colors.onPrimary },
             ]}
           >
-            {item === "all" ? t("library.filterAll") : item}
+            {item === "all" ? t("library.filterAll") : translateMuscle(item, t)}
           </Chip>
         )}
       />
