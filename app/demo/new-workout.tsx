@@ -9,6 +9,7 @@ import {
   Modal,
   FlatList,
   Animated,
+  ScrollView,
 } from "react-native";
 import {
   Text,
@@ -17,6 +18,8 @@ import {
   Card,
   IconButton,
   Avatar,
+  Chip,
+  Searchbar,
 } from "react-native-paper";
 import { SafeAreaView } from "react-native-safe-area-context";
 import { MaterialCommunityIcons } from "@expo/vector-icons";
@@ -142,6 +145,22 @@ export default function DemoWorkoutBuilder() {
   const [exercises, setExercises] = useState<WorkoutExercise[]>([]);
   const [showExercisePicker, setShowExercisePicker] = useState(false);
   const [showClientPicker, setShowClientPicker] = useState(false);
+  const [exerciseSearch, setExerciseSearch] = useState("");
+  const [selectedMuscle, setSelectedMuscle] = useState("all");
+
+  const muscleGroups = ["all", "chest", "back", "shoulders", "legs", "arms", "core"] as const;
+
+  const filteredExercises = useMemo(() => {
+    let list = demoExercises;
+    if (selectedMuscle !== "all") {
+      list = list.filter((ex) => ex.muscle_group === selectedMuscle);
+    }
+    if (exerciseSearch.trim()) {
+      const q = exerciseSearch.toLowerCase();
+      list = list.filter((ex) => ex.name.toLowerCase().includes(q));
+    }
+    return list;
+  }, [demoExercises, selectedMuscle, exerciseSearch]);
 
   const activeClients = useMemo(
     () => demoClients.filter((c) => c.status === "active"),
@@ -289,7 +308,7 @@ export default function DemoWorkoutBuilder() {
         </View>
       </Animated.View>
     ),
-    [contentOpacity, theme, t]
+    [contentOpacity, theme, t, name, exercises]
   );
 
   return (
@@ -314,15 +333,35 @@ export default function DemoWorkoutBuilder() {
         keyboardShouldPersistTaps="handled"
       />
 
-      <Modal visible={showExercisePicker} animationType="slide" transparent onRequestClose={() => setShowExercisePicker(false)}>
+      <Modal visible={showExercisePicker} animationType="slide" transparent onRequestClose={() => { setShowExercisePicker(false); setExerciseSearch(""); setSelectedMuscle("all"); }}>
         <View style={[styles.modalOverlay, { backgroundColor: theme.custom.scrim }]}>
           <View style={[styles.modalContent, { backgroundColor: theme.colors.surface }]}>
             <View style={styles.modalHeader}>
               <Text variant="titleLarge" style={{ color: theme.colors.onSurface, fontWeight: "700" }}>{t("library.addExercise")}</Text>
-              <IconButton icon="close" size={24} onPress={() => setShowExercisePicker(false)} />
+              <IconButton icon="close" size={24} onPress={() => { setShowExercisePicker(false); setExerciseSearch(""); setSelectedMuscle("all"); }} />
             </View>
+            <Searchbar
+              placeholder={t("pickExercise.searchPlaceholder")}
+              value={exerciseSearch}
+              onChangeText={setExerciseSearch}
+              style={{ marginHorizontal: 16, marginBottom: 8, borderRadius: 12, backgroundColor: theme.colors.surfaceVariant }}
+              inputStyle={{ fontSize: 14 }}
+            />
+            <ScrollView horizontal showsHorizontalScrollIndicator={false} style={{ maxHeight: 44, marginBottom: 8 }} contentContainerStyle={{ paddingHorizontal: 16, gap: 8 }}>
+              {muscleGroups.map((mg) => (
+                <Chip
+                  key={mg}
+                  selected={selectedMuscle === mg}
+                  onPress={() => setSelectedMuscle(mg)}
+                  style={{ backgroundColor: selectedMuscle === mg ? theme.colors.primaryContainer : theme.colors.surfaceVariant }}
+                  textStyle={{ color: selectedMuscle === mg ? theme.colors.primary : theme.colors.onSurfaceVariant, textTransform: "capitalize" }}
+                >
+                  {mg === "all" ? t("pickExercise.all") : translateMuscle(mg, t)}
+                </Chip>
+              ))}
+            </ScrollView>
             <FlatList
-              data={demoExercises}
+              data={filteredExercises}
               keyExtractor={(item) => item.id}
               renderItem={({ item }) => (
                 <Pressable style={[styles.pickerRow, { borderBottomColor: theme.colors.outline }]} onPress={() => addExercise(item)}>
@@ -336,6 +375,12 @@ export default function DemoWorkoutBuilder() {
                   <MaterialCommunityIcons name="plus" size={22} color={theme.colors.primary} />
                 </Pressable>
               )}
+              ListEmptyComponent={
+                <View style={{ padding: 32, alignItems: "center" }}>
+                  <MaterialCommunityIcons name="dumbbell" size={40} color={theme.colors.onSurfaceVariant} style={{ opacity: 0.5, marginBottom: 8 }} />
+                  <Text variant="bodyMedium" style={{ color: theme.colors.onSurfaceVariant }}>{t("pickExercise.noResults")}</Text>
+                </View>
+              }
             />
           </View>
         </View>
