@@ -172,7 +172,7 @@ function DetailView({
 }) {
   const exerciseCount = workout.exercises?.length ?? 0;
   const totalSets = workout.exercises?.reduce((s, ex) => s + (ex.sets?.length ?? 0), 0) ?? 0;
-  const { introOpacity, introTranslateY, contentOpacity } = useDemoFadeIn("workout");
+  const { introOpacity, introTranslateY, contentOpacity, dismissIntro } = useDemoFadeIn("workout");
 
   return (
     <SafeAreaView style={[styles.container, { backgroundColor: theme.colors.background }]}>
@@ -189,7 +189,7 @@ function DetailView({
 
       <ScrollView contentContainerStyle={styles.detailContent}>
         <Animated.View style={{ opacity: introOpacity, transform: [{ translateY: introTranslateY }] }}>
-          <Card style={[styles.introCard, { backgroundColor: `${theme.colors.primary}10` }]} mode="contained">
+          <Card style={[styles.introCard, { backgroundColor: `${theme.colors.primary}10` }]} mode="contained" onPress={dismissIntro}>
             <Card.Content style={styles.introContent}>
               <MaterialCommunityIcons name="information-outline" size={20} color={theme.colors.primary} />
               <Text variant="bodySmall" style={{ color: theme.colors.primary, flex: 1, marginLeft: 10, lineHeight: 18 }}>

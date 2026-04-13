@@ -73,7 +73,7 @@ export default function DemoLibrary() {
   const theme = useTheme<AppTheme>();
   const { t } = useTranslation();
   const router = useRouter();
-  const { introOpacity, introTranslateY, contentOpacity } = useDemoFadeIn("coach-library");
+  const { introOpacity, introTranslateY, contentOpacity, dismissIntro } = useDemoFadeIn("coach-library");
   const [selectedGroup, setSelectedGroup] = useState("All");
   const demoExercises = useMemo(() => getDemoExercises(t), [t]);
 
@@ -84,7 +84,7 @@ export default function DemoLibrary() {
   return (
     <ScrollView style={{ flex: 1, backgroundColor: theme.colors.background }} contentContainerStyle={s.content}>
       <Animated.View style={{ opacity: introOpacity, transform: [{ translateY: introTranslateY }] }}>
-        <Card style={[s.introCard, { backgroundColor: `${theme.colors.primary}10` }]} mode="contained">
+        <Card style={[s.introCard, { backgroundColor: `${theme.colors.primary}10` }]} mode="contained" onPress={dismissIntro}>
           <Card.Content style={s.introContent}>
             <MaterialCommunityIcons name="information-outline" size={20} color={theme.colors.primary} />
             <Text variant="bodySmall" style={{ color: theme.colors.primary, flex: 1, marginLeft: 10, lineHeight: 18 }}>

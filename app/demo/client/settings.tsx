@@ -30,7 +30,7 @@ export default function DemoClientSettings() {
   const theme = useTheme<AppTheme>();
   const { t } = useTranslation();
   const router = useRouter();
-  const { introOpacity, introTranslateY, contentOpacity } = useDemoFadeIn("client-settings");
+  const { introOpacity, introTranslateY, contentOpacity, dismissIntro } = useDemoFadeIn("client-settings");
   const themePref = useSettingsStore((s) => s.theme);
   const langPref = useSettingsStore((s) => s.language);
   const setTheme = useSettingsStore((s) => s.setTheme);
@@ -54,7 +54,7 @@ export default function DemoClientSettings() {
     <>
     <ScrollView style={{ flex: 1, backgroundColor: theme.colors.background }} contentContainerStyle={s.content}>
       <Animated.View style={{ opacity: introOpacity, transform: [{ translateY: introTranslateY }] }}>
-        <Card style={[s.introCard, { backgroundColor: `${theme.colors.secondary}10` }]} mode="contained">
+        <Card style={[s.introCard, { backgroundColor: `${theme.colors.secondary}10` }]} mode="contained" onPress={dismissIntro}>
           <Card.Content style={s.introContent}>
             <MaterialCommunityIcons name="information-outline" size={20} color={theme.colors.secondary} />
             <Text variant="bodySmall" style={{ color: theme.colors.secondary, flex: 1, marginLeft: 10, lineHeight: 18 }}>

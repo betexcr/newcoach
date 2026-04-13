@@ -36,7 +36,7 @@ export default function DemoWorkoutBuilder() {
   const theme = useTheme<AppTheme>();
   const router = useRouter();
   const demoExercises = useMemo(() => getDemoExercises(t), [t]);
-  const { introOpacity, introTranslateY, contentOpacity } = useDemoFadeIn("new-workout");
+  const { introOpacity, introTranslateY, contentOpacity, dismissIntro } = useDemoFadeIn("new-workout");
 
   const [name, setName] = useState("");
   const [description, setDescription] = useState("");
@@ -95,7 +95,7 @@ export default function DemoWorkoutBuilder() {
 
       <ScrollView contentContainerStyle={styles.content} keyboardShouldPersistTaps="handled">
         <Animated.View style={{ opacity: introOpacity, transform: [{ translateY: introTranslateY }] }}>
-          <Card style={[styles.introCard, { backgroundColor: `${theme.colors.primary}10` }]} mode="contained">
+          <Card style={[styles.introCard, { backgroundColor: `${theme.colors.primary}10` }]} mode="contained" onPress={dismissIntro}>
             <Card.Content style={styles.introContent}>
               <MaterialCommunityIcons name="information-outline" size={20} color={theme.colors.primary} />
               <Text variant="bodySmall" style={{ color: theme.colors.primary, flex: 1, marginLeft: 10, lineHeight: 18 }}>

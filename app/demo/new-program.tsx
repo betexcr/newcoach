@@ -14,7 +14,7 @@ export default function DemoCreateProgram() {
   const { t } = useTranslation();
   const theme = useTheme<AppTheme>();
   const router = useRouter();
-  const { introOpacity, introTranslateY, contentOpacity } = useDemoFadeIn("new-program");
+  const { introOpacity, introTranslateY, contentOpacity, dismissIntro } = useDemoFadeIn("new-program");
 
   function goBack() {
     router.navigate({ pathname: "/demo/coach/library" } as any);
@@ -49,7 +49,7 @@ export default function DemoCreateProgram() {
       <KeyboardAvoidingView style={{ flex: 1 }} behavior={Platform.OS === "ios" ? "padding" : undefined}>
         <ScrollView contentContainerStyle={styles.content} keyboardShouldPersistTaps="handled">
           <Animated.View style={{ opacity: introOpacity, transform: [{ translateY: introTranslateY }] }}>
-            <Card style={[styles.introCard, { backgroundColor: `${theme.colors.primary}10` }]} mode="contained">
+            <Card style={[styles.introCard, { backgroundColor: `${theme.colors.primary}10` }]} mode="contained" onPress={dismissIntro}>
               <Card.Content style={styles.introContent}>
                 <MaterialCommunityIcons name="information-outline" size={20} color={theme.colors.primary} />
                 <Text variant="bodySmall" style={{ color: theme.colors.primary, flex: 1, marginLeft: 10, lineHeight: 18 }}>

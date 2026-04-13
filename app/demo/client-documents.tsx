@@ -25,7 +25,7 @@ export default function DemoClientDocuments() {
   const theme = useTheme<AppTheme>();
   const { t } = useTranslation();
   const router = useRouter();
-  const { introOpacity, introTranslateY, contentOpacity } = useDemoFadeIn("client-documents");
+  const { introOpacity, introTranslateY, contentOpacity, dismissIntro } = useDemoFadeIn("client-documents");
 
   return (
     <View style={[s.container, { backgroundColor: theme.colors.background }]}>
@@ -49,7 +49,7 @@ export default function DemoClientDocuments() {
         contentContainerStyle={s.list}
         ListHeaderComponent={
           <Animated.View style={{ opacity: introOpacity, transform: [{ translateY: introTranslateY }] }}>
-            <Card style={[s.introCard, { backgroundColor: `${theme.colors.secondary}10` }]} mode="contained">
+            <Card style={[s.introCard, { backgroundColor: `${theme.colors.secondary}10` }]} mode="contained" onPress={dismissIntro}>
               <Card.Content style={s.introContent}>
                 <MaterialCommunityIcons name="information-outline" size={20} color={theme.colors.secondary} />
                 <Text variant="bodySmall" style={{ color: theme.colors.secondary, flex: 1, marginLeft: 10, lineHeight: 18 }}>

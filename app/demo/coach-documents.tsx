@@ -26,7 +26,7 @@ export default function DemoCoachDocuments() {
   const theme = useTheme<AppTheme>();
   const { t } = useTranslation();
   const router = useRouter();
-  const { introOpacity, introTranslateY, contentOpacity } = useDemoFadeIn("coach-documents");
+  const { introOpacity, introTranslateY, contentOpacity, dismissIntro } = useDemoFadeIn("coach-documents");
   const [docs, setDocs] = useState(demoDocuments);
 
   function handleAssign(doc: DemoDocument) {
@@ -78,7 +78,7 @@ export default function DemoCoachDocuments() {
         contentContainerStyle={s.list}
         ListHeaderComponent={
           <Animated.View style={{ opacity: introOpacity, transform: [{ translateY: introTranslateY }] }}>
-            <Card style={[s.introCard, { backgroundColor: `${theme.colors.primary}10` }]} mode="contained">
+            <Card style={[s.introCard, { backgroundColor: `${theme.colors.primary}10` }]} mode="contained" onPress={dismissIntro}>
               <Card.Content style={s.introContent}>
                 <MaterialCommunityIcons name="information-outline" size={20} color={theme.colors.primary} />
                 <Text variant="bodySmall" style={{ color: theme.colors.primary, flex: 1, marginLeft: 10, lineHeight: 18 }}>
