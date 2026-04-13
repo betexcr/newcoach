@@ -40,68 +40,56 @@ export function DemoTooltipProvider({ children }: { children: ReactNode }) {
     };
   }, []);
 
+  const hide = useCallback(() => {
+    if (timer.current) clearTimeout(timer.current);
+    Animated.parallel([
+      Animated.timing(opacity, { toValue: 0, duration: 200, useNativeDriver: true }),
+      Animated.timing(translateY, { toValue: 20, duration: 200, useNativeDriver: true }),
+    ]).start();
+  }, [opacity, translateY]);
+
   const show = useCallback(() => {
     if (timer.current) clearTimeout(timer.current);
     opacity.setValue(0);
     translateY.setValue(20);
     Animated.parallel([
-      Animated.timing(opacity, {
-        toValue: 1,
-        duration: 200,
-        useNativeDriver: true,
-      }),
-      Animated.timing(translateY, {
-        toValue: 0,
-        duration: 200,
-        useNativeDriver: true,
-      }),
+      Animated.timing(opacity, { toValue: 1, duration: 200, useNativeDriver: true }),
+      Animated.timing(translateY, { toValue: 0, duration: 200, useNativeDriver: true }),
     ]).start();
-    timer.current = setTimeout(() => {
-      Animated.parallel([
-        Animated.timing(opacity, {
-          toValue: 0,
-          duration: 300,
-          useNativeDriver: true,
-        }),
-        Animated.timing(translateY, {
-          toValue: 20,
-          duration: 300,
-          useNativeDriver: true,
-        }),
-      ]).start();
-    }, 2500);
-  }, [opacity, translateY]);
+    timer.current = setTimeout(hide, 2500);
+  }, [opacity, translateY, hide]);
 
   return (
     <Ctx.Provider value={{ show }}>
       {children}
-      <Animated.View
-        style={[
-          s.toast,
-          {
-            backgroundColor: theme.colors.inverseSurface,
-            opacity,
-            transform: [{ translateY }],
-          },
-        ]}
-        pointerEvents="none"
-      >
-        <MaterialCommunityIcons
-          name="lock-outline"
-          size={16}
-          color={theme.colors.inverseOnSurface}
-        />
-        <Text
-          variant="bodySmall"
-          style={{
-            color: theme.colors.inverseOnSurface,
-            marginLeft: 8,
-            flex: 1,
-          }}
+      <Pressable onPress={hide} style={StyleSheet.absoluteFill} pointerEvents="box-none">
+        <Animated.View
+          style={[
+            s.toast,
+            {
+              backgroundColor: theme.colors.inverseSurface,
+              opacity,
+              transform: [{ translateY }],
+            },
+          ]}
         >
-          {t("demo.limitedFeature")}
-        </Text>
-      </Animated.View>
+          <MaterialCommunityIcons
+            name="lock-outline"
+            size={16}
+            color={theme.colors.inverseOnSurface}
+          />
+          <Text
+            variant="bodySmall"
+            style={{
+              color: theme.colors.inverseOnSurface,
+              marginLeft: 8,
+              flex: 1,
+            }}
+          >
+            {t("demo.limitedFeature")}
+          </Text>
+        </Animated.View>
+      </Pressable>
     </Ctx.Provider>
   );
 }
