@@ -16,6 +16,7 @@ import {
   TextInput,
   Card,
   IconButton,
+  Avatar,
 } from "react-native-paper";
 import { SafeAreaView } from "react-native-safe-area-context";
 import { MaterialCommunityIcons } from "@expo/vector-icons";
@@ -24,7 +25,7 @@ import DraggableFlatList, {
   ScaleDecorator,
   type RenderItemParams,
 } from "react-native-draggable-flatlist";
-import { getDemoExercises } from "./mock-data";
+import { getDemoExercises, demoClients } from "./mock-data";
 import type { AppTheme } from "@/lib/theme";
 import { useDemoFadeIn } from "./use-demo-fade";
 import { DemoPress } from "./DemoTooltip";
@@ -140,6 +141,21 @@ export default function DemoWorkoutBuilder() {
   const [description, setDescription] = useState("");
   const [exercises, setExercises] = useState<WorkoutExercise[]>([]);
   const [showExercisePicker, setShowExercisePicker] = useState(false);
+  const [showClientPicker, setShowClientPicker] = useState(false);
+
+  const activeClients = useMemo(
+    () => demoClients.filter((c) => c.status === "active"),
+    []
+  );
+
+  function handleAssignToClient(clientName: string) {
+    setShowClientPicker(false);
+    Alert.alert(
+      t("library.assignedTitle"),
+      t("library.assignedMessage", { name: clientName }),
+      [{ text: t("common.ok"), onPress: goBack }]
+    );
+  }
 
   function goBack() {
     router.navigate({ pathname: "/demo/coach/library" } as any);
@@ -250,9 +266,23 @@ export default function DemoWorkoutBuilder() {
         </Pressable>
 
         <View style={styles.actions}>
-          <DemoPress style={[styles.primaryBtn, { backgroundColor: theme.colors.primary }]} accessibilityRole="button">
+          <Pressable
+            style={[styles.primaryBtn, { backgroundColor: theme.colors.primary }]}
+            accessibilityRole="button"
+            onPress={() => {
+              if (!name.trim()) {
+                Alert.alert(t("common.required"), t("library.enterWorkoutName"));
+                return;
+              }
+              if (exercises.length === 0) {
+                Alert.alert(t("common.required"), t("library.addAtLeastOneExercise"));
+                return;
+              }
+              setShowClientPicker(true);
+            }}
+          >
             <Text variant="labelLarge" style={{ color: theme.colors.onPrimary, fontWeight: "700" }}>{t("library.assignToClient")}</Text>
-          </DemoPress>
+          </Pressable>
           <DemoPress style={[styles.secondaryBtn, { borderColor: theme.colors.primary }]} accessibilityRole="button">
             <Text variant="labelLarge" style={{ color: theme.colors.primary, fontWeight: "700" }}>{t("library.saveAsTemplate")}</Text>
           </DemoPress>
@@ -305,6 +335,48 @@ export default function DemoWorkoutBuilder() {
                   <MaterialCommunityIcons name="plus" size={22} color={theme.colors.primary} />
                 </Pressable>
               )}
+            />
+          </View>
+        </View>
+      </Modal>
+
+      <Modal visible={showClientPicker} animationType="slide" transparent onRequestClose={() => setShowClientPicker(false)}>
+        <View style={[styles.modalOverlay, { backgroundColor: theme.custom.scrim }]}>
+          <View style={[styles.modalContent, { backgroundColor: theme.colors.surface }]}>
+            <View style={styles.modalHeader}>
+              <Text variant="titleLarge" style={{ color: theme.colors.onSurface, fontWeight: "700" }}>{t("library.selectClient")}</Text>
+              <IconButton icon="close" size={24} onPress={() => setShowClientPicker(false)} />
+            </View>
+            <FlatList
+              data={activeClients}
+              keyExtractor={(item) => item.id}
+              renderItem={({ item }) => {
+                const initials = item.profile?.full_name
+                  ? item.profile.full_name.split(" ").map((n: string) => n[0]).join("").toUpperCase()
+                  : "?";
+                return (
+                  <Pressable
+                    style={[styles.pickerRow, { borderBottomColor: theme.colors.outline }]}
+                    onPress={() => handleAssignToClient(item.profile?.full_name ?? t("dashboard.fallbackClient"))}
+                  >
+                    <Avatar.Text
+                      size={40}
+                      label={initials}
+                      style={{ backgroundColor: theme.colors.primaryContainer }}
+                      labelStyle={{ color: theme.colors.primary }}
+                    />
+                    <View style={{ flex: 1, marginLeft: 12 }}>
+                      <Text variant="titleMedium" style={{ color: theme.colors.onSurface, fontWeight: "600" }}>
+                        {item.profile?.full_name ?? t("clients.unknown")}
+                      </Text>
+                      <Text variant="bodySmall" style={{ color: theme.colors.onSurfaceVariant }}>
+                        {item.profile?.email ?? ""}
+                      </Text>
+                    </View>
+                    <MaterialCommunityIcons name="chevron-right" size={22} color={theme.colors.onSurfaceVariant} />
+                  </Pressable>
+                );
+              }}
             />
           </View>
         </View>
