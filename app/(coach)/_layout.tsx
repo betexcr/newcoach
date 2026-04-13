@@ -40,7 +40,7 @@ export default function CoachLayout() {
   const { t } = useTranslation();
   const insets = useSafeAreaInsets();
   const authLoading = useRequireAuth();
-  const bottomInset = Math.max(insets.bottom, 6);
+  const bottomInset = Math.max(insets.bottom, 16);
 
   if (authLoading) {
     return (
@@ -60,7 +60,7 @@ export default function CoachLayout() {
           backgroundColor: theme.colors.surface,
           borderTopColor: theme.colors.outline,
           borderTopWidth: 0.5,
-          height: 54 + bottomInset,
+          height: 62 + bottomInset,
           paddingBottom: bottomInset,
           paddingTop: 6,
         },
