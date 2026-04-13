@@ -8,12 +8,39 @@ import type { AppTheme } from "@/lib/theme";
 import type { Exercise } from "@/types/database";
 import { useDemoFadeIn } from "../use-demo-fade";
 import { DemoPress } from "../DemoTooltip";
-import { getDemoExercises, demoTemplates, demoProgram, demoProgramWorkouts, demoExerciseVideos } from "../mock-data";
+import { getDemoExercises, demoTemplates, demoProgram, demoProgramWorkouts, demoExerciseVideos, exerciseI18nKeys, workoutNameKeys } from "../mock-data";
 
-const MUSCLE_GROUPS = ["All", "Chest", "Back", "Legs", "Shoulders", "Arms", "Core"] as const;
+const MUSCLE_GROUPS = [
+  { key: "all", labelKey: "demo.all" },
+  { key: "chest", labelKey: "muscleGroups.chest" },
+  { key: "back", labelKey: "muscleGroups.back" },
+  { key: "legs", labelKey: "muscleGroups.legs" },
+  { key: "shoulders", labelKey: "muscleGroups.shoulders" },
+  { key: "arms", labelKey: "muscleGroups.arms" },
+  { key: "core", labelKey: "muscleGroups.core" },
+] as const;
+
+function translateMuscle(mg: string | null, t: (k: string) => string): string {
+  if (!mg) return "";
+  const key = `muscleGroups.${mg.toLowerCase()}` as const;
+  const v = t(key);
+  return v !== key ? v : mg;
+}
+
+function translateEquipment(eq: string | null | undefined, t: (k: string) => string): string {
+  if (!eq) return "";
+  const key = `equipment.${eq.toLowerCase()}` as const;
+  const v = t(key);
+  return v !== key ? v : eq;
+}
 
 function ExerciseCard({ exercise, hasVideo, theme, t }: { exercise: Exercise; hasVideo: boolean; theme: AppTheme; t: (k: string) => string }) {
   const [expanded, setExpanded] = useState(false);
+  const i18nKey = exerciseI18nKeys[exercise.id];
+  const displayName = i18nKey ? t(`${i18nKey}.name`) : exercise.name;
+  const displayDesc = i18nKey ? t(`${i18nKey}.description`) : exercise.description;
+  const displayMuscle = translateMuscle(exercise.muscle_group, t);
+  const displayEquipment = translateEquipment(exercise.equipment, t);
 
   return (
     <Card
@@ -22,9 +49,9 @@ function ExerciseCard({ exercise, hasVideo, theme, t }: { exercise: Exercise; ha
     >
       <View style={s.exerciseRow}>
         <View style={{ flex: 1 }}>
-          <Text variant="titleMedium" style={{ color: theme.colors.onSurface, fontWeight: "600" }}>{exercise.name}</Text>
-          <Text variant="bodySmall" style={{ color: theme.colors.onSurfaceVariant, textTransform: "capitalize", marginTop: 2 }}>
-            {exercise.muscle_group}{exercise.equipment ? ` \u00B7 ${exercise.equipment}` : ""}
+          <Text variant="titleMedium" style={{ color: theme.colors.onSurface, fontWeight: "600" }}>{displayName}</Text>
+          <Text variant="bodySmall" style={{ color: theme.colors.onSurfaceVariant, marginTop: 2 }}>
+            {displayMuscle}{displayEquipment ? ` \u00B7 ${displayEquipment}` : ""}
           </Text>
         </View>
         {hasVideo && (
@@ -38,14 +65,14 @@ function ExerciseCard({ exercise, hasVideo, theme, t }: { exercise: Exercise; ha
       {expanded && (
         <View style={[s.expandedContent, { borderTopColor: theme.colors.outlineVariant }]}>
           <View style={{ flexDirection: "row", gap: 8, marginBottom: 10 }}>
-            <Chip mode="flat" compact style={{ backgroundColor: theme.colors.primaryContainer }} textStyle={{ fontSize: 11, textTransform: "capitalize" }}>{exercise.muscle_group}</Chip>
-            {exercise.equipment && (
-              <Chip mode="flat" compact style={{ backgroundColor: theme.colors.surfaceVariant }} textStyle={{ fontSize: 11, textTransform: "capitalize" }}>{exercise.equipment}</Chip>
-            )}
+            <Chip mode="flat" compact style={{ backgroundColor: theme.colors.primaryContainer }} textStyle={{ fontSize: 11 }}>{displayMuscle}</Chip>
+            {displayEquipment ? (
+              <Chip mode="flat" compact style={{ backgroundColor: theme.colors.surfaceVariant }} textStyle={{ fontSize: 11 }}>{displayEquipment}</Chip>
+            ) : null}
           </View>
-          {exercise.description ? (
+          {displayDesc ? (
             <Text variant="bodyMedium" style={{ color: theme.colors.onSurfaceVariant, lineHeight: 20 }}>
-              {exercise.description}
+              {displayDesc}
             </Text>
           ) : null}
           {hasVideo && (
@@ -74,12 +101,12 @@ export default function DemoLibrary() {
   const { t } = useTranslation();
   const router = useRouter();
   const { introOpacity, introTranslateY, contentOpacity, dismissIntro, introCollapsed } = useDemoFadeIn("coach-library");
-  const [selectedGroup, setSelectedGroup] = useState("All");
+  const [selectedGroup, setSelectedGroup] = useState("all");
   const demoExercises = useMemo(() => getDemoExercises(t), [t]);
 
-  const filteredExercises = selectedGroup === "All"
+  const filteredExercises = selectedGroup === "all"
     ? demoExercises
-    : demoExercises.filter((ex) => ex.muscle_group.toLowerCase() === selectedGroup.toLowerCase());
+    : demoExercises.filter((ex) => ex.muscle_group.toLowerCase() === selectedGroup);
 
   return (
     <ScrollView style={{ flex: 1, backgroundColor: theme.colors.background }} contentContainerStyle={s.content}>
@@ -102,18 +129,18 @@ export default function DemoLibrary() {
       </Text>
 
       <View style={s.chipRow}>
-        {MUSCLE_GROUPS.map((label) => {
-          const active = label === selectedGroup;
+        {MUSCLE_GROUPS.map((group) => {
+          const active = group.key === selectedGroup;
           return (
             <Chip
-              key={label}
+              key={group.key}
               mode={active ? "flat" : "outlined"}
               selected={active}
-              onPress={() => setSelectedGroup(label)}
+              onPress={() => setSelectedGroup(group.key)}
               style={[s.chip, active && { backgroundColor: theme.colors.primary }]}
               textStyle={[{ textTransform: "capitalize", fontSize: 13 }, active && { color: theme.colors.onPrimary }]}
             >
-              {label}
+              {t(group.labelKey)}
             </Chip>
           );
         })}
@@ -154,7 +181,7 @@ export default function DemoLibrary() {
           <Card.Content>
             <Text variant="labelLarge" style={{ color: theme.colors.onSurfaceVariant, marginBottom: 4 }}>{t("demo.workoutName")}</Text>
             <View style={[s.fakeInput, { borderColor: theme.colors.outline }]}>
-              <Text variant="bodyLarge" style={{ color: theme.colors.onSurface }}>Upper Body Strength</Text>
+              <Text variant="bodyLarge" style={{ color: theme.colors.onSurface }}>{t(workoutNameKeys["Upper Body Strength"] ?? "Upper Body Strength")}</Text>
             </View>
             <Text variant="labelLarge" style={{ color: theme.colors.onSurfaceVariant, marginBottom: 4, marginTop: 12 }}>{t("demo.description")}</Text>
             <View style={[s.fakeInput, { borderColor: theme.colors.outline }]}>
@@ -164,11 +191,14 @@ export default function DemoLibrary() {
         </Card>
       </Pressable>
 
-      {demoTemplates[0].exercises.slice(0, 3).map((ex) => (
+      {demoTemplates[0].exercises.slice(0, 3).map((ex) => {
+        const exI18n = exerciseI18nKeys[ex.exercise_id];
+        const exName = exI18n ? t(`${exI18n}.name`) : ex.exercise_name;
+        return (
         <Card key={ex.exercise_id + ex.order} style={[s.exerciseBlock, { backgroundColor: theme.colors.surface }]}>
           <Card.Content>
             <View style={{ flexDirection: "row", alignItems: "center", justifyContent: "space-between" }}>
-              <Text variant="titleMedium" style={{ color: theme.colors.onSurface, fontWeight: "600" }}>{ex.exercise_name}</Text>
+              <Text variant="titleMedium" style={{ color: theme.colors.onSurface, fontWeight: "600" }}>{exName}</Text>
               <Text variant="labelSmall" style={{ color: theme.colors.onSurfaceVariant }}>{ex.sets.length} sets</Text>
             </View>
             <View style={[s.setHeader, { borderBottomColor: theme.colors.outline }]}>
@@ -187,7 +217,8 @@ export default function DemoLibrary() {
             ))}
           </Card.Content>
         </Card>
-      ))}
+        );
+      })}
 
       <Pressable style={[s.addExerciseBtn, { borderColor: theme.colors.outline }]} onPress={() => router.push({ pathname: "/demo/new-workout" } as any)} accessibilityRole="button">
         <MaterialCommunityIcons name="plus" size={20} color={theme.colors.primary} />
@@ -222,10 +253,10 @@ export default function DemoLibrary() {
         <Card style={[s.programCard, { backgroundColor: theme.colors.surface }]}>
           <Card.Content>
             <View style={{ flexDirection: "row", justifyContent: "space-between", alignItems: "center" }}>
-              <Text variant="titleLarge" style={{ color: theme.colors.onSurface, fontWeight: "700" }}>{demoProgram.name}</Text>
+              <Text variant="titleLarge" style={{ color: theme.colors.onSurface, fontWeight: "700" }}>{t(workoutNameKeys[demoProgram.name] ?? demoProgram.name)}</Text>
               <MaterialCommunityIcons name="chevron-right" size={22} color={theme.colors.onSurfaceVariant} />
             </View>
-            <Text variant="bodySmall" style={{ color: theme.colors.onSurfaceVariant, marginTop: 4 }}>{demoProgram.description}</Text>
+            <Text variant="bodySmall" style={{ color: theme.colors.onSurfaceVariant, marginTop: 4 }}>{t("demo.workoutNames.strengthFoundationsDesc")}</Text>
             <Chip mode="flat" style={{ backgroundColor: theme.colors.primaryContainer, alignSelf: "flex-start", marginTop: 8 }} textStyle={{ fontSize: 11 }}>
               {demoProgram.duration_weeks} {t("demo.weeks")}
             </Chip>
@@ -240,7 +271,7 @@ export default function DemoLibrary() {
             <Text variant="labelSmall" style={{ color: theme.colors.primary, fontWeight: "700" }}>D{pw.day_number}</Text>
           </View>
           <View style={{ flex: 1, marginLeft: 10 }}>
-            <Text variant="bodyMedium" style={{ color: theme.colors.onSurface, fontWeight: "600" }}>{pw.name}</Text>
+            <Text variant="bodyMedium" style={{ color: theme.colors.onSurface, fontWeight: "600" }}>{t(workoutNameKeys[pw.name] ?? pw.name)}</Text>
             <Text variant="bodySmall" style={{ color: theme.colors.onSurfaceVariant }}>{pw.exercises.length} {t("demo.exercises")}</Text>
           </View>
         </View>

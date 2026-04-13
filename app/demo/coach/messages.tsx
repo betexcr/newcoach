@@ -5,7 +5,7 @@ import { useTranslation } from "react-i18next";
 import type { AppTheme } from "@/lib/theme";
 import { useDemoFadeIn } from "../use-demo-fade";
 import { DemoPress } from "../DemoTooltip";
-import { demoConversations, demoChatMessages, COACH_ID } from "../mock-data";
+import { demoConversations, demoChatMessages, COACH_ID, chatMessageKeys, convLastMessageKeys } from "../mock-data";
 
 export default function DemoMessages() {
   const theme = useTheme<AppTheme>();
@@ -38,10 +38,10 @@ export default function DemoMessages() {
           />
           <View style={{ flex: 1, marginLeft: 12 }}>
             <Text variant="bodyMedium" style={{ color: theme.colors.onSurface, fontWeight: "600" }}>
-              {conv.name ?? (conv.type === "direct" ? "Jordan Athlete" : "Group Chat")}
+              {conv.name === "Weekly Motivation" ? t("demo.workoutNames.weeklyMotivation") : (conv.name ?? (conv.type === "direct" ? "Jordan Athlete" : t("messages.typeGroup")))}
             </Text>
             <Text variant="bodySmall" style={{ color: theme.colors.onSurfaceVariant }} numberOfLines={1}>
-              {conv.last_message?.body ?? ""}
+              {convLastMessageKeys[conv.id] ? t(convLastMessageKeys[conv.id]) : (conv.last_message?.body ?? "")}
             </Text>
           </View>
           <MaterialCommunityIcons name="chevron-right" size={20} color={theme.colors.onSurfaceVariant} />
@@ -73,7 +73,7 @@ export default function DemoMessages() {
                 </DemoPress>
               ) : (
                 <Text variant="bodyMedium" style={{ color: isOwn ? theme.colors.onPrimary : theme.colors.onSurface, lineHeight: 20 }}>
-                  {msg.body}
+                  {chatMessageKeys[msg.id] ? t(chatMessageKeys[msg.id]) : msg.body}
                 </Text>
               )}
               <Text variant="labelSmall" style={{ color: isOwn ? theme.colors.onPrimary : theme.colors.onSurfaceVariant, opacity: isOwn ? 0.6 : 1, marginTop: 4, alignSelf: isOwn ? "flex-end" : "flex-start" }}>

@@ -64,7 +64,7 @@ export default function DemoSettings() {
             </View>
             <View style={[s.revenueBadge, { backgroundColor: `${theme.colors.primary}15` }]}>
               <MaterialCommunityIcons name="cash-multiple" size={18} color={theme.colors.primary} />
-              <Text variant="titleMedium" style={{ color: theme.colors.primary, fontWeight: "700", marginLeft: 6 }}>${demoBilling.monthlyRevenue}/mo</Text>
+              <Text variant="titleMedium" style={{ color: theme.colors.primary, fontWeight: "700", marginLeft: 6 }}>${demoBilling.monthlyRevenue}{t("demo.perMonth")}</Text>
             </View>
           </View>
           <View style={[s.billingRow, { borderTopColor: theme.colors.surfaceVariant }]}>

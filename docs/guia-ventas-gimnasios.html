@@ -1,0 +1,351 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Guía de Ventas para Gimnasios — TrueCoach</title>
+<style>
+  @page { margin: 0; size: letter; }
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  body {
+    font-family: 'Segoe UI', system-ui, -apple-system, sans-serif;
+    color: #1a2e44;
+    line-height: 1.55;
+    background: #fff;
+  }
+
+  .cover {
+    height: 100vh;
+    background: linear-gradient(155deg, #1a2e44 0%, #0f3460 40%, #16613b 100%);
+    color: #fff;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    text-align: center;
+    padding: 60px 40px;
+    page-break-after: always;
+  }
+  .cover h1 { font-size: 50px; font-weight: 800; letter-spacing: -1px; margin-bottom: 16px; }
+  .cover .subtitle { font-size: 22px; opacity: .85; max-width: 520px; }
+  .cover .badge {
+    margin-top: 40px;
+    border: 2px solid rgba(255,255,255,.35);
+    border-radius: 40px;
+    padding: 10px 28px;
+    font-size: 14px;
+    text-transform: uppercase;
+    letter-spacing: 2px;
+    opacity: .7;
+  }
+
+  .page {
+    max-width: 720px;
+    margin: 0 auto;
+    padding: 56px 48px;
+    page-break-after: always;
+  }
+  .page:last-child { page-break-after: auto; }
+
+  h2 {
+    font-size: 28px;
+    font-weight: 700;
+    margin-bottom: 24px;
+    color: #0f3460;
+    border-bottom: 3px solid #16613b;
+    padding-bottom: 8px;
+    display: inline-block;
+  }
+  h3 {
+    font-size: 19px;
+    font-weight: 700;
+    margin: 28px 0 10px;
+    color: #1a2e44;
+  }
+  p, li { font-size: 15px; margin-bottom: 10px; }
+  ul, ol { padding-left: 22px; }
+
+  .highlight {
+    background: #f0f7f3;
+    border-left: 4px solid #16613b;
+    border-radius: 8px;
+    padding: 20px 24px;
+    margin: 24px 0;
+  }
+  .highlight strong { color: #16613b; }
+
+  .steps { display: flex; flex-direction: column; gap: 18px; margin: 20px 0; }
+  .step {
+    display: flex;
+    gap: 16px;
+    align-items: flex-start;
+    background: #f8f9fb;
+    border-radius: 10px;
+    padding: 18px 20px;
+  }
+  .step-num {
+    flex-shrink: 0;
+    width: 38px; height: 38px;
+    background: #0f3460;
+    color: #fff;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-weight: 800;
+    font-size: 16px;
+  }
+  .step-body { flex: 1; }
+  .step-body strong { display: block; margin-bottom: 4px; font-size: 16px; }
+  .step-body span { font-size: 14px; color: #4a5568; }
+
+  table {
+    width: 100%;
+    border-collapse: collapse;
+    margin: 20px 0;
+    font-size: 14px;
+  }
+  th {
+    background: #0f3460;
+    color: #fff;
+    text-align: left;
+    padding: 12px 14px;
+    font-weight: 600;
+  }
+  th:first-child { border-radius: 8px 0 0 0; }
+  th:last-child { border-radius: 0 8px 0 0; }
+  td { padding: 12px 14px; border-bottom: 1px solid #e2e8f0; }
+  tr:nth-child(even) td { background: #f8f9fb; }
+
+  .two-col { display: flex; gap: 20px; margin: 20px 0; }
+  .col {
+    flex: 1;
+    border-radius: 10px;
+    padding: 20px;
+  }
+  .col.do { background: #f0f7f3; border: 1px solid #b8dfc9; }
+  .col.dont { background: #fef2f2; border: 1px solid #fca5a5; }
+  .col h4 { margin-bottom: 12px; font-size: 16px; }
+  .col.do h4 { color: #16613b; }
+  .col.dont h4 { color: #b91c1c; }
+  .col li { font-size: 14px; margin-bottom: 6px; }
+
+  .script-box {
+    background: #1a2e44;
+    color: #e2e8f0;
+    border-radius: 10px;
+    padding: 24px 28px;
+    margin: 20px 0;
+    font-size: 14.5px;
+    line-height: 1.65;
+  }
+  .script-box em { color: #6ee7a0; font-style: normal; font-weight: 600; }
+
+  .footer {
+    text-align: center;
+    color: #94a3b8;
+    font-size: 12px;
+    padding: 20px 0 40px;
+  }
+
+  @media print {
+    .cover { height: 100vh; }
+    .page { padding: 40px 36px; }
+  }
+</style>
+</head>
+<body>
+
+<!-- ============ PORTADA ============ -->
+<div class="cover">
+  <h1>Guía de Ventas<br>para Gimnasios</h1>
+  <p class="subtitle">Cómo conseguir gimnasios — una guía sencilla para el equipo de ventas</p>
+  <div class="badge">Uso Interno</div>
+</div>
+
+<!-- ============ PÁGINA 1: LA OFERTA ============ -->
+<div class="page">
+  <h2>La Oferta: Programa Piloto</h2>
+  <p>No simplemente "regalamos meses gratis." Invitamos a los gimnasios a ser <strong>Socios Piloto</strong>. Esto los hace sentir parte del proyecto, filtra a los que no van en serio y nos da feedback real.</p>
+
+  <div class="highlight">
+    <strong>La oferta en una frase:</strong><br>
+    "Te damos 3 meses gratis. A cambio, activas a tus entrenadores, hacemos una llamada corta cada mes y si te encanta, nos dejas usar tu historia como caso de éxito."
+  </div>
+
+  <h3>Qué recibe el gimnasio</h3>
+  <ul>
+    <li><strong>3 meses completamente gratis</strong> — sin tarjeta, sin compromiso</li>
+    <li><strong>Ayuda personalizada para configurar todo</strong> — nosotros lo montamos</li>
+    <li><strong>Línea directa con nuestro equipo</strong> — soporte prioritario durante el piloto</li>
+  </ul>
+
+  <h3>Qué pedimos a cambio</h3>
+  <ul>
+    <li>Activar al menos <strong>3 entrenadores</strong> y <strong>10 clientes</strong> en el primer mes</li>
+    <li>Una <strong>llamada de feedback de 30 minutos</strong> una vez al mes (nada más)</li>
+    <li>Si les gusta el producto, permiso para usar su <strong>nombre y logo</strong> como caso de éxito</li>
+  </ul>
+</div>
+
+<!-- ============ PÁGINA 2: POR QUÉ FUNCIONA ============ -->
+<div class="page">
+  <h2>Por Qué Funciona</h2>
+
+  <div class="steps">
+    <div class="step">
+      <div class="step-num">1</div>
+      <div class="step-body">
+        <strong>Cero riesgo para el gimnasio</strong>
+        <span>No pagan nada y no firman contrato. Lo único que "invierten" es tiempo configurando — que es justo lo que los engancha.</span>
+      </div>
+    </div>
+    <div class="step">
+      <div class="step-num">2</div>
+      <div class="step-body">
+        <strong>Una vez que los datos están dentro, se quedan</strong>
+        <span>Después de 3 meses de entrenamientos, historial de clientes y fotos de progreso, cambiarse se siente como empezar de cero. El producto se retiene solo.</span>
+      </div>
+    </div>
+    <div class="step">
+      <div class="step-num">3</div>
+      <div class="step-body">
+        <strong>La obligación de feedback filtra a los aprovechados</strong>
+        <span>Alguien que no se compromete ni a una llamada de 30 minutos nunca iba a pagar. Esto mantiene limpio nuestro pipeline.</span>
+      </div>
+    </div>
+    <div class="step">
+      <div class="step-num">4</div>
+      <div class="step-body">
+        <strong>Los dueños de gimnasios hablan entre ellos</strong>
+        <span>Un dueño contento en un barrio le cuenta a tres más. Los pilotos tempranos se convierten en nuestro mejor canal de marketing.</span>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ============ PÁGINA 3: LA CONVERSACIÓN ============ -->
+<div class="page">
+  <h2>Cómo Hablar con un Dueño de Gimnasio</h2>
+  <p>Mantenlo casual y con confianza. Aquí tienes un guión sencillo que puedes adaptar:</p>
+
+  <div class="script-box">
+    "Oye [Nombre], estamos creando una plataforma de coaching que hace súper fácil para tus entrenadores programar entrenamientos y hacer seguimiento a los clientes desde el móvil.<br><br>
+    Estamos eligiendo <em>un grupo pequeño de gimnasios</em> en [ciudad] para probarlo gratis durante 3 meses — sin letra pequeña. Solo pedimos feedback honesto para mejorar el producto.<br><br>
+    La configuración toma unos <em>15 minutos</em> — yo mismo te lo monto. ¿Te interesa?"
+  </div>
+
+  <h3>Frases clave que funcionan</h3>
+  <table>
+    <tr><th>Di esto</th><th>Por qué funciona</th></tr>
+    <tr><td>"Un grupo pequeño de gimnasios"</td><td>Crea escasez — se siente exclusivo, no desesperado</td></tr>
+    <tr><td>"Sin letra pequeña"</td><td>Elimina el miedo a quedar atrapado</td></tr>
+    <tr><td>"Yo mismo te lo monto"</td><td>Elimina el trabajo — la objeción más grande desaparece</td></tr>
+    <tr><td>"Feedback honesto"</td><td>Los posiciona como expertos, no como obra de caridad</td></tr>
+  </table>
+
+  <h3>Objeciones comunes</h3>
+  <table>
+    <tr><th>Ellos dicen…</th><th>Tú dices…</th></tr>
+    <tr><td>"Ya usamos [X]"</td><td>"Perfecto — prueba los dos a la vez gratis y quédate con el que prefieran tus entrenadores."</td></tr>
+    <tr><td>"No tengo tiempo"</td><td>"Yo configuro todo. Tú solo dile a tus entrenadores que descarguen la app."</td></tr>
+    <tr><td>"¿Qué pasa después de 3 meses?"</td><td>"Eliges un plan que te funcione, o te vas sin pagar nada. Así de simple."</td></tr>
+    <tr><td>"Suena demasiado bueno"</td><td>"Necesitamos gimnasios reales usándolo para mejorar el producto. Tu feedback es el precio."</td></tr>
+  </table>
+</div>
+
+<!-- ============ PÁGINA 4: DESPUÉS DEL SÍ ============ -->
+<div class="page">
+  <h2>Después de que Digan Sí</h2>
+  <p>La velocidad importa. Cuanto más rápido vean valor, más probable es que se queden.</p>
+
+  <div class="steps">
+    <div class="step">
+      <div class="step-num">1</div>
+      <div class="step-body">
+        <strong>El mismo día: Configurar su cuenta</strong>
+        <span>Crea el gimnasio, añade al entrenador principal y carga 2–3 entrenamientos de ejemplo para que no se vea vacío.</span>
+      </div>
+    </div>
+    <div class="step">
+      <div class="step-num">2</div>
+      <div class="step-body">
+        <strong>Día 1–3: Ayudar a los entrenadores a añadir sus primeros clientes reales</strong>
+        <span>Ofrece una videollamada rápida de 15 min o una visita en persona. Consigue que al menos un entrenador esté asignando entrenamientos.</span>
+      </div>
+    </div>
+    <div class="step">
+      <div class="step-num">3</div>
+      <div class="step-body">
+        <strong>Semana 2: Hacer seguimiento</strong>
+        <span>Un mensaje rápido: "¿Cómo va todo? ¿Algo confuso?" Resuelve problemas rápido — aquí es cuando la mayoría abandona.</span>
+      </div>
+    </div>
+    <div class="step">
+      <div class="step-num">4</div>
+      <div class="step-body">
+        <strong>Mes 1: Primera llamada de feedback</strong>
+        <span>Pregunta qué les encanta, qué falta y si sus clientes están enganchados. Toma notas — esto es oro para el equipo de producto.</span>
+      </div>
+    </div>
+    <div class="step">
+      <div class="step-num">5</div>
+      <div class="step-body">
+        <strong>Mes 3: Conversación de conversión</strong>
+        <span>A estas alturas los datos hacen el trabajo por nosotros. Presenta los precios y pregunta qué plan les queda mejor. No des descuento — el valor habla solo.</span>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ============ PÁGINA 5: SÍ / NO + NÚMEROS ============ -->
+<div class="page">
+  <h2>Qué Hacer y Qué No Hacer</h2>
+
+  <div class="two-col">
+    <div class="col do">
+      <h4>HAZLO</h4>
+      <ul>
+        <li>Ofrece configurar todo tú mismo</li>
+        <li>Haz seguimiento en menos de 24 horas tras el "sí"</li>
+        <li>Preséntalo como una alianza, no como caridad</li>
+        <li>Limita el piloto a 3 meses máximo</li>
+        <li>Pide un testimonio al final</li>
+        <li>Apunta a gimnasios con 3+ entrenadores (más potencial)</li>
+      </ul>
+    </div>
+    <div class="col dont">
+      <h4>NO LO HAGAS</h4>
+      <ul>
+        <li>Dar más de 3 meses gratis</li>
+        <li>Ofrecer descuentos grandes después del piloto (ancla el valor bajo)</li>
+        <li>Saltarte las llamadas de feedback (es nuestra info)</li>
+        <li>Activar un gimnasio y luego desaparecer</li>
+        <li>Perder tiempo con gimnasios que no se comprometen</li>
+        <li>Hablar mal de la competencia — simplemente sé mejor</li>
+      </ul>
+    </div>
+  </div>
+
+  <h2 style="margin-top: 36px;">Referencia Rápida: Los Números</h2>
+  <table>
+    <tr><th>Métrica</th><th>Objetivo</th></tr>
+    <tr><td>Duración del piloto gratuito</td><td>3 meses</td></tr>
+    <tr><td>Mín. entrenadores a activar</td><td>3</td></tr>
+    <tr><td>Mín. clientes a activar</td><td>10</td></tr>
+    <tr><td>Llamadas de feedback</td><td>1 al mes (30 min)</td></tr>
+    <tr><td>Tiempo hasta primer entrenador activo</td><td>&lt; 3 días</td></tr>
+    <tr><td>Seguimiento tras el "sí"</td><td>&lt; 24 horas</td></tr>
+  </table>
+
+  <div class="highlight" style="margin-top: 32px;">
+    <strong>Recuerda:</strong> No estamos regalando nada. Estamos invirtiendo en un socio que nos da feedback, un caso de éxito y boca a boca. Eso vale mucho más que 3 meses de ingresos.
+  </div>
+
+  <div class="footer">
+    <p>TrueCoach — Guía de Ventas para Gimnasios — Confidencial</p>
+  </div>
+</div>
+
+</body>
+</html>

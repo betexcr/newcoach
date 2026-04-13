@@ -13,7 +13,9 @@ import {
   demoConversations,
   demoActivityFeed,
   demoBilling,
+  workoutNameKeys,
 } from "../mock-data";
+import type { DemoActivity } from "../mock-data";
 
 function initials(name: string | null): string {
   if (!name) return "?";
@@ -31,6 +33,24 @@ export default function DemoDashboard() {
     const d = new Date().toISOString().split("T")[0];
     return w.scheduled_date === d;
   });
+
+  function translateActivityTitle(item: DemoActivity): string {
+    const nameMatch = item.title.match(/^(.+?)\s+(completed|assigned|joined)$/);
+    const rawName = nameMatch?.[1] ?? item.title;
+    const wKey = workoutNameKeys[rawName];
+    const translatedName = wKey ? t(wKey) : rawName;
+    if (item.type === "workout_completed") return t("dashboard.activityCompleted", { name: translatedName });
+    if (item.type === "workout_assigned") return t("dashboard.activityAssigned", { name: translatedName });
+    return t("dashboard.clientJoined", { name: item.clientName });
+  }
+
+  function translateActivitySubtitle(subtitle: string): string {
+    if (subtitle === "Today") return t("demo.todayLabel");
+    if (subtitle === "Yesterday") return t("demo.yesterdayLabel");
+    const daysMatch = subtitle.match(/^(\d+)\s+days?\s+ago$/);
+    if (daysMatch) return t("demo.daysAgoLabel", { count: parseInt(daysMatch[1], 10) });
+    return subtitle;
+  }
 
   return (
     <ScrollView style={{ flex: 1, backgroundColor: theme.colors.background }} contentContainerStyle={s.content}>
@@ -121,11 +141,11 @@ export default function DemoDashboard() {
             </View>
             <View style={{ flex: 1, marginLeft: 12 }}>
               <Text variant="bodyMedium" style={{ color: theme.colors.onSurface, fontWeight: "600" }} numberOfLines={1}>
-                {item.title}
+                {translateActivityTitle(item)}
               </Text>
               <View style={{ flexDirection: "row", alignItems: "center", gap: 8, marginTop: 2 }}>
                 <Text variant="bodySmall" style={{ color: theme.colors.onSurfaceVariant }}>
-                  {item.subtitle}
+                  {translateActivitySubtitle(item.subtitle)}
                 </Text>
                 <View style={[s.clientTag, { backgroundColor: theme.colors.primaryContainer }]}>
                   <MaterialCommunityIcons name="account" size={12} color={theme.colors.primary} />

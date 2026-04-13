@@ -5,7 +5,7 @@ import { useTranslation } from "react-i18next";
 import type { AppTheme } from "@/lib/theme";
 import { useDemoFadeIn } from "../use-demo-fade";
 import { DemoPress } from "../DemoTooltip";
-import { demoClients, demoAssignedWorkouts } from "../mock-data";
+import { demoClients, demoAssignedWorkouts, workoutNameKeys } from "../mock-data";
 
 function initials(name: string | null): string {
   if (!name) return "?";
@@ -77,7 +77,7 @@ export default function DemoClients() {
                     : theme.colors.surfaceVariant,
             }}
           >
-            {c.status}
+            {t(`status.${c.status}`)}
           </Chip>
         </DemoPress>
       ))}
@@ -98,14 +98,14 @@ export default function DemoClients() {
             jordan@email.com
           </Text>
         </View>
-        <Chip mode="flat" style={{ backgroundColor: theme.colors.secondaryContainer }} textStyle={{ fontSize: 11, textTransform: "capitalize" }}>active</Chip>
+        <Chip mode="flat" style={{ backgroundColor: theme.colors.secondaryContainer }} textStyle={{ fontSize: 11, textTransform: "capitalize" }}>{t("status.active")}</Chip>
       </View>
 
       <View style={s.statsRow}>
         {[
           { label: t("demo.completed"), value: "16", icon: "check-circle" },
           { label: t("demo.compliance"), value: "78%", icon: "percent" },
-          { label: t("demo.streak"), value: "8 days", icon: "fire" },
+          { label: t("demo.streak"), value: t("today.dayCount", { count: 8 }), icon: "fire" },
         ].map((st) => (
           <Card key={st.label} style={[s.statCard, { backgroundColor: theme.colors.surface }]}>
             <Card.Content style={s.statContent}>
@@ -123,13 +123,13 @@ export default function DemoClients() {
       {demoAssignedWorkouts.slice(0, 4).map((w) => (
         <DemoPress key={w.id} style={[s.workoutRow, { backgroundColor: theme.colors.surface }]}>
           <View style={{ flex: 1 }}>
-            <Text variant="bodyMedium" style={{ color: theme.colors.onSurface, fontWeight: "600" }}>{w.name}</Text>
+            <Text variant="bodyMedium" style={{ color: theme.colors.onSurface, fontWeight: "600" }}>{t(workoutNameKeys[w.name] ?? w.name)}</Text>
             <Text variant="bodySmall" style={{ color: theme.colors.onSurfaceVariant }}>
               {w.scheduled_date} &middot; {w.exercises.length} {t("demo.exercises")}
             </Text>
           </View>
           <Text variant="labelSmall" style={{ color: statusColor(w.status, theme), fontWeight: "600", textTransform: "capitalize" }}>
-            {w.status}
+            {t(`status.${w.status}`)}
           </Text>
         </DemoPress>
       ))}

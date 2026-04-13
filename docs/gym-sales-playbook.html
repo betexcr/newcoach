@@ -1,0 +1,359 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Gym Sales Playbook — TrueCoach</title>
+<style>
+  @page { margin: 0; size: letter; }
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  body {
+    font-family: 'Segoe UI', system-ui, -apple-system, sans-serif;
+    color: #1a2e44;
+    line-height: 1.55;
+    background: #fff;
+  }
+
+  /* ---------- COVER ---------- */
+  .cover {
+    height: 100vh;
+    background: linear-gradient(155deg, #1a2e44 0%, #0f3460 40%, #16613b 100%);
+    color: #fff;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    text-align: center;
+    padding: 60px 40px;
+    page-break-after: always;
+  }
+  .cover h1 { font-size: 52px; font-weight: 800; letter-spacing: -1px; margin-bottom: 16px; }
+  .cover .subtitle { font-size: 22px; opacity: .85; max-width: 500px; }
+  .cover .badge {
+    margin-top: 40px;
+    border: 2px solid rgba(255,255,255,.35);
+    border-radius: 40px;
+    padding: 10px 28px;
+    font-size: 14px;
+    text-transform: uppercase;
+    letter-spacing: 2px;
+    opacity: .7;
+  }
+
+  /* ---------- PAGE LAYOUT ---------- */
+  .page {
+    max-width: 720px;
+    margin: 0 auto;
+    padding: 56px 48px;
+    page-break-after: always;
+  }
+  .page:last-child { page-break-after: auto; }
+
+  h2 {
+    font-size: 28px;
+    font-weight: 700;
+    margin-bottom: 24px;
+    color: #0f3460;
+    border-bottom: 3px solid #16613b;
+    padding-bottom: 8px;
+    display: inline-block;
+  }
+  h3 {
+    font-size: 19px;
+    font-weight: 700;
+    margin: 28px 0 10px;
+    color: #1a2e44;
+  }
+  p, li { font-size: 15px; margin-bottom: 10px; }
+  ul, ol { padding-left: 22px; }
+
+  /* ---------- HIGHLIGHT BOX ---------- */
+  .highlight {
+    background: #f0f7f3;
+    border-left: 4px solid #16613b;
+    border-radius: 8px;
+    padding: 20px 24px;
+    margin: 24px 0;
+  }
+  .highlight strong { color: #16613b; }
+
+  /* ---------- STEP CARDS ---------- */
+  .steps { display: flex; flex-direction: column; gap: 18px; margin: 20px 0; }
+  .step {
+    display: flex;
+    gap: 16px;
+    align-items: flex-start;
+    background: #f8f9fb;
+    border-radius: 10px;
+    padding: 18px 20px;
+  }
+  .step-num {
+    flex-shrink: 0;
+    width: 38px; height: 38px;
+    background: #0f3460;
+    color: #fff;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-weight: 800;
+    font-size: 16px;
+  }
+  .step-body { flex: 1; }
+  .step-body strong { display: block; margin-bottom: 4px; font-size: 16px; }
+  .step-body span { font-size: 14px; color: #4a5568; }
+
+  /* ---------- TABLE ---------- */
+  table {
+    width: 100%;
+    border-collapse: collapse;
+    margin: 20px 0;
+    font-size: 14px;
+  }
+  th {
+    background: #0f3460;
+    color: #fff;
+    text-align: left;
+    padding: 12px 14px;
+    font-weight: 600;
+  }
+  th:first-child { border-radius: 8px 0 0 0; }
+  th:last-child { border-radius: 0 8px 0 0; }
+  td { padding: 12px 14px; border-bottom: 1px solid #e2e8f0; }
+  tr:nth-child(even) td { background: #f8f9fb; }
+
+  /* ---------- DO / DON'T ---------- */
+  .two-col { display: flex; gap: 20px; margin: 20px 0; }
+  .col {
+    flex: 1;
+    border-radius: 10px;
+    padding: 20px;
+  }
+  .col.do { background: #f0f7f3; border: 1px solid #b8dfc9; }
+  .col.dont { background: #fef2f2; border: 1px solid #fca5a5; }
+  .col h4 { margin-bottom: 12px; font-size: 16px; }
+  .col.do h4 { color: #16613b; }
+  .col.dont h4 { color: #b91c1c; }
+  .col li { font-size: 14px; margin-bottom: 6px; }
+
+  /* ---------- SCRIPT BOX ---------- */
+  .script-box {
+    background: #1a2e44;
+    color: #e2e8f0;
+    border-radius: 10px;
+    padding: 24px 28px;
+    margin: 20px 0;
+    font-size: 14.5px;
+    line-height: 1.65;
+  }
+  .script-box em { color: #6ee7a0; font-style: normal; font-weight: 600; }
+
+  /* ---------- FOOTER ---------- */
+  .footer {
+    text-align: center;
+    color: #94a3b8;
+    font-size: 12px;
+    padding: 20px 0 40px;
+  }
+
+  @media print {
+    .cover { height: 100vh; }
+    .page { padding: 40px 36px; }
+  }
+</style>
+</head>
+<body>
+
+<!-- ============ COVER ============ -->
+<div class="cover">
+  <h1>Gym Sales Playbook</h1>
+  <p class="subtitle">How to get gyms on board — a simple guide for the sales team</p>
+  <div class="badge">Internal Use Only</div>
+</div>
+
+<!-- ============ PAGE 1: THE OFFER ============ -->
+<div class="page">
+  <h2>The Offer: Pilot Partner Program</h2>
+  <p>We don't just "give free months." We invite gyms to become <strong>Pilot Partners</strong>. This makes them feel invested, filters out time-wasters, and gives us real feedback.</p>
+
+  <div class="highlight">
+    <strong>The deal in one sentence:</strong><br>
+    "We give you 3 months free. In return, you onboard your coaches, jump on a short monthly call with us, and let us use your story if you love it."
+  </div>
+
+  <h3>What the gym gets</h3>
+  <ul>
+    <li><strong>3 months completely free</strong> — no credit card, no commitment</li>
+    <li><strong>Personal setup help</strong> — we configure their first coaches and clients</li>
+    <li><strong>Direct line to our team</strong> — priority support during the pilot</li>
+  </ul>
+
+  <h3>What we ask in return</h3>
+  <ul>
+    <li>Onboard at least <strong>3 coaches</strong> and <strong>10 clients</strong> in the first month</li>
+    <li>A <strong>30-minute feedback call</strong> once a month (that's it)</li>
+    <li>If they like the product, we can use their <strong>name &amp; logo</strong> as a case study</li>
+  </ul>
+</div>
+
+<!-- ============ PAGE 2: WHY THIS WORKS ============ -->
+<div class="page">
+  <h2>Why This Works</h2>
+
+  <div class="steps">
+    <div class="step">
+      <div class="step-num">1</div>
+      <div class="step-body">
+        <strong>Zero risk for the gym</strong>
+        <span>They don't pay anything and don't sign a contract. The only thing they "spend" is time setting up — which is exactly what gets them hooked.</span>
+      </div>
+    </div>
+    <div class="step">
+      <div class="step-num">2</div>
+      <div class="step-body">
+        <strong>Once the data is in, they stay</strong>
+        <span>After 3 months of workouts, client history, and progress photos, switching away feels like starting from scratch. The product retains itself.</span>
+      </div>
+    </div>
+    <div class="step">
+      <div class="step-num">3</div>
+      <div class="step-body">
+        <strong>The feedback obligation filters out freebie-hunters</strong>
+        <span>Someone who won't commit to a 30-min call was never going to pay. This keeps our pipeline clean.</span>
+      </div>
+    </div>
+    <div class="step">
+      <div class="step-num">4</div>
+      <div class="step-body">
+        <strong>Gyms talk to each other</strong>
+        <span>One happy gym owner in a neighborhood tells three others. Early pilots become our best marketing channel.</span>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ============ PAGE 3: THE CONVERSATION ============ -->
+<div class="page">
+  <h2>How to Talk to a Gym Owner</h2>
+  <p>Keep it casual and confident. Here's a simple script you can adapt:</p>
+
+  <div class="script-box">
+    "Hey [Name], we're building a coaching platform that makes it super easy for your trainers to program workouts and track clients from their phone.<br><br>
+    We're picking <em>a handful of gyms</em> in [city] to try it free for 3 months — no strings. All we ask is honest feedback so we can make it great.<br><br>
+    The setup takes about <em>15 minutes</em> — I can do it for you. Interested?"
+  </div>
+
+  <h3>Key phrases that work</h3>
+  <table>
+    <tr><th>Say this</th><th>Why it works</th></tr>
+    <tr><td>"A handful of gyms"</td><td>Creates scarcity — feels exclusive, not desperate</td></tr>
+    <tr><td>"No strings"</td><td>Removes fear of being locked in</td></tr>
+    <tr><td>"I can set it up for you"</td><td>Removes the work — biggest objection gone</td></tr>
+    <tr><td>"Honest feedback"</td><td>Positions them as an expert, not a charity case</td></tr>
+  </table>
+
+  <h3>Common objections</h3>
+  <table>
+    <tr><th>They say…</th><th>You say…</th></tr>
+    <tr><td>"We already use [X]"</td><td>"Perfect — try both side by side for free and keep whichever your coaches prefer."</td></tr>
+    <tr><td>"I don't have time"</td><td>"I'll set everything up. You just tell your coaches to download the app."</td></tr>
+    <tr><td>"What happens after 3 months?"</td><td>"You pick a plan that fits, or walk away with zero cost. Simple."</td></tr>
+    <tr><td>"Sounds too good to be true"</td><td>"We need real gyms using it to make the product better. Your feedback is the price."</td></tr>
+  </table>
+</div>
+
+<!-- ============ PAGE 4: AFTER THE YES ============ -->
+<div class="page">
+  <h2>After They Say Yes</h2>
+  <p>Speed matters. The faster they see value, the more likely they convert.</p>
+
+  <div class="steps">
+    <div class="step">
+      <div class="step-num">1</div>
+      <div class="step-body">
+        <strong>Same day: Set up their account</strong>
+        <span>Create the gym, add their head coach, and load 2–3 sample workouts so it doesn't look empty.</span>
+      </div>
+    </div>
+    <div class="step">
+      <div class="step-num">2</div>
+      <div class="step-body">
+        <strong>Day 1–3: Help coaches add their first real clients</strong>
+        <span>Offer a quick 15-min video call or in-person walkthrough. Get at least one coach actively assigning workouts.</span>
+      </div>
+    </div>
+    <div class="step">
+      <div class="step-num">3</div>
+      <div class="step-body">
+        <strong>Week 2: Check in</strong>
+        <span>Quick text: "How's it going? Anything confusing?" Fix issues fast — this is when most drop-offs happen.</span>
+      </div>
+    </div>
+    <div class="step">
+      <div class="step-num">4</div>
+      <div class="step-body">
+        <strong>Month 1: First feedback call</strong>
+        <span>Ask what they love, what's missing, and whether their clients are engaging. Take notes — this is gold for the product team.</span>
+      </div>
+    </div>
+    <div class="step">
+      <div class="step-num">5</div>
+      <div class="step-body">
+        <strong>Month 3: Conversion conversation</strong>
+        <span>By now the data lock-in has done its job. Present pricing and ask which plan fits. Don't discount — the value should speak for itself.</span>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ============ PAGE 5: DO's & DON'Ts ============ -->
+<div class="page">
+  <h2>Do's &amp; Don'ts</h2>
+
+  <div class="two-col">
+    <div class="col do">
+      <h4>DO</h4>
+      <ul>
+        <li>Offer to set up everything yourself</li>
+        <li>Follow up within 24 hours of a "yes"</li>
+        <li>Frame it as a partnership, not charity</li>
+        <li>Keep the pilot to 3 months max</li>
+        <li>Ask for a testimonial at the end</li>
+        <li>Target gyms with 3+ coaches (bigger potential)</li>
+      </ul>
+    </div>
+    <div class="col dont">
+      <h4>DON'T</h4>
+      <ul>
+        <li>Give more than 3 months free</li>
+        <li>Offer big discounts after the pilot (anchors low value)</li>
+        <li>Skip the feedback calls (that's our intel)</li>
+        <li>Onboard a gym and then disappear</li>
+        <li>Waste time on gyms that won't commit to onboarding</li>
+        <li>Bad-mouth competitors — just be better</li>
+      </ul>
+    </div>
+  </div>
+
+  <h2 style="margin-top: 36px;">Quick Reference: The Numbers</h2>
+  <table>
+    <tr><th>Metric</th><th>Target</th></tr>
+    <tr><td>Free pilot length</td><td>3 months</td></tr>
+    <tr><td>Min. coaches to onboard</td><td>3</td></tr>
+    <tr><td>Min. clients to onboard</td><td>10</td></tr>
+    <tr><td>Feedback calls</td><td>1 per month (30 min)</td></tr>
+    <tr><td>Time to first coach assigning workouts</td><td>&lt; 3 days</td></tr>
+    <tr><td>Follow-up after "yes"</td><td>&lt; 24 hours</td></tr>
+  </table>
+
+  <div class="highlight" style="margin-top: 32px;">
+    <strong>Remember:</strong> We're not giving something away for free. We're investing in a partner who gives us feedback, a case study, and word-of-mouth. That's worth way more than 3 months of revenue.
+  </div>
+
+  <div class="footer">
+    <p>TrueCoach — Gym Sales Playbook — Confidential</p>
+  </div>
+</div>
+
+</body>
+</html>

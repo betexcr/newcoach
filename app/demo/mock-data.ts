@@ -476,4 +476,49 @@ export const demoPendingInvites: DemoInvite[] = [
   { id: "inv-001", coach: { full_name: "Sarah Trainer", avatar_url: null }, created_at: isoAgo(24) },
 ];
 
+// ── i18n Key Maps ────────────────────────────────────────────────────────────
+
+export const exerciseI18nKeys: Record<string, string> = {
+  "ex-001": "exerciseCatalog.barbellBenchPress",
+  "ex-002": "exerciseCatalog.barbellBackSquat",
+  "ex-003": "exerciseCatalog.barbellDeadlift",
+  "ex-004": "exerciseCatalog.overheadPress",
+  "ex-005": "exerciseCatalog.barbellRow",
+  "ex-006": "exerciseCatalog.latPulldown",
+  "ex-007": "exerciseCatalog.romanianDeadlift",
+  "ex-008": "exerciseCatalog.dumbbellCurl",
+  "ex-009": "exerciseCatalog.tricepPushdown",
+  "ex-010": "exerciseCatalog.plank",
+  "ex-011": "exerciseCatalog.lateralRaise",
+  "ex-012": "exerciseCatalog.legPress",
+};
+
+export const workoutNameKeys: Record<string, string> = {
+  "Upper Body Strength": "demo.workoutNames.upperBodyStrength",
+  "Lower Body Power": "demo.workoutNames.lowerBodyPower",
+  "Push Day": "demo.workoutNames.pushDay",
+  "Pull Day": "demo.workoutNames.pullDay",
+  "Active Recovery": "demo.workoutNames.activeRecovery",
+  "Upper Strength": "demo.workoutNames.upperStrength",
+  "Lower Power": "demo.workoutNames.lowerPower",
+  "Push Focus": "demo.workoutNames.pushFocus",
+  "Pull Focus": "demo.workoutNames.pullFocus",
+  "Strength Foundations 4-Week": "demo.workoutNames.strengthFoundations",
+  "Full Body Blast": "demo.workoutNames.fullBodyBlast",
+};
+
+export const chatMessageKeys: Record<string, string> = {
+  "msg-001": "demo.chatMessages.msg1",
+  "msg-002": "demo.chatMessages.msg2",
+  "msg-003": "demo.chatMessages.msg3",
+  "msg-004": "demo.chatMessages.msg4",
+  "msg-006": "demo.chatMessages.msg6",
+};
+
+export const convLastMessageKeys: Record<string, string> = {
+  "conv-001": "demo.chatMessages.convLast1",
+  "conv-002": "demo.chatMessages.convLast2",
+  "conv-003": "demo.chatMessages.convLast3",
+};
+
 export { COACH_ID, CLIENT_1_ID, today };

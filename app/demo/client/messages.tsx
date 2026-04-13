@@ -5,7 +5,7 @@ import { useTranslation } from "react-i18next";
 import type { AppTheme } from "@/lib/theme";
 import { useDemoFadeIn } from "../use-demo-fade";
 import { DemoPress } from "../DemoTooltip";
-import { coachProfile, demoConversations, demoChatMessages, CLIENT_1_ID } from "../mock-data";
+import { coachProfile, demoConversations, demoChatMessages, CLIENT_1_ID, chatMessageKeys, convLastMessageKeys } from "../mock-data";
 
 export default function DemoClientMessages() {
   const theme = useTheme<AppTheme>();
@@ -32,7 +32,7 @@ export default function DemoClientMessages() {
         <Avatar.Icon size={44} icon="account" style={{ backgroundColor: theme.colors.primaryContainer }} color={theme.colors.primary} />
         <View style={{ flex: 1, marginLeft: 12 }}>
           <Text variant="bodyMedium" style={{ color: theme.colors.onSurface, fontWeight: "600" }}>{coachProfile.full_name}</Text>
-          <Text variant="bodySmall" style={{ color: theme.colors.onSurfaceVariant }} numberOfLines={1}>{demoConversations[0].last_message?.body ?? ""}</Text>
+          <Text variant="bodySmall" style={{ color: theme.colors.onSurfaceVariant }} numberOfLines={1}>{convLastMessageKeys["conv-001"] ? t(convLastMessageKeys["conv-001"]) : (demoConversations[0].last_message?.body ?? "")}</Text>
         </View>
         <MaterialCommunityIcons name="chevron-right" size={20} color={theme.colors.onSurfaceVariant} />
       </DemoPress>
@@ -56,7 +56,7 @@ export default function DemoClientMessages() {
                   </View>
                 </DemoPress>
               ) : (
-                <Text variant="bodyMedium" style={{ color: isOwn ? theme.colors.onPrimary : theme.colors.onSurface, lineHeight: 20 }}>{msg.body}</Text>
+                <Text variant="bodyMedium" style={{ color: isOwn ? theme.colors.onPrimary : theme.colors.onSurface, lineHeight: 20 }}>{chatMessageKeys[msg.id] ? t(chatMessageKeys[msg.id]) : msg.body}</Text>
               )}
               <Text variant="labelSmall" style={{ color: isOwn ? theme.colors.onPrimary : theme.colors.onSurfaceVariant, opacity: isOwn ? 0.6 : 1, marginTop: 4, alignSelf: isOwn ? "flex-end" : "flex-start" }}>
                 {new Date(msg.created_at).toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" })}

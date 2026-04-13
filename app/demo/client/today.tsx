@@ -6,7 +6,7 @@ import { useRouter } from "expo-router";
 import type { AppTheme } from "@/lib/theme";
 import { useDemoFadeIn } from "../use-demo-fade";
 import { DemoPress } from "../DemoTooltip";
-import { clientProfile, demoAssignedWorkouts, demoProgressStats, demoPendingInvites, today } from "../mock-data";
+import { clientProfile, demoAssignedWorkouts, demoProgressStats, demoPendingInvites, today, exerciseI18nKeys, workoutNameKeys } from "../mock-data";
 
 const statusColor = (status: string, theme: AppTheme) => {
   if (status === "completed") return theme.colors.secondary;
@@ -97,15 +97,19 @@ export default function DemoToday() {
                 <View style={[s.workoutIcon, { backgroundColor: `${theme.colors.primary}15` }]}>
                   <MaterialCommunityIcons name="dumbbell" size={22} color={theme.colors.primary} />
                 </View>
-                <Text variant="titleMedium" style={{ color: theme.colors.onSurface, fontWeight: "700", marginLeft: 10, flex: 1 }}>{w.name}</Text>
+                <Text variant="titleMedium" style={{ color: theme.colors.onSurface, fontWeight: "700", marginLeft: 10, flex: 1 }}>{t(workoutNameKeys[w.name] ?? w.name)}</Text>
               </View>
-              {w.exercises.slice(0, 3).map((ex) => (
+              {w.exercises.slice(0, 3).map((ex) => {
+                const exKey = exerciseI18nKeys[ex.exercise_id];
+                const exName = exKey ? t(`${exKey}.name`) : ex.exercise_name;
+                return (
                 <Text key={ex.exercise_id + ex.order} variant="bodySmall" style={{ color: theme.colors.onSurfaceVariant, marginLeft: 46, marginBottom: 2 }}>
-                  {ex.exercise_name} &middot; {ex.sets.length} sets
+                  {exName} &middot; {t("today.moreSets", { count: ex.sets.length })}
                 </Text>
-              ))}
+                );
+              })}
               {w.exercises.length > 3 && (
-                <Text variant="bodySmall" style={{ color: theme.colors.onSurfaceVariant, marginLeft: 46 }}>+{w.exercises.length - 3} more</Text>
+                <Text variant="bodySmall" style={{ color: theme.colors.onSurfaceVariant, marginLeft: 46 }}>{t("today.moreExercises", { count: w.exercises.length - 3 })}</Text>
               )}
               <Pressable
                 style={[s.startBtn, { backgroundColor: theme.colors.primary }]}
@@ -142,7 +146,7 @@ export default function DemoToday() {
 
       <View style={s.statsRow}>
         {[
-          { label: t("demo.streak"), value: `${demoProgressStats.streak} days`, icon: "fire" },
+          { label: t("demo.streak"), value: t("today.dayCount", { count: demoProgressStats.streak }), icon: "fire" },
           { label: t("demo.thisWeek"), value: `${weekDays.filter((d) => d.status === "completed").length}/7`, icon: "calendar-check" },
           { label: t("demo.compliance"), value: `${demoProgressStats.compliance30}%`, icon: "chart-arc" },
         ].map((st) => (

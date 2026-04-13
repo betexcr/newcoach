@@ -1,0 +1,28 @@
+---
+description: Pre-push checks for file corruption, uncommitted changes, and white screen bugs
+alwaysApply: true
+---
+
+# Pre-Push Validation (MANDATORY)
+
+Before EVERY `git push`, you MUST do ALL of these. Do NOT skip any.
+
+## 1. Commit ALL changed files
+Run `git status --short`. If ANY `.ts` or `.tsx` files are modified or untracked, they MUST be committed before pushing. Forgetting to commit changes is the #1 cause of "not found" errors on deploy.
+
+## 2. File Corruption Check
+```bash
+git diff --name-only HEAD -- '*.ts' '*.tsx' | while read f; do printf "--- $f --- "; head -c 80 "$f"; echo; done
+```
+Every file must start with `import`, `export`, `const`, `//`, `/*`, or whitespace. If you see garbage bytes, fix before pushing.
+
+## 3. White Screen Check
+- React Query hooks (`useQuery`, `useMutation`) must only be called inside components that are DESCENDANTS of `QueryClientProvider`.
+- No hooks called after an early return.
+- No `require()` calls referencing missing assets.
+- No new files in tab directories (`app/demo/coach/`, `app/demo/client/`) unless registered in `tabDefs`.
+
+## 4. Build Check
+Run `npx tsc --noEmit` and `npx expo export --platform web` — both must exit 0.
+
+A Cursor hook at `.cursor/hooks/pre-push-check.sh` will warn automatically, but you must still fix any issues it flags.

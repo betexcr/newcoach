@@ -21,7 +21,7 @@ import {
 import { SafeAreaView } from "react-native-safe-area-context";
 import { MaterialCommunityIcons } from "@expo/vector-icons";
 import { useRouter, useLocalSearchParams } from "expo-router";
-import { demoAssignedWorkouts, getDemoExercises } from "./mock-data";
+import { demoAssignedWorkouts, getDemoExercises, exerciseI18nKeys, workoutNameKeys } from "./mock-data";
 import type {
   LoggedSet,
   WorkoutExercise,
@@ -182,7 +182,7 @@ function DetailView({
         </Pressable>
         <View style={{ flex: 1 }}>
           <Text variant="titleLarge" style={{ color: theme.colors.onSurface, fontWeight: "700" }} numberOfLines={1}>
-            {workout.name}
+            {t(workoutNameKeys[workout.name] ?? workout.name)}
           </Text>
         </View>
       </View>
@@ -266,6 +266,9 @@ function ExerciseDetailCard({
   t: (key: string, opts?: Record<string, unknown>) => string;
 }) {
   const [expanded, setExpanded] = useState(false);
+  const exI18n = exerciseI18nKeys[exercise.exercise_id];
+  const exDisplayName = exI18n ? t(`${exI18n}.name`) : exercise.exercise_name;
+  const exDisplayDesc = exI18n ? t(`${exI18n}.description`) : detail?.description;
 
   return (
     <Card
@@ -285,15 +288,15 @@ function ExerciseDetailCard({
               <Text style={{ fontWeight: "700", fontSize: 12, color: theme.colors.onPrimary }}>{index + 1}</Text>
             </View>
             <Text variant="titleSmall" style={{ color: theme.colors.onSurface, fontWeight: "700", flex: 1 }} numberOfLines={2}>
-              {exercise.exercise_name}
+              {exDisplayName}
             </Text>
           </View>
           <View style={{ flexDirection: "row", alignItems: "center", marginTop: 4 }}>
             {detail?.muscle_group && (
-              <Text variant="labelSmall" style={{ color: theme.colors.primary, textTransform: "capitalize" }}>{detail.muscle_group}</Text>
+              <Text variant="labelSmall" style={{ color: theme.colors.primary }}>{t(`muscleGroups.${detail.muscle_group.toLowerCase()}`)}</Text>
             )}
             {detail?.equipment && (
-              <Text variant="labelSmall" style={{ color: theme.colors.onSurfaceVariant }}> · {detail.equipment}</Text>
+              <Text variant="labelSmall" style={{ color: theme.colors.onSurfaceVariant }}> · {t(`equipment.${detail.equipment.toLowerCase()}`)}</Text>
             )}
           </View>
           <Text variant="bodySmall" style={{ color: theme.colors.onSurfaceVariant, marginTop: 2 }}>
@@ -312,8 +315,8 @@ function ExerciseDetailCard({
 
       {expanded && (
         <View style={[styles.expandedContent, { borderTopColor: theme.colors.outline }]}>
-          {detail?.description ? (
-            <Text variant="bodyMedium" style={{ color: theme.colors.onSurface, lineHeight: 22, marginBottom: 12 }}>{detail.description}</Text>
+          {exDisplayDesc ? (
+            <Text variant="bodyMedium" style={{ color: theme.colors.onSurface, lineHeight: 22, marginBottom: 12 }}>{exDisplayDesc}</Text>
           ) : (
             <Text variant="bodySmall" style={{ color: theme.colors.onSurfaceVariant, fontStyle: "italic", marginBottom: 12 }}>{t("workout.noDescription")}</Text>
           )}
@@ -392,6 +395,9 @@ function ExecutionView({
   const detail = exercise ? exerciseMap[exercise.exercise_id] : undefined;
   const sets = exercise ? getExerciseSets(exercise) : [];
   const completedSets = sets.filter((s) => s.completed).length;
+  const execI18n = exercise ? exerciseI18nKeys[exercise.exercise_id] : undefined;
+  const execDisplayName = execI18n ? t(`${execI18n}.name`) : exercise?.exercise_name;
+  const execDisplayDesc = execI18n ? t(`${execI18n}.description`) : detail?.description;
 
   const denom = Math.max(sets.length, 1);
   const progress = total > 0
@@ -441,20 +447,20 @@ function ExecutionView({
             </View>
             <View style={{ flex: 1 }}>
               <Text variant="headlineSmall" style={{ color: theme.colors.onSurface, fontWeight: "700" }}>
-                {exercise.exercise_name}
+                {execDisplayName}
               </Text>
               {detail?.muscle_group && (
                 <View style={{ flexDirection: "row", alignItems: "center", marginTop: 4 }}>
-                  <Text variant="labelMedium" style={{ color: theme.colors.primary, textTransform: "capitalize" }}>{detail.muscle_group}</Text>
+                  <Text variant="labelMedium" style={{ color: theme.colors.primary }}>{t(`muscleGroups.${detail.muscle_group.toLowerCase()}`)}</Text>
                   {detail?.equipment && (
-                    <Text variant="labelMedium" style={{ color: theme.colors.onSurfaceVariant, marginLeft: 8 }}>{detail.equipment}</Text>
+                    <Text variant="labelMedium" style={{ color: theme.colors.onSurfaceVariant, marginLeft: 8 }}>{t(`equipment.${detail.equipment.toLowerCase()}`)}</Text>
                   )}
                 </View>
               )}
             </View>
           </View>
 
-          {detail?.description && (
+          {execDisplayDesc && (
             <Card style={[styles.instructionCard, { backgroundColor: theme.colors.surface }]}>
               <Card.Content>
                 <View style={{ flexDirection: "row", alignItems: "center", marginBottom: 8 }}>
@@ -463,7 +469,7 @@ function ExecutionView({
                     {t("workout.howToPerform")}
                   </Text>
                 </View>
-                <Text variant="bodyMedium" style={{ color: theme.colors.onSurface, lineHeight: 22 }}>{detail.description}</Text>
+                <Text variant="bodyMedium" style={{ color: theme.colors.onSurface, lineHeight: 22 }}>{execDisplayDesc}</Text>
               </Card.Content>
             </Card>
           )}
